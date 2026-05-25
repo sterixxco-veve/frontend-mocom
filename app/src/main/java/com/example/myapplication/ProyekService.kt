@@ -1,0 +1,145 @@
+package com.example.myapplication
+
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+
+interface ApiService {
+
+    /* =========================
+       AUTH & USERS
+    ========================= */
+
+    @POST("api/register")
+    suspend fun register(
+        @Body user: User
+    ): Response<User>
+
+    @POST("api/login")
+    suspend fun login(
+        @Body user: User
+    ): Response<User>
+
+    @GET("api/getUserProfile/{id}")
+    suspend fun getUserProfile(
+        @Path("id") id: Int
+    ): Response<User>
+
+    /* =========================
+       ROLES
+    ========================= */
+
+    @POST("api/insertRoles")
+    suspend fun insertRoles(
+        @Body role: Role
+    ): Response<Role>
+
+    @GET("api/getAllRoles")
+    suspend fun getAllRoles(): Response<List<Role>>
+
+    /* =========================
+       SCHEDULES
+    ========================= */
+
+    @POST("api/insertSchedules")
+    suspend fun insertSchedules(
+        @Body schedule: Schedule
+    ): Response<Schedule>
+
+    @GET("api/getAllSchedules")
+    suspend fun getAllSchedules(): Response<List<Schedule>>
+
+    /* =========================
+       ASSIGNMENTS
+    ========================= */
+
+    @POST("api/insertAssignments")
+    suspend fun insertAssignments(
+        @Body assignment: Assignment
+    ): Response<Assignment>
+
+    @GET("api/getAssignmentsByUserId/{user_id}")
+    suspend fun getAssignmentsByUserId(
+        @Path("user_id") userId: Int
+    ): Response<List<Assignment>>
+
+    /* =========================
+       ATTENDANCES
+    ========================= */
+
+    @POST("api/insertAttendance/checkin")
+    suspend fun checkInAttendance(
+        @Body attendance: Attendance
+    ): Response<Attendance>
+
+    @POST("api/updateAttendance/checkout")
+    suspend fun checkOutAttendance(
+        @Body attendance: Attendance
+    ): Response<Attendance>
+
+    /* =========================
+       REPLACEMENTS
+    ========================= */
+
+    @POST("api/insertReplacements")
+    suspend fun insertReplacements(
+        @Body replacement: Replacement
+    ): Response<Replacement>
+
+    /* =========================
+       AI RECOMMENDATIONS
+    ========================= */
+
+    @POST("api/insertAi-recommendations")
+    suspend fun insertAiRecommendations(
+        @Body aiRecommendation: AiRecommendation
+    ): Response<AiRecommendation>
+
+    @GET("api/getAi-recommendations/{schedule_id}")
+    suspend fun getAiRecommendations(
+        @Path("schedule_id") scheduleId: Int
+    ): Response<List<AiRecommendation>>
+
+    /* =========================
+       NOTIFICATIONS
+    ========================= */
+
+    @GET("api/getNotificationsByUserId/{user_id}")
+    suspend fun getNotificationsByUserId(
+        @Path("user_id") userId: Int
+    ): Response<List<Notification>>
+
+    @PUT("api/updateNotifications/{id}/read")
+    suspend fun updateNotificationRead(
+        @Path("id") id: Int
+    ): Response<Notification>
+
+    /* =========================
+       RESOURCES
+    ========================= */
+
+    @POST("api/insertResources")
+    suspend fun insertResources(
+        @Body resource: Resource
+    ): Response<Resource>
+
+    @GET("api/getResources/{schedule_id}")
+    suspend fun getResources(
+        @Path("schedule_id") scheduleId: Int
+    ): Response<List<Resource>>
+
+    /* =========================
+       ANNOUNCEMENTS
+    ========================= */
+
+    @POST("api/insertAnnouncements")
+    suspend fun insertAnnouncements(
+        @Body announcement: Announcement
+    ): Response<Announcement>
+
+    @GET("api/getAllAnnouncements")
+    suspend fun getAllAnnouncements(): Response<List<Announcement>>
+}
