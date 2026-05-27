@@ -1,4 +1,4 @@
-package com.example.myapplication.admin.ui
+package com.example.myapplication.ui.admin.fragments
 
 import android.os.Bundle
 import android.view.View
@@ -17,8 +17,10 @@ class ScheduleCrudFragment : Fragment(R.layout.fragment_schedule_crud) {
         _binding = FragmentScheduleCrudBinding.bind(view)
 
         binding.fabAdd.setOnClickListener {
-            // Simulasi Trigger Modal Buat Jadwal Baru
-            Toast.makeText(context, "Membuka Form Tambah Jadwal Baru...", Toast.LENGTH_SHORT).show()
+            // PENTING: Pastikan nama kelas di sini cocok 100% dengan nama file BottomSheet Anda.
+            // Jika sebelumnya Anda memberi nama 'AddScheduleBottomSheetFragment', ubah kodenya menjadi:
+            val addScheduleBottomSheet = AddScheduleBottomSheetFragment()
+            addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
         }
     }
 

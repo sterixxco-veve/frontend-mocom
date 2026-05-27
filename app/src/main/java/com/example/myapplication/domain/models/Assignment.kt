@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.domain.models
 
 import java.io.Serializable
 import java.time.LocalDateTime

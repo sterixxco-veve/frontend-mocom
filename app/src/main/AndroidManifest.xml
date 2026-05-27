@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,7 +20,7 @@
 <!--            android:name=".admin.AdminActivity"-->
 <!--            android:exported="false" />-->
         <activity
-            android:name=".admin.AdminActivity"
+            android:name=".ui.admin.AdminActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

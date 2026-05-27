@@ -1,8 +1,7 @@
-package com.example.myapplication
+package com.example.myapplication.domain.models
 
 import java.io.Serializable
 import java.time.LocalDateTime
-import java.util.Date
 
 data class Replacement(
     val id: Int = 0,

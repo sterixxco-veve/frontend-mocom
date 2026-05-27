@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.myapplication.admin.ui.AdminDashboardFragment"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminDashboardFragment"
         android:label="Dashboard"
         tools:layout="@layout/fragment_admin_dashboard">
         <!-- Transisi tanpa menggunakan animasi kustom eksternal -->
@@ -18,25 +18,25 @@
 
     <fragment
         android:id="@+id/navigation_crud"
-        android:name="com.example.myapplication.admin.ui.ScheduleCrudFragment"
+        android:name="com.example.myapplication.ui.admin.fragments.ScheduleCrudFragment"
         android:label="Kelola Jadwal"
         tools:layout="@layout/fragment_schedule_crud" />
 
     <fragment
         android:id="@+id/navigation_attendance"
-        android:name="com.example.myapplication.admin.ui.AttendanceMonitorFragment"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminAttendanceFragment"
         android:label="Absensi Staff"
-        tools:layout="@layout/fragment_attendance_monitor" />
+        tools:layout="@layout/fragment_admin_attendance" />
 
     <fragment
         android:id="@+id/navigation_announcement"
-        android:name="com.example.myapplication.admin.ui.AdminBroadcastFragment"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminBroadcastFragment"
         android:label="Broadcast"
         tools:layout="@layout/fragment_admin_broadcast" />
 
     <fragment
         android:id="@+id/navigation_reports"
-        android:name="com.example.myapplication.admin.ui.AdminReportsFragment"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminReportsFragment"
         android:label="Laporan PDF"
         tools:layout="@layout/fragment_admin_reports" />
 </navigation>

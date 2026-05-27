@@ -30,7 +30,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#1E293B"
-        app:menu="@menu/admin_bottom_nav"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:itemTextColor="#E6DCF6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/admin_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,12 @@
-package com.example.myapplication.admin.ui
+package com.example.myapplication.ui.admin.fragments
 
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -28,7 +32,7 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
 
             if (subject.isEmpty() || message.isEmpty()) {
                 Toast.makeText(context, "Harap lengkapi Subjek dan Detail Pesan!", Toast.LENGTH_SHORT).show()
-                return
+
             }
 
             // Simulasi penambahan entri pengumuman baru ke dalam daftar riwayat dinamis
@@ -53,25 +57,25 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
                 bottomMargin = 16
             }
             radius = 24f
-            setCardBackgroundColor(android.graphics.Color.parseColor("#1E293B"))
+            setCardBackgroundColor(Color.parseColor("#1E293B"))
         }
 
-        val linearLayout = android.widget.LinearLayout(context).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
+        val linearLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
             setPadding(32, 32, 32, 32)
         }
 
         val tvSubject = TextView(context).apply {
             text = "📢 $subject"
-            setTextColor(android.graphics.Color.parseColor("#06B6D4"))
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 13f)
-            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(Color.parseColor("#06B6D4"))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTypeface(null, Typeface.BOLD)
         }
 
         val tvMessage = TextView(context).apply {
             text = message
-            setTextColor(android.graphics.Color.parseColor("#CBD5E1"))
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextColor(Color.parseColor("#CBD5E1"))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setPadding(0, 8, 0, 0)
         }
 
@@ -80,8 +84,8 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
 
         val tvMeta = TextView(context).apply {
             text = "Baru saja dikirim • Jam $currentTime"
-            setTextColor(android.graphics.Color.parseColor("#475569"))
-            setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 10f)
+            setTextColor(Color.parseColor("#475569"))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
             setPadding(0, 12, 0, 0)
         }
 

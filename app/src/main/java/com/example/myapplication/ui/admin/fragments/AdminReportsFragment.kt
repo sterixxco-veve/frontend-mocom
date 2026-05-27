@@ -1,4 +1,4 @@
-package com.example.myapplication.admin.ui
+package com.example.myapplication.ui.admin.fragments
 
 import android.app.DownloadManager
 import android.content.Context

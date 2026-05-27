@@ -1,4 +1,4 @@
-package com.example.myapplication.admin
+package com.example.myapplication.ui.admin
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

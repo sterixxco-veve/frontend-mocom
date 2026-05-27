@@ -1,5 +1,13 @@
 package com.example.myapplication
 
+import com.example.myapplication.domain.models.AiRecommendation
+import com.example.myapplication.domain.models.Announcement
+import com.example.myapplication.domain.models.Assignment
+import com.example.myapplication.domain.models.Attendance
+import com.example.myapplication.domain.models.Notification
+import com.example.myapplication.domain.models.Replacement
+import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.domain.models.User
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

@@ -1,5 +1,6 @@
-package com.example.myapplication.admin.ui
+package com.example.myapplication.ui.admin.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -18,8 +19,8 @@ class AdminAttendanceFragment : Fragment(R.layout.fragment_admin_attendance) {
 
         binding.btnFilterAll.setOnClickListener {
             resetButtons()
-            binding.btnFilterAll.setBackgroundColor(android.graphics.Color.parseColor("#06B6D4"))
-            binding.btnFilterAll.setTextColor(android.graphics.Color.parseColor("#0F172A"))
+            binding.btnFilterAll.setBackgroundColor(Color.parseColor("#06B6D4"))
+            binding.btnFilterAll.setTextColor(Color.parseColor("#0F172A"))
 
             // Simulasikan menampilkan kembali seluruh card
             binding.cardAttendance1.visibility = View.VISIBLE
@@ -31,8 +32,8 @@ class AdminAttendanceFragment : Fragment(R.layout.fragment_admin_attendance) {
 
         binding.btnFilterPresent.setOnClickListener {
             resetButtons()
-            binding.btnFilterPresent.setBackgroundColor(android.graphics.Color.parseColor("#06B6D4"))
-            binding.btnFilterPresent.setTextColor(android.graphics.Color.parseColor("#0F172A"))
+            binding.btnFilterPresent.setBackgroundColor(Color.parseColor("#06B6D4"))
+            binding.btnFilterPresent.setTextColor(Color.parseColor("#0F172A"))
 
             // Saring dan tampilkan yang hanya berstatus 'Hadir' saja
             binding.cardAttendance1.visibility = View.VISIBLE
@@ -44,8 +45,8 @@ class AdminAttendanceFragment : Fragment(R.layout.fragment_admin_attendance) {
 
         binding.btnFilterAbsent.setOnClickListener {
             resetButtons()
-            binding.btnFilterAbsent.setBackgroundColor(android.graphics.Color.parseColor("#06B6D4"))
-            binding.btnFilterAbsent.setTextColor(android.graphics.Color.parseColor("#0F172A"))
+            binding.btnFilterAbsent.setBackgroundColor(Color.parseColor("#06B6D4"))
+            binding.btnFilterAbsent.setTextColor(Color.parseColor("#0F172A"))
 
             // Saring dan tampilkan yang hanya berstatus 'Sakit/Absen' saja (Siti Rahma)
             binding.cardAttendance1.visibility = View.GONE
@@ -57,8 +58,8 @@ class AdminAttendanceFragment : Fragment(R.layout.fragment_admin_attendance) {
     }
 
     private fun resetButtons() {
-        val darkSlate = android.graphics.Color.parseColor("#1E293B")
-        val textSlate = android.graphics.Color.parseColor("#CBD5E1")
+        val darkSlate = Color.parseColor("#1E293B")
+        val textSlate = Color.parseColor("#CBD5E1")
 
         binding.btnFilterAll.setBackgroundColor(darkSlate)
         binding.btnFilterAll.setTextColor(textSlate)
