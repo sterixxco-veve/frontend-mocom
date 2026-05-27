@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--
+        PENTING: ID item di bawah ini harus sama persis dengan ID fragment
+        yang ada di dalam res/navigation/nav_graph_admin.xml agar
+        setupWithNavController() dapat bekerja secara otomatis.
+    -->
+
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Dashboard"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_crud"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Jadwal"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_attendance"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Absensi"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_announcement"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="Broadcast"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_reports"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="Laporan"
+        app:showAsAction="ifRoom" />
+
+</menu>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="#0F172A"
+android:padding="16dp">
+
+<TextView
+    android:id="@+id/title_crud"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Kelola Jadwal Tutorial"
+    android:textColor="#FFFFFF"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"/>
+
+<!-- Placeholder List Menggunakan Simpel RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_crud" />
+
+<!-- FAB Untuk Tambah Jadwal Baru (Keperluan Demo UI) -->
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fab_add"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:backgroundTint="#06B6D4"
+    app:srcCompat="@android:drawable/ic_input_add"
+    app:tint="#FFFFFF"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
