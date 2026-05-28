@@ -11,7 +11,7 @@ import java.util.Locale
 
 class ScheduleAdapter(
     private var scheduleList: List<Schedule> = emptyList(),
-    private val onItemClick: (Schedule) -> Unit // Lambda fungsi untuk mendeteksi klik pada item
+//    private val onItemClick: (Schedule) -> Unit // Lambda fungsi untuk mendeteksi klik pada item
 ) : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>() {
 
     // ViewHolder bertugas mengenali komponen visual di item_schedule.xml via View Binding
@@ -29,9 +29,9 @@ class ScheduleAdapter(
             val endTimeStr = timeFormat.format(Date(schedule.end_time))
             binding.tvTime.text = "$startTimeStr - $endTimeStr"
 
-            binding.root.setOnClickListener {
-                onItemClick(schedule)
-            }
+//            binding.root.setOnClickListener {
+//                onItemClick(schedule)
+//            }
         }
     }
 

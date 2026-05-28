@@ -1,78 +1,88 @@
 package com.example.myapplication.data.sources.remote
 
+import android.util.Log
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.models.Schedule
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
-fun Schedule.toScheduleJson(): ScheduleJson{
-    return ScheduleJson(id, created_by, title, description, start_time, end_time,location,created_at)
-}
-fun ScheduleJson.toSchedule(): Schedule{
-    return Schedule(id, created_by, title, description, start_time, end_time, location, created_at)
+private val mysqlFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+// 1. EKSTENSI: Mengubah Schedule (Lokal Long) -> Ke ScheduleJson (Remote String)
+fun Schedule.toScheduleJson(): ScheduleJson {
+    return ScheduleJson(
+        id = this.id,
+        created_by = this.created_by,
+        title = this.title,
+        description = this.description,
+        start_time = Date(this.start_time), // Konversi Long ke Date
+        end_time = Date(this.end_time),     // Konversi Long ke Date
+        location = this.location,
+        created_at = Date(this.created_at)  // Konversi Long ke Date
+    )
 }
 
+// Ekstensi: Jaringan (Date) -> Ke Model Lokal (Long)
+fun ScheduleJson.toSchedule(): Schedule {
+    return Schedule(
+        id = this.id,
+        created_by = this.created_by,
+        title = this.title,
+        description = this.description,
+        start_time = this.start_time.time, // Ambil angka milidetik Long dari Date
+        end_time = this.end_time.time,     // Ambil angka milidetik Long dari Date
+        location = this.location,
+        created_at = this.created_at.time  // Ambil angka milidetik Long dari Date
+    )
+}
 class RetrofitDataSource(private val webService: WebService) : RemoteDataSource {
 
     override suspend fun insertSchedule(schedule: Schedule): Schedule {
         try {
-            val scheduleId = schedule.id ?: 0
+            // Gunakan fungsi ekstensi .toScheduleJson() yang sudah kita perbaiki di atas
+            val requestBody = schedule.toScheduleJson()
 
-            val requestBody = ScheduleJson(
-                id = scheduleId,
-                created_by = schedule.created_by,
-                title = schedule.title,
-                description = schedule.description ?: "",
-                start_time = schedule.start_time,
-                end_time = schedule.end_time,
-                location = schedule.location ?: "",
-                created_at = schedule.created_at
-            )
+            // Kirim ke server via Retrofit webService
+            //  KODE YANG BENAR (Baru):
+            val response: ScheduleJson = webService.insertSchedule(requestBody)
 
-            // 3. FIX: Kirim DUA argumen (id untuk @Path dan requestBody untuk @Body)
-            val response: ScheduleJson = webService.insertSchedule(scheduleId, requestBody)
-
-            // 4. Ambil ID hasil respons server dan kembalikan dalam bentuk objek 'Schedule' lokal
+            // Gunakan fungsi copy manual milik kelas Schedule kamu dengan named argument
             return schedule.copy(id = response.id)
 
         } catch (e: Exception) {
             e.printStackTrace()
-            // Jika gagal koneksi/offline, kembalikan data asli (ID tetap 0) agar tersimpan di lokal
             return schedule
         }
     }
 
-    override suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule> {
-        // 1. Konversi List<Schedule> menjadi List<ScheduleJson>
-        val requestBody: List<ScheduleJson> = schedule.map { clientData ->
-            ScheduleJson(
-                id = clientData.id ?: 0,
-                created_by = clientData.created_by,
-                title = clientData.title,
-                description = clientData.description ?: "",
-                start_time = clientData.start_time,
-                end_time = clientData.end_time,
-                location = clientData.location ?: "",
-                created_at = clientData.created_at
-            )
+    override suspend fun fetchAllSchedules(): List<Schedule> {
+        return try {
+            val responseList = webService.getAllSchedules()
+            responseList.map { it.toSchedule() }
+        } catch (e: Exception) {
+            Log.e("MOCOM_ERROR", "Terjadi kegagalan saat fetch data dari Node.js!", e)
+            e.printStackTrace()
+            emptyList()
         }
+    }
 
-        // 2. Kirim data ke server
-        val responseList: List<ScheduleJson> = webService.syncSchedule(requestBody)
+    override suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule> {
+        try {
+            val requestBody: List<ScheduleJson> = schedule.map { clientData ->
+                clientData.toScheduleJson()
+            }
 
-        // 3. Konversi kembali List<ScheduleJson> menjadi List<Schedule> untuk kebutuhan lokal Repository
-        return responseList.map { serverData ->
-            Schedule(
-                id = serverData.id,
-                created_by = serverData.created_by,
-                title = serverData.title,
-                description = serverData.description,
+            // 2. Kirim data ke server
+            val responseList: List<ScheduleJson> = webService.syncSchedule(requestBody)
 
-                // Kembalikan dalam format String agar diterima oleh model Schedule Anda
-                start_time = serverData.start_time,
-                end_time = serverData.end_time,
-                location = serverData.location,
-                created_at = serverData.created_at
-            )
+            // 3. Konversi kembali List<ScheduleJson> menjadi List<Schedule> menggunakan fungsi ekstelinesi
+            return responseList.map { serverData ->
+                serverData.toSchedule()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return schedule // Jika sync gagal, kembalikan data asal agar tidak crash
         }
     }
 }

@@ -33,7 +33,7 @@ class App : Application() {
         // 2. Konfigurasi Instansiasi Retrofit dengan Moshi Converter
         val retrofit = Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl("http://192.168.103.61:3000/") // Menggunakan IP Local Server Node.js Anda
+            .baseUrl("http://10.0.2.2:3000/") // Menggunakan IP Local Server Node.js Anda
             .build()
 
         // 3. Membuat implementasi dari interface WebService API Anda
