@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.repositories.ScheduleRepository
 import com.example.myapplication.data.sources.models.Schedule
 import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AdminViewModel (
     private val scheduleRepository: ScheduleRepository
@@ -42,14 +44,42 @@ class AdminViewModel (
     fun loadSchedules() {
         viewModelScope.launch {
             try {
-                _schedules.value = scheduleRepository.getAll()
+                val data = scheduleRepository.getAll()
+                _schedules.postValue(data)
             } catch (e: Exception) {
                 e.printStackTrace()
+                _schedules.postValue(emptyList()) // Tetap kirim list kosong jika server Node.js mati
             }
         }
     }
 
+    fun addSchedule(schedule: Schedule, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                // 1. Eksekusi insert ke MySQL lewat repository anonim yang ada di fragment
+                val response = scheduleRepository.insert(schedule)
 
+                // 2. Cek apakah server mengembalikan data dengan ID baru (sukses)
+                // Jika sukses, MySQL akan mengembalikan id > 0 karena Auto_Increment
+                if (response.id > 0) {
+                    // Pindah ke Main Thread untuk mengembalikan status sukses ke UI (BottomSheet)
+                    withContext(Dispatchers.Main) {
+                        onResult(true)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onResult(false)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Jika terjadi crash jaringan atau server Node.js mati, kembalikan false
+                withContext(Dispatchers.Main) {
+                    onResult(false)
+                }
+            }
+        }
+    }
 
     fun fetchBurnoutAnalysis() {
         viewModelScope.launch {

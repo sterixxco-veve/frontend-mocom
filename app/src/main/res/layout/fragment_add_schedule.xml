@@ -24,7 +24,7 @@
         android:id="@+id/tvHeaderSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Silakan isi formulir di bawah untuk menambahkan sesi tutorial baru."
+        android:text="Silakan isi formulir di bawah untuk menambahkan jadwal baru."
         android:textColor="#94A3B8"
         android:textSize="14sp"
         android:layout_marginTop="4dp"
@@ -91,7 +91,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Lokasi Ruangan / Kelas"
+        android:hint="Lokasi"
         android:textColorHint="#94A3B8"
         app:hintTextColor="#06B6D4"
         app:boxStrokeColor="#06B6D4"
@@ -118,7 +118,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Waktu Mulai (YYYY-MM-DD HH:mm:ss)"
+        android:hint="Waktu Mulai"
         android:textColorHint="#94A3B8"
         app:hintTextColor="#06B6D4"
         app:boxStrokeColor="#06B6D4"
@@ -127,6 +127,8 @@
         app:boxCornerRadiusTopEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusBottomEnd="8dp"
+        app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
+        app:startIconTint="#06B6D4"
         app:layout_constraintTop_toBottomOf="@id/tilLocation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -137,7 +139,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#F8FAFC"
-            android:inputType="datetime" />
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -145,7 +149,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Waktu Selesai (YYYY-MM-DD HH:mm:ss)"
+        android:hint="Waktu Selesai"
         android:textColorHint="#94A3B8"
         app:hintTextColor="#06B6D4"
         app:boxStrokeColor="#06B6D4"
@@ -154,6 +158,8 @@
         app:boxCornerRadiusTopEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
         app:boxCornerRadiusBottomEnd="8dp"
+        app:startIconDrawable="@android:drawable/ic_menu_my_calendar"
+        app:startIconTint="#06B6D4"
         app:layout_constraintTop_toBottomOf="@id/tilStartTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -164,7 +170,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#F8FAFC"
-            android:inputType="datetime" />
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
