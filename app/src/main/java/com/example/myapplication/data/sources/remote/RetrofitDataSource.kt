@@ -1,25 +1,30 @@
-package com.example.myapplication.data.remote
+package com.example.myapplication.data.sources.remote
 
-import com.example.myapplication.data.remote.WebService
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.remote.json.ScheduleJson
+import com.example.myapplication.data.sources.models.Schedule
+import java.util.Date
+
+fun Schedule.toScheduleJson(): ScheduleJson{
+    return ScheduleJson(id, created_by, title, description, start_time, end_time,location,created_at)
+}
+fun ScheduleJson.toSchedule(): Schedule{
+    return Schedule(id, created_by, title, description, start_time, end_time, location, created_at)
+}
 
 class RetrofitDataSource(private val webService: WebService) : RemoteDataSource {
 
     override suspend fun insertSchedule(schedule: Schedule): Schedule {
         try {
-            // 1. Ambil id untuk path URL (jika null, default ke 0)
             val scheduleId = schedule.id ?: 0
 
-            // 2. Konversi dari model lokal 'Schedule' ke model jaringan 'ScheduleJson'
             val requestBody = ScheduleJson(
                 id = scheduleId,
                 created_by = schedule.created_by,
-                content = schedule.description ?: "",
                 title = schedule.title,
                 description = schedule.description ?: "",
-                location = schedule.location ?: "",
                 start_time = schedule.start_time,
                 end_time = schedule.end_time,
+                location = schedule.location ?: "",
                 created_at = schedule.created_at
             )
 
@@ -42,17 +47,11 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             ScheduleJson(
                 id = clientData.id ?: 0,
                 created_by = clientData.created_by,
-
-                // FIX: Mengisi parameter 'content' dengan deskripsi atau judul (sesuai kebutuhan database MySQL Anda)
-                content = clientData.description ?: "",
-
                 title = clientData.title,
                 description = clientData.description ?: "",
-                location = clientData.location ?: "",
-
-                // FIX: Konversi dari String (di model Schedule) ke Long (di ScheduleJson)
                 start_time = clientData.start_time,
                 end_time = clientData.end_time,
+                location = clientData.location ?: "",
                 created_at = clientData.created_at
             )
         }

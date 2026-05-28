@@ -1,17 +1,16 @@
-package com.example.myapplication.data.local
+package com.example.myapplication.data.sources.local
 
-import com.example.myapplication.data.local.database.AppDatabase
-import com.example.myapplication.data.local.entities.ScheduleEntity
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.local.database.AppDatabase
+import com.example.myapplication.data.sources.local.entities.ScheduleEntity
+import com.example.myapplication.data.sources.models.Schedule
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
     private val scheduleDao = database.scheduleDao()
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    override suspend fun getAll(): List<Schedule> {
+    override suspend fun getAllSchedule(): List<Schedule> {
         return scheduleDao.getAll().map { it.toRawModel() }
     }
 
@@ -65,11 +64,7 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
                 created_at = remote.created_at
             )
 
-            if (existingEntity != null) {
-                scheduleDao.update(entityToSave)
-            } else {
-                scheduleDao.insert(entityToSave)
-            }
+            scheduleDao.insert(entityToSave)
         }
     }
 }

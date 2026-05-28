@@ -1,14 +1,12 @@
-package com.example.myapplication.domain.models
+package com.example.myapplication.data.sources.models
 
 import java.io.Serializable
 import java.time.LocalDateTime
 
-data class Notification(
+data class Announcement(
     val id: Int = 0,
-    val user_id: Int,
     val title: String = "",
     val message: String = "",
-    val type: String,
-    val is_read: Int,
+    val created_by: Int,
     val created_at: LocalDateTime
 ) : Serializable

@@ -1,6 +1,6 @@
-package com.example.myapplication.data.remote
+package com.example.myapplication.data.sources.remote
 
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.PUT

@@ -1,4 +1,4 @@
-package com.example.myapplication.domain.models
+package com.example.myapplication.data.sources.models
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -52,17 +52,25 @@ class Schedule(
         }
     }
 
-    // Fungsi copy disesuaikan (menghapus content)
     fun copy(
         id: Int = this.id,
         created_by: Int = this.created_by,
         title: String = this.title,
         description: String? = this.description,
-        location: String? = this.location,
         start_time: Long = this.start_time,
         end_time: Long = this.end_time,
-        createdAt: Long = Date().time
-    ): Schedule {
-        return Schedule(id, created_by, title, description, start_time, end_time, location, createdAt)
+        location: String? = this.location,
+        created_at: Long = this.created_at
+    ): Schedule{
+        return Schedule(
+            id,
+            created_by,
+            title,
+            description,
+            start_time,
+            end_time,
+            location,
+            created_at
+        )
     }
 }

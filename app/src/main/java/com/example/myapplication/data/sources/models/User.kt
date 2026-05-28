@@ -1,4 +1,4 @@
-package com.example.myapplication.domain.models
+package com.example.myapplication.data.sources.models
 
 import java.io.Serializable
 import java.util.Date

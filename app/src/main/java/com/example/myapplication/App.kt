@@ -1,14 +1,12 @@
 package com.example.myapplication
 
 import android.app.Application
-import com.example.myapplication.data.local.LocalDataSource
-import com.example.myapplication.data.local.RoomDataSource
-import com.example.myapplication.data.local.database.AppDatabase
-import com.example.myapplication.data.remote.RemoteDataSource
-import com.example.myapplication.data.remote.RetrofitDataSource
-import com.example.myapplication.data.remote.WebService
 import com.example.myapplication.data.repositories.ScheduleRepository
 import com.example.myapplication.data.repositories.DefaultScheduleRepository
+import com.example.myapplication.data.sources.local.RoomDataSource
+import com.example.myapplication.data.sources.local.database.AppDatabase
+import com.example.myapplication.data.sources.remote.RetrofitDataSource
+import com.example.myapplication.data.sources.remote.WebService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit

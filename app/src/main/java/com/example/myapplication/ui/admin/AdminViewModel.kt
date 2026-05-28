@@ -1,9 +1,11 @@
 package com.example.myapplication.ui.admin
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.repositories.ScheduleRepository
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.models.Schedule
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,9 +14,10 @@ import kotlinx.coroutines.launch
 class AdminViewModel (
     private val scheduleRepository: ScheduleRepository
 ): ViewModel() {
-
-    private val _schedules = MutableStateFlow<List<Schedule>>(emptyList())
-    val schedules: StateFlow<List<Schedule>> = _schedules
+    private val _scheduleList = ArrayList<Schedule>()
+    private val _schedules = MutableLiveData(_scheduleList.toList())
+    val schedules: LiveData<List<Schedule>>
+        get() = _schedules
 
     private val _burnoutRecommendations = MutableStateFlow<String>("Memuat analisis beban kerja asisten...")
     val burnoutRecommendations: StateFlow<String> = _burnoutRecommendations
@@ -25,8 +28,15 @@ class AdminViewModel (
         apiKey = "gen-lang-client-0990912019"
     )
 
-    init {
-        loadSchedules()
+    fun init() {
+        viewModelScope.launch {
+            refreshList()
+        }
+    }
+
+    private suspend fun refreshList() {
+        _scheduleList.clear()
+        _scheduleList.addAll(scheduleRepository.getAll())
     }
 
     fun loadSchedules() {
@@ -39,9 +49,8 @@ class AdminViewModel (
         }
     }
 
-    /**
-     * Mengambil analisis burnout menggunakan data riil dari database lokal/server
-     */
+
+
     fun fetchBurnoutAnalysis() {
         viewModelScope.launch {
             try {
@@ -61,15 +70,15 @@ class AdminViewModel (
 
                 // 3. Bangun Prompt Pintar EduStaff Pro dengan data dinamis
                 val prompt = """
-                    Kamu adalah sistem AI terintegrasi dari proyek EduStaff Pro. 
+                    Kamu adalah sistem AI terintegrasi dari proyek EduStaff Pro.
                     Analisis data aktivitas mengajar asisten dosen berikut yang diambil langsung dari database:
-                    
+
                     $staffScheduleDataText
-                    
+
                     Tugas utama kamu:
                     1. Berikan urutan perkiraan risiko burnout asisten dari yang tertinggi ke terendah disertai skala tingkat stres (1-10) berdasarkan frekuensi mengajar mereka di atas.
                     2. Berikan rekomendasi konkret tindakan pencegahan, seperti pembatasan maksimal jadwal mengajar atau saran penugasan asisten cadangan potensial.
-                    
+
                     Ketentuan Output:
                     - Menggunakan Bahasa Indonesia yang profesional, padat, dan instruktif.
                     - Format rapi menggunakan poin-poin Markdown agar mudah dibaca oleh Admin pada halaman dashboard aplikasi Android.

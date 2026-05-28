@@ -1,10 +1,10 @@
-package com.example.myapplication.data.local
+package com.example.myapplication.data.sources.local
 
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.models.Schedule
 
 interface LocalDataSource {
 
-    suspend fun getAll(): List<Schedule>
+    suspend fun getAllSchedule(): List<Schedule>
 
     suspend fun getById(id: Int): Schedule?
 

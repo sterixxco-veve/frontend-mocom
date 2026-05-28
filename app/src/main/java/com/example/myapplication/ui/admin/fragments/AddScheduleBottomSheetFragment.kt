@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.myapplication.App
 import com.example.myapplication.R
+import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.ui.admin.AdminViewModel
-import com.example.myapplication.domain.models.Schedule
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat

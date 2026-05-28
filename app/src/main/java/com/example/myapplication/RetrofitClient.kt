@@ -1,6 +1,7 @@
 package com.example.myapplication
 
-import com.example.myapplication.domain.models.Schedule
+
+import com.example.myapplication.data.sources.models.Schedule
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

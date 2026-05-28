@@ -1,6 +1,6 @@
 package com.example.myapplication.data.repositories
 
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.models.Schedule
 
 interface ScheduleRepository {
     suspend fun getAll(): List<Schedule>

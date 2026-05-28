@@ -1,12 +1,12 @@
-package com.example.myapplication.data.local.entities
+package com.example.myapplication.data.sources.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
-import com.example.myapplication.domain.models.Schedule
+import com.example.myapplication.data.sources.models.Schedule
 
 @Entity(tableName = "schedules")
-data class ScheduleEntity(
+class ScheduleEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val created_by: Int,
