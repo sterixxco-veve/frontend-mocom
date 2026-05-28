@@ -2,13 +2,15 @@ package com.example.myapplication
 
 import com.example.myapplication.data.sources.remote.WebService
 import com.google.gson.GsonBuilder
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory // Pastikan pakai GSON murni
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitClient {
     private const val BASE_URL = "http://10.0.2.2:3000/"
 
-    // KUNCI UTAMA: GSON akan otomatis mengubah String MySQL Datetime menjadi Objek Date Java secara global
     private val gson = GsonBuilder()
         .setDateFormat("yyyy-MM-dd HH:mm:ss")
         .create()
@@ -16,7 +18,7 @@ object RetrofitClient {
     val webService: WebService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson)) // GSON Converter didaftarkan di sini
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(WebService::class.java)
     }

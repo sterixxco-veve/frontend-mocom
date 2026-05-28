@@ -35,16 +35,15 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             adapter = scheduleAdapter
         }
 
-        // 2. TAMBAHKAN: Setup Tampilan Warna Swipe-to-Refresh (Aksen Cyan & Dark Mode)
+        // 2. Setup Tampilan Warna Swipe-to-Refresh (Aksen Cyan & Dark Mode)
         binding.swipeRefresh.setColorSchemeColors(Color.parseColor("#06B6D4"))
         binding.swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#1E293B"))
 
-        // 3. TAMBAHKAN: Listener geser layar ke bawah untuk reload/sync data dari SQL Node.js
+        // 3. Listener geser layar ke bawah untuk reload/sync data dari SQL Node.js
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadSchedules()
         }
 
-        // 4. Siapkan Data Source
         val webService = RetrofitClient.webService
         val remoteDataSource = RetrofitDataSource(webService)
 
@@ -67,30 +66,26 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             }
         }
 
-        // 6. Masukkan objek repository anonim tersebut ke dalam ViewModel Factory
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+        // 6. PERBAIKAN UTAMA: Gunakan scope 'requireActivity()' agar ViewModel bisa di-share ke BottomSheet
+        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 return AdminViewModel(repository) as T
             }
         })[AdminViewModel::class.java]
 
-        // 7. Amati perubahan LiveData schedules dari AdminViewModel
         viewModel.schedules.observe(viewLifecycleOwner) { listJadwal ->
-            // TAMBAHKAN: Hentikan animasi putaran loading begitu data dari server diterima
             binding.swipeRefresh.isRefreshing = false
 
             if (listJadwal != null && listJadwal.isNotEmpty()) {
                 scheduleAdapter.submitList(listJadwal)
             } else {
-                Toast.makeText(requireContext(), "Tidak ada data jadwal saat ini", Toast.LENGTH_SHORT).show()
+                scheduleAdapter.submitList(emptyList())
             }
         }
 
-        // 8. Tampilkan animasi loading saat pertama kali halaman dibuka, lalu panggil data SQL
         binding.swipeRefresh.isRefreshing = true
         viewModel.loadSchedules()
 
-        // Klik aksi untuk memunculkan BottomSheet input jadwal baru
         binding.fabAdd.setOnClickListener {
             val addScheduleBottomSheet = AddScheduleBottomSheetFragment()
             addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")

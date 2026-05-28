@@ -13,8 +13,6 @@ class ScheduleAdapter(
     private var scheduleList: List<Schedule> = emptyList(),
 //    private val onItemClick: (Schedule) -> Unit // Lambda fungsi untuk mendeteksi klik pada item
 ) : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>() {
-
-    // ViewHolder bertugas mengenali komponen visual di item_schedule.xml via View Binding
     inner class ScheduleViewHolder(private val binding: ItemScheduleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 

@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.admin
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,7 @@ class AdminViewModel (
     // Inisialisasi Model Gemini SDK
     private val generativeModel = GenerativeModel(
         modelName = "gemini-pro",
-        apiKey = "gen-lang-client-0990912019"
+        apiKey = "AIzaSyB7v6J3IGCIXn4IAdJ60t1jlOEdcA6D_vI"
     )
 
     fun init() {
@@ -45,10 +46,11 @@ class AdminViewModel (
         viewModelScope.launch {
             try {
                 val data = scheduleRepository.getAll()
+                Log.d("DEBUG_VM", "Data size dari repository: ${data.size}")
                 _schedules.postValue(data)
             } catch (e: Exception) {
-                e.printStackTrace()
-                _schedules.postValue(emptyList()) // Tetap kirim list kosong jika server Node.js mati
+                Log.e("DEBUG_VM", "Error: ${e.message}")
+                _schedules.postValue(emptyList())
             }
         }
     }
@@ -56,24 +58,13 @@ class AdminViewModel (
     fun addSchedule(schedule: Schedule, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                // 1. Eksekusi insert ke MySQL lewat repository anonim yang ada di fragment
-                val response = scheduleRepository.insert(schedule)
-
-                // 2. Cek apakah server mengembalikan data dengan ID baru (sukses)
-                // Jika sukses, MySQL akan mengembalikan id > 0 karena Auto_Increment
-                if (response.id > 0) {
-                    // Pindah ke Main Thread untuk mengembalikan status sukses ke UI (BottomSheet)
-                    withContext(Dispatchers.Main) {
-                        onResult(true)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onResult(false)
-                    }
+                scheduleRepository.insert(schedule)
+                withContext(Dispatchers.Main) {
+                    onResult(true)
                 }
             } catch (e: Exception) {
+                Log.e("DEBUG_INSERT", "Error: ${e.message}")
                 e.printStackTrace()
-                // Jika terjadi crash jaringan atau server Node.js mati, kembalikan false
                 withContext(Dispatchers.Main) {
                     onResult(false)
                 }

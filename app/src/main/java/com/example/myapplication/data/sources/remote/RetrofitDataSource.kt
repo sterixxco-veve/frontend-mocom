@@ -3,23 +3,18 @@ package com.example.myapplication.data.sources.remote
 import android.util.Log
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.models.Schedule
+import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
-private val mysqlFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+// Untuk PARSE response dari server (ISO 8601)
+private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
+    timeZone = TimeZone.getTimeZone("UTC")
+}
 
-fun Schedule.toScheduleJson(): ScheduleJson {
-    return ScheduleJson(
-        id = this.id,
-        created_by = this.created_by,
-        title = this.title,
-        description = this.description,
-        start_time = Date(this.start_time),
-        end_time = Date(this.end_time),
-        location = this.location,
-        created_at = Date(this.created_at)
-    )
+// Untuk SEND request ke server (MySQL format)
+private val mysqlFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
+    timeZone = TimeZone.getTimeZone("UTC")
 }
 
 fun ScheduleJson.toSchedule(): Schedule {
@@ -28,19 +23,53 @@ fun ScheduleJson.toSchedule(): Schedule {
         created_by = this.created_by,
         title = this.title,
         description = this.description,
-        start_time = this.start_time.time,
-        end_time = this.end_time.time,
+        start_time = isoFormat.parse(this.start_time)?.time ?: 0L,
+        end_time = isoFormat.parse(this.end_time)?.time ?: 0L,
         location = this.location,
-        created_at = this.created_at.time
+        created_at = this.created_at?.let { isoFormat.parse(it)?.time }
+            ?: System.currentTimeMillis()
     )
 }
+
+// Schedule (Long) -> ScheduleRequest (String) untuk INSERT
+fun Schedule.toScheduleRequest(): ScheduleRequest {
+    return ScheduleRequest(
+        created_by = this.created_by,
+        title = this.title,
+        description = this.description,
+        start_time = mysqlFormat.format(Date(this.start_time)),
+        end_time = mysqlFormat.format(Date(this.end_time)),
+        location = this.location
+    )
+}
+
+// Schedule (Long) -> ScheduleJson (Date) untuk SYNC
+fun Schedule.toScheduleJsonForSync(): ScheduleJson {
+    return ScheduleJson(
+        id = this.id,
+        created_by = this.created_by,
+        title = this.title,
+        description = this.description,
+        start_time = mysqlFormat.format(Date(this.start_time)),   // Long → String
+        end_time = mysqlFormat.format(Date(this.end_time)),       // Long → String
+        location = this.location,
+        created_at = mysqlFormat.format(Date(this.created_at))    // Long → String
+    )
+}
+
 class RetrofitDataSource(private val webService: WebService) : RemoteDataSource {
+
     override suspend fun insertSchedule(schedule: Schedule): Schedule {
         try {
-            val requestBody = schedule.toScheduleJson()
+            val requestBody = schedule.toScheduleRequest()  // pakai toScheduleRequest()
+            Log.d("DEBUG_REQUEST", "Sending: $requestBody")
+
             val response: ScheduleJson = webService.insertSchedule(requestBody)
-            return schedule.copy(id = response.id)
+            Log.d("DEBUG_RESPONSE", "Received: $response")
+
+            return response.toSchedule()
         } catch (e: Exception) {
+            Log.e("DEBUG_ERROR", "Error: ${e.message}")
             e.printStackTrace()
             return schedule
         }
@@ -49,8 +78,14 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
     override suspend fun fetchAllSchedules(): List<Schedule> {
         return try {
             val responseList = webService.getAllSchedules()
-            responseList.map { it.toSchedule() }
+            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
+            Log.d("DEBUG_FETCH", "Raw response: $responseList")
+
+            val mapped = responseList.map { it.toSchedule() }
+            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
+            mapped
         } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
             e.printStackTrace()
             emptyList()
         }
@@ -58,13 +93,9 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
 
     override suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule> {
         try {
-            val requestBody: List<ScheduleJson> = schedule.map { clientData ->
-                clientData.toScheduleJson()
-            }
-            val responseList: List<ScheduleJson> = webService.syncSchedule(requestBody)
-            return responseList.map { serverData ->
-                serverData.toSchedule()
-            }
+            val requestBody = schedule.map { it.toScheduleJsonForSync() }
+            val responseList = webService.syncSchedule(requestBody)
+            return responseList.map { it.toSchedule() }
         } catch (e: Exception) {
             e.printStackTrace()
             return schedule

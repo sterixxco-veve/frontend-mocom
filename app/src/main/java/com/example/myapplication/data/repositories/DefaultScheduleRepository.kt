@@ -10,7 +10,13 @@ class DefaultScheduleRepository(
 ) : ScheduleRepository {
 
     override suspend fun getAll(): List<Schedule> {
-        return localDataSource.getAllSchedule()
+        return try {
+            val remoteData = remoteDataSource.fetchAllSchedules()
+            remoteData
+        } catch (e: Exception) {
+            e.printStackTrace()
+            localDataSource.getAllSchedule()
+        }
     }
 
     override suspend fun getById(id: Int): Schedule? {

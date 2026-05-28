@@ -78,7 +78,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
             showDateTimePicker(etEndTime, sdf)
         }
 
-        // 3. AKTIFKAN KEMBALI: Logika penyimpanan data jadwal baru
         btnSave.setOnClickListener {
             val title = etTitle.text.toString().trim()
             val description = etDescription.text.toString().trim()
@@ -92,7 +91,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
             }
 
             try {
-                // Mengonversi teks string rapi dari picker menjadi angka Long milidetik
                 val startTimeLong: Long = sdf.parse(startTimeStr)?.time ?: Date().time
                 val endTimeLong: Long = sdf.parse(endTimeStr)?.time ?: Date().time
                 val createdAtLong: Long = Date().time
@@ -108,15 +106,10 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                     created_at = createdAtLong
                 )
 
-                // 4. JALANKAN: Memasukkan data ke viewmodel untuk dikirim ke database SQL murni via Node.js
                 viewModel.addSchedule(newSchedule) { success ->
                     if (success) {
                         Toast.makeText(context, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-
-                        // Picu reload/getAll() otomatis pada halaman utama setelah sukses input data baru
-                        viewModel.loadSchedules()
-
-                        // Menutup BottomSheet setelah sukses menyimpan
+                        viewModel.init()
                         dismiss()
                     } else {
                         Toast.makeText(context, "Gagal menyimpan ke database server", Toast.LENGTH_SHORT).show()
