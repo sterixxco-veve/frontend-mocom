@@ -28,8 +28,15 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdminScheduleBinding.bind(view)
 
-        // 1. Inisialisasi Adapter & RecyclerView
-        scheduleAdapter = ScheduleAdapter()
+        // =========================================================================
+        // 1. PERBAIKAN DI SINI: Daftarkan fungsi klik item di dalam constructor Adapter
+        // =========================================================================
+        scheduleAdapter = ScheduleAdapter { scheduleTerpilih ->
+            // Ketika salah satu item list jadwal diklik, buka modal Admin Staff Assignment
+            val staffAssignmentBottomSheet = AdminStaffAssignmentBottomSheetFragment(scheduleTerpilih)
+            staffAssignmentBottomSheet.show(parentFragmentManager, "AdminStaffAssignmentBottomSheet")
+        }
+
         binding.rvSchedule.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = scheduleAdapter
@@ -66,7 +73,7 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             }
         }
 
-        // 6. PERBAIKAN UTAMA: Gunakan scope 'requireActivity()' agar ViewModel bisa di-share ke BottomSheet
+        // 6. Gunakan scope 'requireActivity()' agar ViewModel bisa di-share ke BottomSheet
         viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 return AdminViewModel(repository) as T

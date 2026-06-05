@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.repositories.ScheduleRepository
 import com.example.myapplication.data.sources.models.Schedule
+import com.example.myapplication.data.sources.remote.json.UserJson
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,6 +69,21 @@ class AdminViewModel (
                 withContext(Dispatchers.Main) {
                     onResult(false)
                 }
+            }
+        }
+    }
+
+    private val _users = MutableLiveData<List<UserJson>>()
+    val users: LiveData<List<UserJson>> get() = _users
+
+    fun loadAllUsers() {
+        viewModelScope.launch {
+            try {
+                val result = com.example.myapplication.RetrofitClient.webService.getStaff()
+                _users.postValue(result)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _users.postValue(emptyList())
             }
         }
     }
