@@ -3,15 +3,14 @@ package com.example.myapplication.data.sources.models
 import java.io.Serializable
 import java.util.Date
 
-data class User(
+data class Company(
     val id: Int = 0,
-    val username: String = "",
-    val fullname: String = "",
+    val company_name: String = "",
     val email: String = "",
     val password: String = "",
+    val phone_number: String = "",
+    val address: String = "",
     val isActive: Int,
-    val role_id: Int = 2,
-    val company_id: Int,
     val created_at: Date,
     val updated_at: Date
 ) : Serializable
