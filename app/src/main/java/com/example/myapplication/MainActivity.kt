@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         val emailOrUsername = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
+        // Reset status error
         binding.tilEmail.error = null
         binding.tilPassword.error = null
 
@@ -70,10 +71,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isValid) {
+            // PERBAIKAN UTAMA: Isi kedua properti sekaligus agar backend fleksibel
             val userRequest = User(
-                email = emailOrUsername,
+                email = emailOrUsername,    // Akan berisi "budi" atau "budi@majujaya.com"
+                username = emailOrUsername, // Akan berisi "budi" atau "budi@majujaya.com"
                 password = password
             )
+            // Jalankan fungsi network Retrofit
             performNetworkLogin(userRequest)
         }
     }
