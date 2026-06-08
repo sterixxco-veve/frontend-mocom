@@ -4,106 +4,105 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A"
-    android:padding="20dp">
-
-    <TextView
-        android:id="@+id/tv_title_reports"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Laporan Kehadiran &amp; AI Burnout"
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    android:background="#FDFDFD" android:padding="24dp"> <TextView
+    android:id="@+id/tv_title_reports"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Laporan Kehadiran &amp; AI Burnout"
+    android:textColor="#1E1E24" android:textSize="24sp"
+    android:fontFamily="sans-serif-black"
+    android:textStyle="bold"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tv_subtitle_reports"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Unduh berkas PDF resmi serta lakukan peninjauan data secara instan."
-        android:textColor="#94A3B8"
-        android:textSize="13sp"
-        android:layout_marginTop="4dp"
+        android:textColor="#8D99AE" android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:lineSpacingExtra="3dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/tv_title_reports"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Tombol Unduh Laporan Kehadiran -->
     <Button
         android:id="@+id/btn_download_attendance"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="20dp"
         android:text="📥 Laporan Kehadiran (.pdf)"
-        android:backgroundTint="#1E293B"
-        android:textColor="#FFFFFF"
+        android:backgroundTint="#EEF2F6" android:textColor="#4361EE" android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
         android:textStyle="bold"
+        android:stateListAnimator="@null" app:cornerRadius="12dp"
         app:layout_constraintTop_toBottomOf="@id/tv_subtitle_reports"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Tombol Unduh Laporan Risiko Burnout -->
     <Button
         android:id="@+id/btn_download_burnout"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
         android:text="🔥 Analisis Burnout AI (.pdf)"
-        android:backgroundTint="#1E293B"
-        android:textColor="#FFFFFF"
+        android:backgroundTint="#EEF2F6"
+        android:textColor="#4361EE"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
         android:textStyle="bold"
+        android:stateListAnimator="@null"
+        app:cornerRadius="12dp"
         app:layout_constraintTop_toBottomOf="@id/btn_download_attendance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- PDF Viewer Frame Placeholder Title -->
     <TextView
         android:id="@+id/tv_pdf_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="28dp"
         android:text="PDF Viewer Terintegrasi (Pratinjau Langsung)"
-        android:textColor="#06B6D4"
-        android:textSize="14sp"
+        android:textColor="#4361EE" android:textSize="14sp"
+        android:fontFamily="sans-serif-bold"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/btn_download_burnout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- PDF Viewer Frame Container -->
     <FrameLayout
         android:id="@+id/pdf_viewer_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:background="#1E293B"
-        app:layout_constraintTop_toBottomOf="@id/tv_pdf_title"
+        android:layout_marginTop="12dp"
+        android:background="#EEF2F6" app:layout_constraintTop_toBottomOf="@id/tv_pdf_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Splash / Placeholder Normal -->
         <TextView
             android:id="@+id/tv_pdf_placeholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Belum ada dokumen PDF yang dibuka.\nSilakan ketuk salah satu tombol di atas."
-            android:textColor="#94A3B8"
+            android:textColor="#8D99AE"
             android:gravity="center"
-            android:padding="20dp"
+            android:fontFamily="sans-serif-medium"
+            android:lineSpacingExtra="4dp"
+            android:padding="24dp"
             android:textSize="14sp"/>
 
-        <!-- Dynamic Live Layout Simulator (Ditampilkan saat PDF dimuat) -->
         <ScrollView
             android:id="@+id/sv_pdf_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:padding="16dp">
+            android:layout_margin="16dp"
+            android:background="#FFFFFF" android:padding="20dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -114,8 +113,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="MOCOM: EDUSTAFF PRO REPORT"
-                    android:textColor="#06B6D4"
-                    android:textSize="12sp"
+                    android:textColor="#4361EE" android:textSize="12sp"
+                    android:fontFamily="sans-serif-condensed-medium"
                     android:textStyle="bold"
                     android:gravity="center"
                     app:layout_constraintTop_toTopOf="parent"
@@ -127,11 +126,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="LAPORAN DATA"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
+                    android:textColor="#1E1E24" android:textSize="18sp"
+                    android:fontFamily="sans-serif-black"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_header"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -139,23 +138,22 @@
                 <View
                     android:id="@+id/divider_pdf"
                     android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:background="#475569"
-                    android:layout_marginTop="12dp"
+                    android:layout_height="1.5dp"
+                    android:background="#EEF2F6"
+                    android:layout_marginTop="16dp"
                     app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_title"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- Dynamic text content inside simulated PDF -->
                 <TextView
                     android:id="@+id/tv_pdf_doc_body"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="16dp"
                     android:text="Detail Laporan..."
-                    android:textColor="#CBD5E1"
-                    android:textSize="13sp"
-                    android:lineSpacingExtra="4dp"
+                    android:textColor="#2D3142" android:textSize="14sp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="5dp"
                     app:layout_constraintTop_toBottomOf="@id/divider_pdf"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />

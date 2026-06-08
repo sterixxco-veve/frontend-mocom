@@ -4,6 +4,7 @@ import com.example.myapplication.data.sources.models.AiRecommendation
 import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
+import com.example.myapplication.data.sources.models.Company
 import com.example.myapplication.data.sources.models.Notification
 import com.example.myapplication.data.sources.models.Replacement
 import com.example.myapplication.data.sources.models.Resource
@@ -32,6 +33,21 @@ interface ApiService {
     suspend fun login(
         @Body user: User
     ): Response<User>
+
+    @POST("api/registerCompany")
+    suspend fun registerCompany(
+        @Body company: Company
+    ): Response<Company>
+
+    @POST("api/loginCompany")
+    suspend fun loginCompany(
+        @Body company: Company
+    ): Response<Company>
+
+    @GET("api/getAllStaffCompany/{company_id}")
+    suspend fun getAllStaffCompany(
+        @Path("company_id") companyId: Int
+    ): Response<List<User>>
 
     @GET("api/getUserProfile/{id}")
     suspend fun getUserProfile(
