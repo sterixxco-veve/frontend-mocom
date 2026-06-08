@@ -22,4 +22,12 @@ object RetrofitClient {
             .build()
             .create(WebService::class.java)
     }
+    
+    val apiService: ApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson)) // Memakai gson date format
+            .build()
+            .create(ApiService::class.java)
+    }
 }
