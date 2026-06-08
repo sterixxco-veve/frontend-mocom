@@ -2,6 +2,7 @@ package com.example.myapplication.ui.admin.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.databinding.ItemScheduleBinding
@@ -11,8 +12,11 @@ import java.util.Locale
 
 class ScheduleAdapter(
     private var scheduleList: List<Schedule> = emptyList(),
-    private val onItemClick: (Schedule) -> Unit // Lambda fungsi untuk mendeteksi klik pada item
+    private val onItemClick: (Schedule) -> Unit,    // 💡 Callback Klik Item (Buka Staff Assignment)
+    private val onEditClick: (Schedule) -> Unit,    // 💡 TAMBAHAN: Callback untuk Edit Jadwal
+    private val onDeleteClick: (Schedule) -> Unit   // 💡 TAMBAHAN: Callback untuk Hapus Jadwal
 ) : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>() {
+
     inner class ScheduleViewHolder(private val binding: ItemScheduleBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -27,8 +31,41 @@ class ScheduleAdapter(
             val endTimeStr = timeFormat.format(Date(schedule.end_time))
             binding.tvTime.text = "$startTimeStr - $endTimeStr"
 
+            // Listener ketika seluruh area kartu jadwal diklik
             binding.root.setOnClickListener {
                 onItemClick(schedule)
+            }
+
+            // =========================================================================
+            // 💡 LOGIKA UTAMA: Pasang Dropdown Menu Melayang pada Ikon Titik Tiga
+            // =========================================================================
+            binding.btnMenuOptions.setOnClickListener { view ->
+                val context = view.context
+
+                // 1. Buat instansiasi PopupMenu terikat pada tombol titik tiga
+                val popupMenu = PopupMenu(context, view)
+
+                // 2. Masukkan opsi menu secara langsung lewat kode
+                popupMenu.menu.add(0, 1, 0, "✏️  Edit Jadwal")
+                popupMenu.menu.add(0, 2, 1, "🗑️  Hapus Jadwal")
+
+                // 3. Tangkap aksi ketukan pada item menu dropdown
+                popupMenu.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        1 -> {
+                            onEditClick(schedule) // Memicu callback edit ke Fragment
+                            true
+                        }
+                        2 -> {
+                            onDeleteClick(schedule) // Memicu callback delete ke Fragment
+                            true
+                        }
+                        else -> false
+                    }
+                }
+
+                // 4. Tampilkan menu melayang tepat di bawah ikon titik tiga
+                popupMenu.show()
             }
         }
     }
@@ -48,9 +85,8 @@ class ScheduleAdapter(
 
     override fun getItemCount(): Int = scheduleList.size
 
-    // Fungsi untuk memperbarui data list dari Fragment / Activity secara dinamis
     fun submitList(newList: List<Schedule>) {
         this.scheduleList = newList
-        notifyDataSetChanged() // Memaksa RecyclerView menggambar ulang data terbaru
+        notifyDataSetChanged()
     }
 }

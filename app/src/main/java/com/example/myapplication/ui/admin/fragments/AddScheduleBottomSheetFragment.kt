@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.myapplication.App
@@ -29,6 +30,11 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
         AdminViewModelFactory((requireActivity().application as App).scheduleRepository)
     }
 
+    // 💡 Properti global untuk melacak mode edit data
+    private var scheduleId: Int? = null
+    private var currentCreatedBy: Int = 1
+    private var currentCompanyId: Int = 1
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,43 +46,58 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Ambil data User ID dan Company ID riil yang aktif dari Activity induk
+        currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
+        currentCreatedBy = requireActivity().intent.getIntExtra("EXTRA_USER_ID", 1)
+
+        val tvHeaderTitle = view.findViewById<TextView>(R.id.tvHeaderTitle)
         val etTitle = view.findViewById<EditText>(R.id.etTitle)
         val etDescription = view.findViewById<EditText>(R.id.etDescription)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
 
-        // Ambil referensi EditText untuk menampilkan teks tanggal terpilih
         val etStartTime = view.findViewById<EditText>(R.id.etStartTime)
         val etEndTime = view.findViewById<EditText>(R.id.etEndTime)
-
-        // 1. GANTI/TAMBAH: Ambil referensi TextInputLayout induk agar bisa mendeteksi klik dengan lancar
         val tilStartTime = view.findViewById<TextInputLayout>(R.id.tilStartTime)
         val tilEndTime = view.findViewById<TextInputLayout>(R.id.tilEndTime)
 
         val btnSave = view.findViewById<Button>(R.id.btnSave)
 
-        // Format standar sinkronisasi database MySQL Node.js
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val currentDateTimeStr = sdf.format(Date())
 
-        // Set waktu default saat form pertama dibuka
+        // Set waktu default awal
         etStartTime.setText(currentDateTimeStr)
         etEndTime.setText(currentDateTimeStr)
 
-        // 2. GANTI: Pasang Click Listener pada TextInputLayout (bukan EditText-nya langsung)
-        tilStartTime.setOnClickListener {
-            showDateTimePicker(etStartTime, sdf)
-        }
-        // Pasang juga pada EditText-nya sebagai cadangan jikalau user menekan tepat di tengah teks
-        etStartTime.setOnClickListener {
-            showDateTimePicker(etStartTime, sdf)
+        // =========================================================================
+        // 💡 LOGIKA DETEKSI MODE: Cek apakah ada data bundle kiriman (Mode Edit)
+        // =========================================================================
+        arguments?.let { bundle ->
+            if (bundle.containsKey("EDIT_ID")) {
+                scheduleId = bundle.getInt("EDIT_ID")
+                currentCreatedBy = bundle.getInt("EDIT_CREATED_BY")
+                currentCompanyId = bundle.getInt("EDIT_COMPANY_ID")
+
+                // Auto-fill form inputan dengan data jadwal lama
+                tvHeaderTitle.text = "Edit Jadwal"
+                etTitle.setText(bundle.getString("EDIT_TITLE"))
+                etDescription.setText(bundle.getString("EDIT_DESC"))
+                etLocation.setText(bundle.getString("EDIT_LOCATION"))
+
+                // Ubah format data Long kembali ke String terformat untuk form
+                etStartTime.setText(sdf.format(Date(bundle.getLong("EDIT_START"))))
+                etEndTime.setText(sdf.format(Date(bundle.getLong("EDIT_END"))))
+
+                // Ganti teks tombol utama
+                btnSave.text = "Perbarui Jadwal"
+            }
         }
 
-        tilEndTime.setOnClickListener {
-            showDateTimePicker(etEndTime, sdf)
-        }
-        etEndTime.setOnClickListener {
-            showDateTimePicker(etEndTime, sdf)
-        }
+        // Setup Picker Jendela Dialog Kalender & Jam
+        tilStartTime.setOnClickListener { showDateTimePicker(etStartTime, sdf) }
+        etStartTime.setOnClickListener { showDateTimePicker(etStartTime, sdf) }
+        tilEndTime.setOnClickListener { showDateTimePicker(etEndTime, sdf) }
+        etEndTime.setOnClickListener { showDateTimePicker(etEndTime, sdf) }
 
         btnSave.setOnClickListener {
             val title = etTitle.text.toString().trim()
@@ -95,9 +116,11 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                 val endTimeLong: Long = sdf.parse(endTimeStr)?.time ?: Date().time
                 val createdAtLong: Long = Date().time
 
-                val newSchedule = Schedule(
-                    id = 0,
-                    created_by = 1, // Default Admin EduStaff Pro
+                // Bungkus menjadi satu objek Schedule utuh
+                val scheduleData = Schedule(
+                    id = scheduleId ?: 0, // Menggunakan ID lama jika mode edit, atau 0 jika baru
+                    created_by = currentCreatedBy,
+                    company_id = currentCompanyId,
                     title = title,
                     description = if (description.isEmpty()) null else description,
                     start_time = startTimeLong,
@@ -106,13 +129,28 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                     created_at = createdAtLong
                 )
 
-                viewModel.addSchedule(newSchedule) { success ->
-                    if (success) {
-                        Toast.makeText(context, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                        viewModel.init()
-                        dismiss()
-                    } else {
-                        Toast.makeText(context, "Gagal menyimpan ke database server", Toast.LENGTH_SHORT).show()
+                // Jalankan fungsi network berdasarkan status mode saat ini
+                if (scheduleId != null) {
+                    // ✏️ PILIHAN A: Eksekusi Update Data (HTTP PUT)
+                    viewModel.updateSchedule(scheduleData) { success ->
+                        if (success) {
+                            Toast.makeText(context, "Jadwal berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                            viewModel.loadSchedules(currentCompanyId) // Tarik ulang data terfilter company
+                            dismiss()
+                        } else {
+                            Toast.makeText(context, "Gagal memperbarui jadwal di server", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    // ➕ PILIHAN B: Eksekusi Tambah Data Baru (HTTP POST) seperti semula
+                    viewModel.addSchedule(scheduleData) { success ->
+                        if (success) {
+                            Toast.makeText(context, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
+                            viewModel.loadSchedules(currentCompanyId) // Sinkronkan ulang tampilan list
+                            dismiss()
+                        } else {
+                            Toast.makeText(context, "Gagal menyimpan ke database server", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
 
@@ -122,9 +160,7 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    // 5. TAMBAHKAN: Fungsi dialog pembantu untuk memicu kemunculan Date & Time Picker berurutan
     private fun showDateTimePicker(targetEditText: EditText, formatter: SimpleDateFormat) {
-        // Inisialisasi Google Material Date Picker
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Pilih Tanggal")
             .build()
@@ -135,7 +171,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = selection
 
-            // Lanjut otomatis memicu Material Time Picker (24 Jam) setelah tanggal dipilih
             val timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
                 .setHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
@@ -150,7 +185,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                 calendar.set(Calendar.MINUTE, timePicker.minute)
                 calendar.set(Calendar.SECOND, 0)
 
-                // Set teks terformat otomatis ke EditText target tanpa ketik manual
                 targetEditText.setText(formatter.format(calendar.time))
             }
         }

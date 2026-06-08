@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity() {
                     val loggedInUser = response.body()!!
 
                     val staffCompanyId = loggedInUser.company_id
+                    val staffUserId = loggedInUser.id
                     val staffName = loggedInUser.fullname ?: loggedInUser.username ?: "Staff"
 
                     Toast.makeText(
@@ -110,12 +111,16 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
+                    android.util.Log.d("TRACK_ID", "🔄 dipicu untuk Company ID: ${staffCompanyId}")
+                    android.util.Log.d("TRACK_ID", "🔄 dipicu untuk user ID: ${staffUserId}")
+
                     // Skenario Pindah Halaman:
-                     val intent = Intent(this@MainActivity, AdminActivity::class.java).apply {
-                         putExtra("EXTRA_COMPANY_ID", staffCompanyId)
-                     }
-                     startActivity(intent)
-                     finish()
+                    val intent = Intent(this@MainActivity, AdminActivity::class.java).apply {
+                        putExtra("EXTRA_COMPANY_ID", staffCompanyId)
+                        putExtra("EXTRA_USER_ID", staffUserId)
+                    }
+                    startActivity(intent)
+                    finish()
 
                 } else {
                     Toast.makeText(

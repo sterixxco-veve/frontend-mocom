@@ -35,6 +35,7 @@ fun ScheduleJson.toSchedule(): Schedule {
 fun Schedule.toScheduleRequest(): ScheduleRequest {
     return ScheduleRequest(
         created_by = this.created_by,
+        company_id = this.company_id,
         title = this.title,
         description = this.description,
         start_time = mysqlFormat.format(Date(this.start_time)),
@@ -48,6 +49,7 @@ fun Schedule.toScheduleJsonForSync(): ScheduleJson {
     return ScheduleJson(
         id = this.id,
         created_by = this.created_by,
+        company_id = this.company_id,
         title = this.title,
         description = this.description,
         start_time = mysqlFormat.format(Date(this.start_time)),   // Long → String
@@ -88,6 +90,41 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
             e.printStackTrace()
             emptyList()
+        }
+    }
+
+    override suspend fun fetchScheduleByCompanyId(company_id: Int): List<Schedule> {
+        return try {
+            val responseList = webService.getSchedulesByCompanyId(company_id)
+            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
+            Log.d("DEBUG_FETCH", "Raw response: $responseList")
+
+            val mapped = responseList.map { it.toSchedule() }
+            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
+            mapped
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+    override suspend fun updateSchedule(schedule: Schedule) {
+        try {
+            // 💡 Mengubah objek Schedule murni (Long) menjadi format teks JSON Request untuk MySQL
+            val requestBody = schedule.toScheduleRequest()
+
+            // Tembak endpoint PUT api/updateSchedule/{id} via Retrofit WebService
+            val response = webService.updateSchedule(schedule.id, requestBody)
+
+            if (response.isSuccessful) {
+                android.util.Log.d("RETROFIT_UPDATE", "✅ Berhasil mengupdate jadwal ID: ${schedule.id} di server backend.")
+            } else {
+                android.util.Log.e("RETROFIT_UPDATE", "⚠️ Server menolak update. Code: ${response.code()} -> ${response.errorBody()?.string()}")
+                throw Exception("Gagal update di server dengan HTTP Code: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("RETROFIT_UPDATE", "❌ Error koneksi saat updateSchedule: ${e.message}")
+            throw e // Lempar error ke atas agar ditangkap oleh try-catch milik AdminViewModel
         }
     }
 

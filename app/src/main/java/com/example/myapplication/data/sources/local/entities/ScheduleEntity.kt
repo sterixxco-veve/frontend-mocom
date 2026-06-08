@@ -10,6 +10,7 @@ class ScheduleEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val created_by: Int,
+    val company_id: Int = 1,
     val title: String,
     val description: String?, // Dibuat nullable (?) karena di DB tidak ada "NOT NULL"
     val start_time: Long = Date().time,
@@ -21,6 +22,7 @@ class ScheduleEntity(
         return Schedule(
             id = id,
             created_by = created_by,
+            company_id = company_id,
             title = title,
             description = description,
             start_time = start_time,
@@ -35,6 +37,7 @@ class ScheduleEntity(
             return ScheduleEntity(
                 id = schedule.id,
                 created_by = schedule.created_by,
+                company_id = schedule.company_id,
                 title = schedule.title,
                 description = schedule.description,
                 start_time = schedule.start_time,

@@ -43,16 +43,33 @@ class AdminViewModel (
         _scheduleList.addAll(scheduleRepository.getAll())
     }
 
-    fun loadSchedules() {
+    fun loadSchedules(companyId: Int) {
+        // 💡 LOG 1: Pastikan fungsi ini terpicu saat Fragment dibuka / Swipe-to-Refresh dijalankan
+        android.util.Log.d("TRACK_SCHEDULE", "========================================")
+        android.util.Log.d("TRACK_SCHEDULE", "🔄 loadSchedules() dipicu untuk Company ID: $companyId")
+
         viewModelScope.launch {
             try {
-                val data = scheduleRepository.getAll()
-                Log.d("DEBUG_VM", "Data size dari repository: ${data.size}")
-                _schedules.postValue(data)
+                val result = scheduleRepository.getByCompanyId(companyId)
+
+                // 💡 LOG 2: Cek berapa jumlah data yang berhasil ditarik dari repository
+                android.util.Log.d("TRACK_SCHEDULE", "✅ BERHASIL! Mendapatkan ${result?.size ?: 0} data dari repositori.")
+                if (result != null && result.isNotEmpty()) {
+                    result.forEachIndexed { index, schedule ->
+                        android.util.Log.d("TRACK_SCHEDULE", "   [Data ke-$index] Title: ${schedule.title} | Location: ${schedule.location}")
+                    }
+                } else {
+                    android.util.Log.w("TRACK_SCHEDULE", "⚠️ Data kosong [] - Periksa apakah company_id $companyId memiliki jadwal di DB MySQL.")
+                }
+
+                _schedules.postValue(result ?: emptyList())
             } catch (e: Exception) {
-                Log.e("DEBUG_VM", "Error: ${e.message}")
+                // 💡 LOG 3: Jika ada crash jaringan, type mismatch, atau parse date error, tangkap di sini!
+                android.util.Log.e("TRACK_SCHEDULE", "❌ GAGAL mengambil jadwal karena Error: ${e.javaClass.simpleName} -> ${e.message}")
+                e.printStackTrace()
                 _schedules.postValue(emptyList())
             }
+            android.util.Log.d("TRACK_SCHEDULE", "========================================")
         }
     }
 
@@ -69,6 +86,22 @@ class AdminViewModel (
                 withContext(Dispatchers.Main) {
                     onResult(false)
                 }
+            }
+        }
+    }
+
+    fun updateSchedule(schedule: Schedule, onResult: (Boolean) -> Unit) {
+        Log.d("TRACK_SCHEDULE", "✏️ Sedang mencoba memperbarui jadwal ID [${schedule.id}]: ${schedule.title}")
+        viewModelScope.launch {
+            try {
+                // Memicu fungsi update di repository kamu
+                scheduleRepository.update(schedule)
+                Log.d("TRACK_SCHEDULE", "✅ Sukses memperbarui jadwal di server.")
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("TRACK_SCHEDULE", "❌ GAGAL memperbarui jadwal: ${e.message}")
+                e.printStackTrace()
+                onResult(false)
             }
         }
     }

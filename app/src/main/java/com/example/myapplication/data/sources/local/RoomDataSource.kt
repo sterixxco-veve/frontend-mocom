@@ -18,6 +18,11 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
         return scheduleDao.getById(id)?.toRawModel()
     }
 
+    override suspend fun getScheduleByCompanyId(company_id: Int): List<Schedule> {
+        return scheduleDao.getByCompanyId(company_id).map { it.toRawModel() }
+    }
+
+
     override suspend fun getUnsynced(): List<Schedule> {
         return scheduleDao.getAll().filter { it.id == 0 }.map { it.toRawModel() }
     }
@@ -25,6 +30,7 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
     override suspend fun insert(
         createdBy: Int,
         title: String,
+        company_id: Int,
         description: String?,
         location: String?,
         startTime: Long,
@@ -33,6 +39,7 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
         val entity = ScheduleEntity(
             id = 0, // 0 memicu auto-increment lokal Room
             created_by = createdBy,
+            company_id = company_id,
             title = title,
             description = description,
             start_time = startTime,
@@ -50,12 +57,13 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
 
         // Masukkan atau update data dari server
         schedules.forEach { remote ->
-            val remoteId = remote.id ?: 0
+            val remoteId = remote.id
             val existingEntity = scheduleDao.getById(remoteId)
 
             val entityToSave = ScheduleEntity(
                 id = remoteId,
                 created_by = remote.created_by,
+                company_id = remote.company_id,
                 title = remote.title,
                 description = remote.description,
                 start_time = remote.start_time,

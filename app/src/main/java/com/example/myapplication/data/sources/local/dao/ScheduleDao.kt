@@ -15,6 +15,9 @@ interface ScheduleDao {
     @Query("SELECT * FROM schedules WHERE id = :id")
     suspend fun getById(id: Int): ScheduleEntity?
 
+    @Query("SELECT * FROM schedules WHERE company_id = :id")
+    suspend fun getByCompanyId(id: Int): List<ScheduleEntity>
+
     @Insert
     suspend fun insert(schedule: ScheduleEntity)
 

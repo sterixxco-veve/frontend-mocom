@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory // Pastikan pakai GSON murn
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.3.59:3000"
+    private const val BASE_URL = "http://192.168.100.113:3000"
 
     private val gson = GsonBuilder()
         .setDateFormat("yyyy-MM-dd HH:mm:ss")

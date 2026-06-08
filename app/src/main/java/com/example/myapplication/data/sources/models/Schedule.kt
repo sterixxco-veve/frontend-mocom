@@ -12,6 +12,7 @@ class Schedule(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val created_by: Int,
+    val company_id: Int = 1,
     val title: String,
     val description: String?, // Dibuat nullable (?) karena di DB tidak ada "NOT NULL"
     val start_time: Long = Date().time,
@@ -65,6 +66,7 @@ class Schedule(
         return Schedule(
             id,
             created_by,
+            company_id,
             title,
             description,
             start_time,

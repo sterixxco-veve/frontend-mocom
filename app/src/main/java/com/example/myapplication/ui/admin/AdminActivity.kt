@@ -10,11 +10,15 @@ import com.example.myapplication.databinding.ActivityAdminBinding
 class AdminActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminBinding
+    private var currentUserId: Int = -1
+    private var currentCompanyId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        currentUserId = intent.getIntExtra("EXTRA_USER_ID", -1)
+        currentCompanyId = intent.getIntExtra("EXTRA_COMPANY_ID", -1)
 
         // Hubungkan Bottom Navigation dengan Jetpack Navigation Controller
         val navHostFragment = supportFragmentManager

@@ -28,14 +28,41 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdminScheduleBinding.bind(view)
 
-        // =========================================================================
-        // 1. PERBAIKAN DI SINI: Daftarkan fungsi klik item di dalam constructor Adapter
-        // =========================================================================
-        scheduleAdapter = ScheduleAdapter { scheduleTerpilih ->
-            // Ketika salah satu item list jadwal diklik, buka modal Admin Staff Assignment
-            val staffAssignmentBottomSheet = AdminStaffAssignmentBottomSheetFragment(scheduleTerpilih)
-            staffAssignmentBottomSheet.show(parentFragmentManager, "AdminStaffAssignmentBottomSheet")
-        }
+        // 💡 KUNCI UTAMA: Ambil nilai EXTRA_COMPANY_ID yang dikirim dari MainActivity lewat AdminActivity
+        val companyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", -1)
+        val userId = requireActivity().intent.getIntExtra("EXTRA_USER_ID", -1)
+
+        // 💡 Di dalam AdminScheduleFragment.kt -> onViewCreated()
+        scheduleAdapter = ScheduleAdapter(
+            scheduleList = emptyList(),
+            onItemClick = { scheduleTerpilih ->
+                // Aksi lama kamu: Membuka bottom sheet penugasan staff
+                val staffAssignmentBottomSheet = AdminStaffAssignmentBottomSheetFragment(scheduleTerpilih)
+                staffAssignmentBottomSheet.show(parentFragmentManager, "AdminStaffAssignmentBottomSheet")
+            },
+            onEditClick = { scheduleTerpilih ->
+                // ✏️ FUNGSI UNTUK EDIT: Kirim data lewat Bundle Arguments
+                val bundle = Bundle().apply {
+                    putInt("EDIT_ID", scheduleTerpilih.id)
+                    putInt("EDIT_CREATED_BY", scheduleTerpilih.created_by)
+                    putInt("EDIT_COMPANY_ID", scheduleTerpilih.company_id)
+                    putString("EDIT_TITLE", scheduleTerpilih.title)
+                    putString("EDIT_DESC", scheduleTerpilih.description)
+                    putString("EDIT_LOCATION", scheduleTerpilih.location)
+                    putLong("EDIT_START", scheduleTerpilih.start_time)
+                    putLong("EDIT_END", scheduleTerpilih.end_time)
+                }
+
+                val addScheduleBottomSheet = AddScheduleBottomSheetFragment().apply {
+                    arguments = bundle
+                }
+                addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
+            },
+            onDeleteClick = { scheduleTerpilih ->
+                // 🗑️ Tempat menaruh logika hapus jadwal kamu (misal panggil viewModel.delete(id))
+                Toast.makeText(requireContext(), "Hapus ID: ${scheduleTerpilih.id}", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         binding.rvSchedule.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -46,14 +73,16 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         binding.swipeRefresh.setColorSchemeColors(Color.parseColor("#06B6D4"))
         binding.swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#1E293B"))
 
-        // 3. Listener geser layar ke bawah untuk reload/sync data dari SQL Node.js
+        // 3. REVISI SINKRONISASI: Swipe-to-refresh sekarang membawa companyId riil ke server
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.loadSchedules()
+            viewModel.loadSchedules(companyId)
         }
 
         val webService = RetrofitClient.webService
         val remoteDataSource = RetrofitDataSource(webService)
 
+
+        // 5. Implementasikan Interface ScheduleRepository secara anonim
         // 5. Implementasikan Interface ScheduleRepository secara anonim
         val repository = object : ScheduleRepository {
             override suspend fun getAll(): List<Schedule> {
@@ -64,8 +93,18 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
                 return null
             }
 
+            override suspend fun getByCompanyId(companyId: Int): List<Schedule> {
+                return remoteDataSource.fetchScheduleByCompanyId(companyId)
+            }
+
             override suspend fun insert(schedule: Schedule): Schedule {
                 return remoteDataSource.insertSchedule(schedule)
+            }
+
+            // 💡 TAMBAHKAN OVERRIDE INI UNTUK MENYEMBUHKAN ERROR BARIS 86:
+            override suspend fun update(schedule: Schedule) {
+                // Alirkan pemanggilan data langsung ke remoteDataSource kamu
+                remoteDataSource.updateSchedule(schedule)
             }
 
             override suspend fun sync() {
@@ -90,8 +129,9 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             }
         }
 
+        // 8. REVISI SINKRONISASI: Jalankan load data pertama kali dengan memfilter companyId
         binding.swipeRefresh.isRefreshing = true
-        viewModel.loadSchedules()
+        viewModel.loadSchedules(companyId)
 
         binding.fabAdd.setOnClickListener {
             val addScheduleBottomSheet = AddScheduleBottomSheetFragment()
