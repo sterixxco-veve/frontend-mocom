@@ -3,24 +3,42 @@ package com.example.myapplication.data.sources.local
 import com.example.myapplication.data.sources.local.database.AppDatabase
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.models.Schedule
+import com.example.myapplication.data.sources.models.User
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
     private val scheduleDao = database.scheduleDao()
+    private val userDao = database.userDao()
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
+    //GET ALL
     override suspend fun getAllSchedule(): List<Schedule> {
         return scheduleDao.getAll().map { it.toRawModel() }
     }
+    override suspend fun getAllUser(): List<User> {
+        return userDao.getAllUser().map { it.toRawModel() }
+    }
 
+    //GET BY COMPANY
+    override suspend fun getScheduleByCompanyId(company_id: Int): List<Schedule> {
+        return scheduleDao.getByCompanyId(company_id).map { it.toRawModel() }
+    }
+
+    override suspend fun getUserByCompanyId(company_id: Int): List<User> {
+        return userDao.getUsersByCompanyId(company_id).map { it.toRawModel() }
+    }
+
+//GET BY ID
     override suspend fun getById(id: Int): Schedule? {
         return scheduleDao.getById(id)?.toRawModel()
     }
 
-    override suspend fun getScheduleByCompanyId(company_id: Int): List<Schedule> {
-        return scheduleDao.getByCompanyId(company_id).map { it.toRawModel() }
+    override suspend fun getUserById(id: Int): User? {
+        return userDao.getUserById(id)?.toRawModel()
     }
+
+
 
 
     override suspend fun getUnsynced(): List<Schedule> {

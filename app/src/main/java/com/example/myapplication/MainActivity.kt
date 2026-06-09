@@ -73,9 +73,14 @@ class MainActivity : AppCompatActivity() {
         if (isValid) {
             // PERBAIKAN UTAMA: Isi kedua properti sekaligus agar backend fleksibel
             val userRequest = User(
-                email = emailOrUsername,    // Akan berisi "budi" atau "budi@majujaya.com"
-                username = emailOrUsername, // Akan berisi "budi" atau "budi@majujaya.com"
-                password = password
+                id = 0,                                 // dummy Int
+                role_id = 0,                            // dummy Int
+                company_id = 0,                         // dummy Int
+                full_name = "",                         // dummy String
+                email = emailOrUsername,                // 🟢 Data Riil Inputan
+                username = emailOrUsername,             // 🟢 Data Riil Inputan
+                password = password,                    // 🟢 Data Riil Inputan
+                is_active = 0                           // dummy Int
             )
             // Jalankan fungsi network Retrofit
             performNetworkLogin(userRequest)
@@ -103,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
                     val staffCompanyId = loggedInUser.company_id
                     val staffUserId = loggedInUser.id
-                    val staffName = loggedInUser.fullname ?: loggedInUser.username ?: "Staff"
+                    val staffName = loggedInUser.full_name ?: loggedInUser.username ?: "Staff"
 
                     Toast.makeText(
                         this@MainActivity,

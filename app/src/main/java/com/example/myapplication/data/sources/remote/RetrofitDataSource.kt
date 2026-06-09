@@ -3,7 +3,9 @@ package com.example.myapplication.data.sources.remote
 import android.util.Log
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.models.Schedule
+import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
+import com.example.myapplication.data.sources.remote.request.UserRequest
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,23 +62,7 @@ fun Schedule.toScheduleJsonForSync(): ScheduleJson {
 }
 
 class RetrofitDataSource(private val webService: WebService) : RemoteDataSource {
-
-    override suspend fun insertSchedule(schedule: Schedule): Schedule {
-        try {
-            val requestBody = schedule.toScheduleRequest()  // pakai toScheduleRequest()
-            Log.d("DEBUG_REQUEST", "Sending: $requestBody")
-
-            val response: ScheduleJson = webService.insertSchedule(requestBody)
-            Log.d("DEBUG_RESPONSE", "Received: $response")
-
-            return response.toSchedule()
-        } catch (e: Exception) {
-            Log.e("DEBUG_ERROR", "Error: ${e.message}")
-            e.printStackTrace()
-            return schedule
-        }
-    }
-
+//GET ALL
     override suspend fun fetchAllSchedules(): List<Schedule> {
         return try {
             val responseList = webService.getAllSchedules()
@@ -92,7 +78,23 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             emptyList()
         }
     }
+    override suspend fun fetchAllUsers(): List<User> {
+        return try {
+            val responseList = webService.getAllUsers()
+            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
+            Log.d("DEBUG_FETCH", "Raw response: $responseList")
 
+            val mapped = responseList.map { it.toUser() }
+            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
+            mapped
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    //GET BY COMPANY ID
     override suspend fun fetchScheduleByCompanyId(company_id: Int): List<Schedule> {
         return try {
             val responseList = webService.getSchedulesByCompanyId(company_id)
@@ -108,6 +110,66 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             emptyList()
         }
     }
+    override suspend fun fetchUserByCompanyId(company_id: Int): List<User> {
+        return try {
+            // 💡 Di sini response bermutasi menjadi retrofit2.Response pembungkus
+            val response = webService.getUsersByCompanyId(company_id)
+
+            // Periksa apakah HTTP request sukses dan body tidak kosong
+            if (response.isSuccessful && response.body() != null) {
+                val responseList = response.body()!! // 💡 Ambil list aslinya di sini
+
+                Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
+                Log.d("DEBUG_FETCH", "Raw response: $responseList")
+
+                val mapped = responseList.map { it.toUser() }
+                Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
+                mapped
+            } else {
+                Log.e("DEBUG_FETCH", "⚠️ Gagal! Server merespon dengan Code: ${response.code()}")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchUserById(id: Int): User? {
+        return try {
+TODO("makan")
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // INSERT
+    override suspend fun insertSchedule(schedule: Schedule): Schedule {
+        try {
+            val requestBody = ScheduleRequest.fromModel(schedule)
+
+            val responseJson = webService.insertSchedule(requestBody)
+
+            return responseJson.toSchedule()
+        } catch (e: Exception) {
+            Log.e("RETROFIT_INSERT", "❌ Gagal insert: ${e.message}")
+            throw e
+        }
+    }
+
+    override suspend fun insertUser(user: User): User {
+        try {
+            TODO("Fungsi insertUser belum diimplementasikan")
+        } catch (e: Exception) {
+            Log.e("RETROFIT_USER_INSERT", "❌ Gagal insert: ${e.message}")
+            throw e
+        }
+    }
+
+
     override suspend fun updateSchedule(schedule: Schedule) {
         try {
             // 💡 Mengubah objek Schedule murni (Long) menjadi format teks JSON Request untuk MySQL
@@ -125,6 +187,14 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         } catch (e: Exception) {
             android.util.Log.e("RETROFIT_UPDATE", "❌ Error koneksi saat updateSchedule: ${e.message}")
             throw e // Lempar error ke atas agar ditangkap oleh try-catch milik AdminViewModel
+        }
+    }
+    override suspend fun updateUser(user: User) {
+        try {
+            val requestBody = UserRequest.fromModel(user)
+        } catch (e: Exception) {
+            Log.e("RETROFIT_INSERT", "❌ Gagal insert: ${e.message}")
+            throw e
         }
     }
 

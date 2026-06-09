@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.admin.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,52 +10,65 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.example.myapplication.App
 import com.example.myapplication.R
 import com.example.myapplication.data.sources.models.Schedule
-import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.models.User // 💡 IMPORT MODEL USER MURNI
 import com.example.myapplication.ui.admin.AdminViewModel
+import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-// 💡 GANTI: Sekarang menginduk ke BottomSheetDialogFragment dan menerima objek Schedule yang diklik
 class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Schedule) : BottomSheetDialogFragment() {
 
-    private lateinit var viewModel: AdminViewModel
-    private var currentStaffList: List<UserJson> = emptyList()
+    // =========================================================================
+    // 💡 PERBAIKAN 1: Inisialisasi ViewModel Factory dengan 2 Repositori agar seragam
+    // =========================================================================
+    private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
+        val app = requireActivity().application as App
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
+    }
+
+    // 💡 PERBAIKAN 2: Ubah dari List<UserJson> menjadi List<User> murni
+    private var currentStaffList: List<User> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        // Hubungkan langsung dengan layout XML penugasan staf yang sudah kita buat
         return inflater.inflate(R.layout.fragment_admin_staff_assignment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Gunakan Shared ViewModel dengan scope Activity utama agar sinkronisasi data lancar
-        viewModel = ViewModelProvider(requireActivity())[AdminViewModel::class.java]
-
         val tvSelectedSchedule = view.findViewById<TextView>(R.id.tvSelectedSchedule)
         val actvStaff = view.findViewById<AutoCompleteTextView>(R.id.actvStaff)
         val btnConfirmAssignment = view.findViewById<Button>(R.id.btnConfirmAssignment)
 
-        // Set teks informasi jadwal yang terpilih
         tvSelectedSchedule.text = "Jadwal: ${selectedSchedule.title} (${selectedSchedule.location})"
 
-        // 1. Amati perubahan LiveData Users hasil panggil backend Express.js kamu
+        // =========================================================================
+        // 💡 PERBAIKAN 3: Amati LiveData 'userList' (List<User>) yang sudah kita buat kemarin
+        // =========================================================================
         viewModel.users.observe(viewLifecycleOwner) { listUsers ->
             if (listUsers != null) {
                 currentStaffList = listUsers
 
-                // Masukkan daftar user riil dari SQL database ke Dropdown AutoComplete
-                val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listUsers)
+                // Ambil daftar nama lengkap saja untuk ditampilkan di Dropdown teks
+                val staffNames = listUsers.map { it.full_name }
+
+                val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, staffNames)
                 actvStaff.setAdapter(adapterDropdown)
             }
         }
 
-        // 2. Picu penarikan data user /api/getAllUsers dari server Node.js saat modal terbuka
-        viewModel.loadAllUsers()
+        // =========================================================================
+        // 💡 PERBAIKAN 4: Ganti loadAllUsers() menjadi loadUsersByCompany via SharedPreferences
+        // =========================================================================
+        val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", Context.MODE_PRIVATE)
+        val currentCompanyId = sharedPref.getInt("LOGIN_COMPANY_ID", 1)
+
+        viewModel.loadUserByCompanyId(currentCompanyId)
 
         // 3. Logika Validasi Ketat Klik Tombol Konfirmasi Penugasan
         btnConfirmAssignment.setOnClickListener {
@@ -65,32 +79,19 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                 return@setOnClickListener
             }
 
-            // KUNCI COCOK: Cari nama staf yang diinput apakah ada di list users database
+            // Cari nama staf yang diinput apakah ada di list users database
             val staffTerpilih = currentStaffList.find { it.full_name.equals(inputNama, ignoreCase = true) }
 
-            // Jika nama asal ketik manual dan tidak terdaftar di database SQL:
             if (staffTerpilih == null) {
                 actvStaff.setError("Nama tidak terdaftar! Silakan pilih nama dari list dropdown.")
                 Toast.makeText(context, "Staff tidak valid! Pilih dari daftar yang tersedia.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
-            // Jika nama valid, ambil ID murni penanda primari key tabel users
             val staffIdDariSql = staffTerpilih.id
 
-            // Kirim payload ke endpoint Node.js via ViewModel
-//            viewModel.submitStaffAssignment(selectedSchedule.id, staffIdDariSql) { success ->
-//                if (success) {
-//                    Toast.makeText(context, "Sukses menugaskan ${staffTerpilih.full_name}!", Toast.LENGTH_SHORT).show()
-//
-//                    // Trigger getAllSchedules() otomatis di halaman utama biar daftar langsung ter-update
-//                    viewModel.loadSchedules()
-//
-//                    dismiss() // Tutup lembaran modal bottom sheet
-//                } else {
-//                    Toast.makeText(context, "Gagal menyimpan penugasan ke database", Toast.LENGTH_SHORT).show()
-//                }
-//            }
+            // Kode pemicu HTTP POST/PUT penugasan kamu di bawah ini nanti tinggal diaktifkan...
+            Toast.makeText(context, "Valid! Menugaskan ID #$staffIdDariSql", Toast.LENGTH_SHORT).show()
         }
     }
 }

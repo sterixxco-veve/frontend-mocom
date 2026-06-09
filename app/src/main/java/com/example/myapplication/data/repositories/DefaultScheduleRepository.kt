@@ -2,6 +2,7 @@ package com.example.myapplication.data.repositories
 
 import com.example.myapplication.data.sources.local.LocalDataSource
 import com.example.myapplication.data.sources.models.Schedule
+import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.RemoteDataSource
 
 class DefaultScheduleRepository(

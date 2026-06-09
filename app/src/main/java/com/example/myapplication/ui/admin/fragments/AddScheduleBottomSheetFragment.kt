@@ -27,7 +27,8 @@ import java.util.Locale
 class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
 
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
-        AdminViewModelFactory((requireActivity().application as App).scheduleRepository)
+        val app = requireActivity().application as App
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
     }
 
     // 💡 Properti global untuk melacak mode edit data
@@ -143,7 +144,7 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                     }
                 } else {
                     // ➕ PILIHAN B: Eksekusi Tambah Data Baru (HTTP POST) seperti semula
-                    viewModel.addSchedule(scheduleData) { success ->
+                    viewModel.addSchedule(scheduleData, currentCompanyId) { success ->
                         if (success) {
                             Toast.makeText(context, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
                             viewModel.loadSchedules(currentCompanyId) // Sinkronkan ulang tampilan list

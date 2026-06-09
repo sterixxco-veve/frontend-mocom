@@ -13,20 +13,24 @@ interface WebService {
     @GET("api/getAllSchedules")
     suspend fun getAllSchedules(): List<ScheduleJson>
 
+    //GET BY COMPANY ID//
     @GET("api/getSchedulesByCompanyId/{company_id}")
     suspend fun getSchedulesByCompanyId(
-        @retrofit2.http.Path("company_id") companyId: Int
+        @Path("company_id") companyId: Int
     ): List<ScheduleJson>
+    @GET("api/getUsersByCompanyId/{company_id}")
+    suspend fun getUsersByCompanyId(
+        @Path("company_id") companyId: Int
+    ): retrofit2.Response<List<UserJson>>
 
-    // Di dalam WebService.kt
     @PUT("api/updateSchedule/{id}")
     suspend fun updateSchedule(
-        @retrofit2.http.Path("id") id: Int,
-        @retrofit2.http.Body scheduleRequest: ScheduleRequest
+        @Path("id") id: Int,
+        @Body scheduleRequest: ScheduleRequest
     ): retrofit2.Response<Void> // Mengembalikan response kosong (HTTP 200 OK atau 204 No Content)
 
     @POST("api/insertSchedules")
-    suspend fun insertSchedule(@Body schedule: ScheduleRequest): ScheduleJson  // ganti ScheduleJson -> ScheduleRequest
+    suspend fun insertSchedule(@Body request: ScheduleRequest): ScheduleJson
 
     @POST("schedule/sync")
     suspend fun syncSchedule(@Body body: List<ScheduleJson>): List<ScheduleJson>

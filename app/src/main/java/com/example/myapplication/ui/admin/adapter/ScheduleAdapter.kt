@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.admin.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -27,18 +28,19 @@ class ScheduleAdapter(
 
             // Konversi dari format Timestamp Long ke format Jam (HH:mm)
             val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            timeFormat.timeZone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
             val startTimeStr = timeFormat.format(Date(schedule.start_time))
             val endTimeStr = timeFormat.format(Date(schedule.end_time))
             binding.tvTime.text = "$startTimeStr - $endTimeStr"
+            android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Judul Jadwal: ${schedule.title}")
+            android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi Start: ${schedule.start_time}")
+            android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi End  : ${schedule.end_time}")
 
             // Listener ketika seluruh area kartu jadwal diklik
             binding.root.setOnClickListener {
                 onItemClick(schedule)
             }
 
-            // =========================================================================
-            // 💡 LOGIKA UTAMA: Pasang Dropdown Menu Melayang pada Ikon Titik Tiga
-            // =========================================================================
             binding.btnMenuOptions.setOnClickListener { view ->
                 val context = view.context
 

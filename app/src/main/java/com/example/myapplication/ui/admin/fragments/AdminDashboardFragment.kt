@@ -16,25 +16,15 @@ class AdminDashboardFragment : Fragment(R.layout.fragment_admin_dashboard) {
 
     private var _binding: FragmentAdminDashboardBinding? = null
     private val binding get() = _binding!!
-    
-    private val viewModel: AdminViewModel by viewModels {
-        AdminViewModelFactory((requireActivity().application as App).scheduleRepository)
+
+    private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
+        val app = requireActivity().application as App
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdminDashboardBinding.bind(view)
-
-        // Observasi status rekomendasi burnout asdos dari Gemini
-        lifecycleScope.launch {
-            viewModel.burnoutRecommendations.collect { recommendation ->
-                binding.tvAiContent.text = recommendation
-            }
-        }
-
-        binding.btnRefreshAi.setOnClickListener {
-            viewModel.fetchBurnoutAnalysis()
-        }
     }
 
     override fun onDestroyView() {
