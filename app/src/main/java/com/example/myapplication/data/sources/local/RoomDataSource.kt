@@ -38,7 +38,44 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
         return userDao.getUserById(id)?.toRawModel()
     }
 
+//UPDATE
+override suspend fun updateScheduleLocal(schedule: Schedule) {
+    try {
+        // Konversi dari data model domain (Schedule) ke bentuk Room Entity (ScheduleEntity)
+        val entity = ScheduleEntity(
+            id = schedule.id,
+            created_by = schedule.created_by,
+            company_id = schedule.company_id,
+            title = schedule.title,
+            description = schedule.description,
+            start_time = schedule.start_time, // Berupa Long milidetik
+            end_time = schedule.end_time,     // Berupa Long milidetik
+            location = schedule.location,
+            created_at = schedule.created_at
+        )
 
+        // Eksekusi fungsi update bawaan Room lewat Dao
+        scheduleDao.update(entity)
+        android.util.Log.d("ROOM_LOCAL_DATA", "✅ Berhasil memperbarui Jadwal ID: ${schedule.id} di Room Lokal")
+    } catch (e: Exception) {
+        android.util.Log.e("ROOM_LOCAL_DATA", "❌ Gagal memperbarui jadwal di Room: ${e.message}")
+        throw e
+    }
+}
+
+    // =========================================================================
+    // 💡 IMPLEMENTASI HAPUS JADWAL LOKAL BY ID
+    // =========================================================================
+    override suspend fun deleteScheduleLocalById(id: Int) {
+        try {
+            // Panggil fungsi query custom yang sudah kita buat di ScheduleDao kemarin
+            scheduleDao.deleteScheduleById(id)
+            android.util.Log.d("ROOM_LOCAL_DATA", "🗑️ Berhasil menghapus Jadwal ID: $id dari Room Lokal")
+        } catch (e: Exception) {
+            android.util.Log.e("ROOM_LOCAL_DATA", "❌ Gagal menghapus jadwal di Room: ${e.message}")
+            throw e
+        }
+    }
 
 
     override suspend fun getUnsynced(): List<Schedule> {

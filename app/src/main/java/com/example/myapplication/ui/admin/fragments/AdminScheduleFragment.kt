@@ -64,7 +64,14 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
                 addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
             },
             onDeleteClick = { scheduleTerpilih ->
-                Toast.makeText(requireContext(), "Hapus ID: ${scheduleTerpilih.id}", Toast.LENGTH_SHORT).show()
+                viewModel.deleteSchedule(scheduleTerpilih.id) { success ->
+                    if (success) {
+                        Toast.makeText(requireContext(), "Jadwal berhasil dihapus!", Toast.LENGTH_SHORT).show()
+                        viewModel.loadSchedules(companyId)
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal menghapus jadwal!", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         )
 

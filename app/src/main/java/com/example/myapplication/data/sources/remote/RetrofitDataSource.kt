@@ -15,20 +15,23 @@ private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.
 }
 
 // Untuk SEND request ke server (MySQL format)
-private val mysqlFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
-    timeZone = TimeZone.getTimeZone("UTC")
-}
+private val mysqlFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
 
 fun ScheduleJson.toSchedule(): Schedule {
     return Schedule(
         id = this.id,
         created_by = this.created_by,
+        company_id = this.company_id, // 💡 Pastikan properti ini ikut dipetakan dari JSON!
         title = this.title,
         description = this.description,
-        start_time = isoFormat.parse(this.start_time)?.time ?: 0L,
-        end_time = isoFormat.parse(this.end_time)?.time ?: 0L,
+
+        // =========================================================================
+        // 💡 PERBAIKAN UTAMA: Ganti dari isoFormat menjadi mysqlFormat!
+        // =========================================================================
+        start_time = mysqlFormat.parse(this.start_time)?.time ?: 0L,
+        end_time = mysqlFormat.parse(this.end_time)?.time ?: 0L,
         location = this.location,
-        created_at = this.created_at?.let { isoFormat.parse(it)?.time }
+        created_at = this.created_at?.let { mysqlFormat.parse(it)?.time }
             ?: System.currentTimeMillis()
     )
 }
@@ -136,6 +139,7 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         }
     }
 
+    //FETCH BY ID
     override suspend fun fetchUserById(id: Int): User? {
         return try {
 TODO("makan")
@@ -149,7 +153,7 @@ TODO("makan")
     // INSERT
     override suspend fun insertSchedule(schedule: Schedule): Schedule {
         try {
-            val requestBody = ScheduleRequest.fromModel(schedule)
+            val requestBody = schedule.toScheduleRequest()
 
             val responseJson = webService.insertSchedule(requestBody)
 
@@ -169,7 +173,7 @@ TODO("makan")
         }
     }
 
-
+    //UPDATE
     override suspend fun updateSchedule(schedule: Schedule) {
         try {
             // 💡 Mengubah objek Schedule murni (Long) menjadi format teks JSON Request untuk MySQL
@@ -198,6 +202,21 @@ TODO("makan")
         }
     }
 
+    //DELETE
+    override suspend fun deleteSchedule(id: Int) {
+        try {
+            val response = webService.deleteSchedule(id)
+            if (!response.isSuccessful) {
+                throw Exception("Gagal menghapus jadwal di server. Code: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("RETROFIT_DELETE", "❌ Error saat deleteSchedule: ${e.message}")
+            throw e
+        }
+    }
+
+
+    //SYNC
     override suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule> {
         try {
             val requestBody = schedule.map { it.toScheduleJsonForSync() }

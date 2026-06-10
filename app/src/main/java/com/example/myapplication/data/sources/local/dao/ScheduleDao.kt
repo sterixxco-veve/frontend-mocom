@@ -17,16 +17,15 @@ interface ScheduleDao {
 
     @Query("SELECT * FROM schedules WHERE company_id = :id")
     suspend fun getByCompanyId(id: Int): List<ScheduleEntity>
-
     @Insert
     suspend fun insert(schedule: ScheduleEntity)
-
+    @Query("DELETE FROM schedules WHERE id = :scheduleId")
+    suspend fun deleteScheduleById(scheduleId: Int)
     @Insert
     suspend fun bulkInsert(schedules: List<ScheduleEntity>)
-
+    @Update
+    suspend fun update(schedule: ScheduleEntity)
     @Query("SELECT * FROM schedules")
     suspend fun getUnsynced(): List<ScheduleEntity>
 
-    @Query("SELECT * FROM schedules WHERE created_by = :userId ORDER BY start_time ASC")
-    suspend fun getByUserId(userId: Int): List<ScheduleEntity>
 }

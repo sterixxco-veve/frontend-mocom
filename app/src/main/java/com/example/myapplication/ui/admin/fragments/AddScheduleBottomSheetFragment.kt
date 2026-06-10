@@ -31,7 +31,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
         AdminViewModelFactory(app.scheduleRepository, app.userRepository)
     }
 
-    // 💡 Properti global untuk melacak mode edit data
     private var scheduleId: Int? = null
     private var currentCreatedBy: Int = 1
     private var currentCompanyId: Int = 1
@@ -47,7 +46,6 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ambil data User ID dan Company ID riil yang aktif dari Activity induk
         currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
         currentCreatedBy = requireActivity().intent.getIntExtra("EXTRA_USER_ID", 1)
 
@@ -64,11 +62,18 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
         val btnSave = view.findViewById<Button>(R.id.btnSave)
 
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val currentDateTimeStr = sdf.format(Date())
 
-        // Set waktu default awal
+        // =========================================================================
+        // 💡 PERBAIKAN 1: Set waktu awal form default: Start = Now, End = Now + 1 Jam
+        // =========================================================================
+        val calendar = Calendar.getInstance()
+        val currentDateTimeStr = sdf.format(calendar.time) // Waktu Sekarang
+
+        calendar.add(Calendar.HOUR_OF_DAY, 1)
+        val endDateTimeStr = sdf.format(calendar.time) // Waktu Sekarang + 1 Jam
+
         etStartTime.setText(currentDateTimeStr)
-        etEndTime.setText(currentDateTimeStr)
+        etEndTime.setText(endDateTimeStr)
 
         // =========================================================================
         // 💡 LOGIKA DETEKSI MODE: Cek apakah ada data bundle kiriman (Mode Edit)
@@ -79,17 +84,14 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                 currentCreatedBy = bundle.getInt("EDIT_CREATED_BY")
                 currentCompanyId = bundle.getInt("EDIT_COMPANY_ID")
 
-                // Auto-fill form inputan dengan data jadwal lama
                 tvHeaderTitle.text = "Edit Jadwal"
                 etTitle.setText(bundle.getString("EDIT_TITLE"))
                 etDescription.setText(bundle.getString("EDIT_DESC"))
                 etLocation.setText(bundle.getString("EDIT_LOCATION"))
 
-                // Ubah format data Long kembali ke String terformat untuk form
                 etStartTime.setText(sdf.format(Date(bundle.getLong("EDIT_START"))))
                 etEndTime.setText(sdf.format(Date(bundle.getLong("EDIT_END"))))
 
-                // Ganti teks tombol utama
                 btnSave.text = "Perbarui Jadwal"
             }
         }
@@ -117,9 +119,8 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                 val endTimeLong: Long = sdf.parse(endTimeStr)?.time ?: Date().time
                 val createdAtLong: Long = Date().time
 
-                // Bungkus menjadi satu objek Schedule utuh
                 val scheduleData = Schedule(
-                    id = scheduleId ?: 0, // Menggunakan ID lama jika mode edit, atau 0 jika baru
+                    id = scheduleId ?: 0,
                     created_by = currentCreatedBy,
                     company_id = currentCompanyId,
                     title = title,
@@ -130,24 +131,21 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                     created_at = createdAtLong
                 )
 
-                // Jalankan fungsi network berdasarkan status mode saat ini
                 if (scheduleId != null) {
-                    // ✏️ PILIHAN A: Eksekusi Update Data (HTTP PUT)
                     viewModel.updateSchedule(scheduleData) { success ->
                         if (success) {
                             Toast.makeText(context, "Jadwal berhasil diperbarui!", Toast.LENGTH_SHORT).show()
-                            viewModel.loadSchedules(currentCompanyId) // Tarik ulang data terfilter company
+                            viewModel.loadSchedules(currentCompanyId)
                             dismiss()
                         } else {
                             Toast.makeText(context, "Gagal memperbarui jadwal di server", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
-                    // ➕ PILIHAN B: Eksekusi Tambah Data Baru (HTTP POST) seperti semula
                     viewModel.addSchedule(scheduleData, currentCompanyId) { success ->
                         if (success) {
                             Toast.makeText(context, "Jadwal berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
-                            viewModel.loadSchedules(currentCompanyId) // Sinkronkan ulang tampilan list
+                            viewModel.loadSchedules(currentCompanyId)
                             dismiss()
                         } else {
                             Toast.makeText(context, "Gagal menyimpan ke database server", Toast.LENGTH_SHORT).show()
@@ -187,6 +185,17 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
                 calendar.set(Calendar.SECOND, 0)
 
                 targetEditText.setText(formatter.format(calendar.time))
+
+                // =========================================================================
+                // 💡 PERBAIKAN 2: Jika etStartTime diubah, otomatis majukan etEndTime + 1 Jam
+                // =========================================================================
+                val etStartTime = view?.findViewById<EditText>(R.id.etStartTime)
+                val etEndTime = view?.findViewById<EditText>(R.id.etEndTime)
+
+                if (targetEditText.id == etStartTime?.id) {
+                    calendar.add(Calendar.HOUR_OF_DAY, 1)
+                    etEndTime?.setText(formatter.format(calendar.time))
+                }
             }
         }
     }

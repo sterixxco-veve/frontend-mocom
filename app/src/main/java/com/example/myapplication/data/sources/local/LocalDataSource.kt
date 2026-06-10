@@ -29,5 +29,9 @@ interface LocalDataSource {
         endTime: Long
     ): Schedule
 
+    suspend fun deleteScheduleLocalById(id: Int)
+
+    suspend fun updateScheduleLocal(schedule: Schedule)
+
     suspend fun sync(schedules: List<Schedule>)
 }

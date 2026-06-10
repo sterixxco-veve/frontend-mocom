@@ -128,6 +128,8 @@ class AdminViewModel (
         }
     }
 
+
+    //ADD
     fun addSchedule(schedule: Schedule, companyId: Int, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
@@ -140,6 +142,8 @@ class AdminViewModel (
         }
     }
 
+
+    //UPDATE
     fun updateSchedule(schedule: Schedule, onResult: (Boolean) -> Unit) {
         Log.d("TRACK_SCHEDULE", "✏️ Sedang mencoba memperbarui jadwal ID [${schedule.id}]: ${schedule.title}")
         viewModelScope.launch {
@@ -152,6 +156,20 @@ class AdminViewModel (
                 Log.e("TRACK_SCHEDULE", "❌ GAGAL memperbarui jadwal: ${e.message}")
                 e.printStackTrace()
                 onResult(false)
+            }
+        }
+    }
+
+
+    //DELETE
+    fun deleteSchedule(id: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                scheduleRepository.delete(id)
+                onResult(true) // Kirim sinyal sukses ke Fragment
+            } catch (e: Exception) {
+                android.util.Log.e("VIEWMODEL_DELETE", "Gagal hapus: ${e.message}")
+                onResult(false) // Kirim sinyal gagal
             }
         }
     }
