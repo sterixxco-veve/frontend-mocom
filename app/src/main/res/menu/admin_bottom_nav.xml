@@ -21,6 +21,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/navigation_user_list"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Daftar User"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/navigation_attendance"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="Absensi"

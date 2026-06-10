@@ -39,4 +39,9 @@
         android:name="com.example.myapplication.ui.admin.fragments.AdminReportsFragment"
         android:label="Laporan PDF"
         tools:layout="@layout/fragment_admin_reports" />
+    <fragment
+        android:id="@+id/navigation_user_list"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminUserManagementFragment"
+        android:label="Manajemen User"
+        tools:layout="@layout/fragment_admin_user_management" />
 </navigation>

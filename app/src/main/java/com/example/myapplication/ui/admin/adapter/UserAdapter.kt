@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data.sources.models.User
-import com.google.android.material.card.MaterialCardView
 import java.util.Locale
 
 class UserAdapter(
@@ -29,28 +28,36 @@ class UserAdapter(
             tvUserEmail.text = user.email ?: "- Tidak ada Email -"
 
             // =========================================================================
-            // 💡 LOGIKA BARU STATUS IS_ACTIVE (1 = Active, 2 = Nonaktif)
+            // 💡 PERBAIKAN 1: Tampilkan Nama Role Asli (Staff / Member) Berdasarkan role_id
+            // =========================================================================
+            val roleName = when (user.role_id) {
+                2 -> "Staff / Asisten"
+                3 -> "Member / Mhs"
+                else -> "User"
+            }
+
+            // =========================================================================
+            // 💡 PERBAIKAN 2: Logika Warna Status Keaktifan (1 = Aktif, 0 = Nonaktif)
             // =========================================================================
             when (user.is_active) {
                 1 -> {
-                    // Status Aktif (Hijau)
-                    tvUserRole.text = "Active ✔"
+                    // Status Aktif (Teks Berwarna Hijau)
+                    tvUserRole.text = "$roleName • Active ✔"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_green_dark))
-
                 }
-                2 -> {
-                    // Status Nonaktif (Merah)
-                    tvUserRole.text = "Nonaktif ❌"
+                0 -> {
+                    // Status Nonaktif (Teks Berwarna Merah - Disinkronkan dari angka 2 ke 0)
+                    tvUserRole.text = "$roleName • Nonaktif ❌"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_red_dark))
                 }
                 else -> {
-                    // Fallback jika ada angka lain di luar skema (Abu-abu)
-                    tvUserRole.text = "Unknown"
+                    // Fallback jika status tidak terdefinisi (Abu-abu)
+                    tvUserRole.text = "$roleName • Unknown"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.darker_gray))
                 }
             }
 
-            // Membuat Inisial Avatar Otomatis (Bobby Pratama -> BP)
+            // Pembuatan Inisial Avatar Otomatis (Bobby Danendra -> BD)
             val words = user.full_name.trim().split("\\s+".toRegex())
             val initials = if (words.size >= 2) {
                 (words[0].take(1) + words[1].take(1)).uppercase(Locale.getDefault())
@@ -59,6 +66,7 @@ class UserAdapter(
             }
             tvAvatarInitials.text = initials
 
+            // Trigger Callback Menu Opsi Titik Tiga Beserta Anchor View-nya
             btnUserOptions.setOnClickListener { view ->
                 onOptionsClick(user, view)
             }
@@ -76,6 +84,7 @@ class UserAdapter(
 
     override fun getItemCount(): Int = userList.size
 
+    // Memperbarui isi list secara dinamis saat tombol filter atau swipe-refresh dipicu
     fun submitList(newList: List<User>) {
         this.userList = newList
         notifyDataSetChanged()
