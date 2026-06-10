@@ -2,6 +2,7 @@ package com.example.myapplication.data.sources.remote
 
 import android.util.Log
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
+import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
@@ -17,17 +18,16 @@ private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.
 // Untuk SEND request ke server (MySQL format)
 private val mysqlFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
 
+// =========================================================================
+// 🔀 MAPPER COMPONENT UNTUK SCHEDULE
+// =========================================================================
 fun ScheduleJson.toSchedule(): Schedule {
     return Schedule(
         id = this.id,
         created_by = this.created_by,
-        company_id = this.company_id, // 💡 Pastikan properti ini ikut dipetakan dari JSON!
+        company_id = this.company_id,
         title = this.title,
         description = this.description,
-
-        // =========================================================================
-        // 💡 PERBAIKAN UTAMA: Ganti dari isoFormat menjadi mysqlFormat!
-        // =========================================================================
         start_time = mysqlFormat.parse(this.start_time)?.time ?: 0L,
         end_time = mysqlFormat.parse(this.end_time)?.time ?: 0L,
         location = this.location,
@@ -36,7 +36,6 @@ fun ScheduleJson.toSchedule(): Schedule {
     )
 }
 
-// Schedule (Long) -> ScheduleRequest (String) untuk INSERT
 fun Schedule.toScheduleRequest(): ScheduleRequest {
     return ScheduleRequest(
         created_by = this.created_by,
@@ -49,7 +48,6 @@ fun Schedule.toScheduleRequest(): ScheduleRequest {
     )
 }
 
-// Schedule (Long) -> ScheduleJson (Date) untuk SYNC
 fun Schedule.toScheduleJsonForSync(): ScheduleJson {
     return ScheduleJson(
         id = this.id,
@@ -57,147 +55,159 @@ fun Schedule.toScheduleJsonForSync(): ScheduleJson {
         company_id = this.company_id,
         title = this.title,
         description = this.description,
-        start_time = mysqlFormat.format(Date(this.start_time)),   // Long → String
-        end_time = mysqlFormat.format(Date(this.end_time)),       // Long → String
+        start_time = mysqlFormat.format(Date(this.start_time)),
+        end_time = mysqlFormat.format(Date(this.end_time)),
         location = this.location,
-        created_at = mysqlFormat.format(Date(this.created_at))    // Long → String
+        created_at = mysqlFormat.format(Date(this.created_at))
     )
 }
 
+// =========================================================================
+// 💡 MAPPER COMPONENT UNTUK USER (FIXED TYPO)
+// =========================================================================
+fun User.toUserRequest(): UserRequest {
+    return UserRequest(
+        role_id = this.role_id,
+        company_id = this.company_id,
+        full_name = this.full_name,
+        username = this.username,
+        email = this.email,
+        password = this.password,
+        is_active = this.is_active,
+        created_at = mysqlFormat.format(Date(this.created_at)),
+        updated_at = mysqlFormat.format(Date(this.updated_at))
+    )
+}
+
+fun UserJson.toUser(): User {
+    return User(
+        id = this.id,
+        company_id = this.company_id,
+        role_id = this.role_id,
+        full_name = this.full_name,
+        username = this.username,
+        email = this.email,
+        password = this.password,
+        is_active = this.is_active
+    )
+}
+
+// =========================================================================
+// 🚀 CLASS RETROFIT DATA SOURCE CORE
+// =========================================================================
 class RetrofitDataSource(private val webService: WebService) : RemoteDataSource {
-//GET ALL
+
+    //GET ALL SCHEDULES
     override suspend fun fetchAllSchedules(): List<Schedule> {
         return try {
             val responseList = webService.getAllSchedules()
-            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
-            Log.d("DEBUG_FETCH", "Raw response: $responseList")
-
-            val mapped = responseList.map { it.toSchedule() }
-            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
-            mapped
+            responseList.map { it.toSchedule() }
         } catch (e: Exception) {
-            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
-            e.printStackTrace()
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()
         }
     }
+
+    //GET ALL USERS
     override suspend fun fetchAllUsers(): List<User> {
         return try {
             val responseList = webService.getAllUsers()
-            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
-            Log.d("DEBUG_FETCH", "Raw response: $responseList")
-
-            val mapped = responseList.map { it.toUser() }
-            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
-            mapped
+            responseList.map { it.toUser() }
         } catch (e: Exception) {
-            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
-            e.printStackTrace()
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()
         }
     }
 
-    //GET BY COMPANY ID
+    //GET SCHEDULE BY COMPANY ID
     override suspend fun fetchScheduleByCompanyId(company_id: Int): List<Schedule> {
         return try {
             val responseList = webService.getSchedulesByCompanyId(company_id)
-            Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
-            Log.d("DEBUG_FETCH", "Raw response: $responseList")
-
-            val mapped = responseList.map { it.toSchedule() }
-            Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
-            mapped
+            responseList.map { it.toSchedule() }
         } catch (e: Exception) {
-            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
-            e.printStackTrace()
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()
         }
     }
+
+    //GET USER BY COMPANY ID
     override suspend fun fetchUserByCompanyId(company_id: Int): List<User> {
         return try {
-            // 💡 Di sini response bermutasi menjadi retrofit2.Response pembungkus
             val response = webService.getUsersByCompanyId(company_id)
-
-            // Periksa apakah HTTP request sukses dan body tidak kosong
             if (response.isSuccessful && response.body() != null) {
-                val responseList = response.body()!! // 💡 Ambil list aslinya di sini
-
-                Log.d("DEBUG_FETCH", "Raw response size: ${responseList.size}")
-                Log.d("DEBUG_FETCH", "Raw response: $responseList")
-
-                val mapped = responseList.map { it.toUser() }
-                Log.d("DEBUG_FETCH", "Mapped size: ${mapped.size}")
-                mapped
+                response.body()!!.map { it.toUser() }
             } else {
                 Log.e("DEBUG_FETCH", "⚠️ Gagal! Server merespon dengan Code: ${response.code()}")
                 emptyList()
             }
         } catch (e: Exception) {
-            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
-            e.printStackTrace()
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()
         }
     }
 
-    //FETCH BY ID
+    // 💡 IMPLEMENTASI BARU: FETCH USER BY ID
     override suspend fun fetchUserById(id: Int): User? {
         return try {
-TODO("makan")
+            // Langsung dapatkan objek UserJson dari server
+            val responseJson = webService.getUserById(id)
+
+            // Langsung petakan ke model internal domain Android kamu
+            responseJson.toUser()
         } catch (e: Exception) {
-            Log.e("DEBUG_FETCH", "Error: ${e.javaClass.simpleName} → ${e.message}")
-            e.printStackTrace()
+            Log.e("DEBUG_FETCH", "❌ Error saat fetchUserById: ${e.message}")
             null
         }
     }
 
-    // INSERT
+    // INSERT SCHEDULE
     override suspend fun insertSchedule(schedule: Schedule): Schedule {
         try {
             val requestBody = schedule.toScheduleRequest()
-
             val responseJson = webService.insertSchedule(requestBody)
-
             return responseJson.toSchedule()
         } catch (e: Exception) {
-            Log.e("RETROFIT_INSERT", "❌ Gagal insert: ${e.message}")
+            Log.e("RETROFIT_INSERT", "❌ Gagal insert schedule: ${e.message}")
             throw e
         }
     }
 
+    // INSERT USER
     override suspend fun insertUser(user: User): User {
         try {
-            TODO("Fungsi insertUser belum diimplementasikan")
+            val requestBody = user.toUserRequest()
+            val responseJson = webService.insertUser(requestBody)
+            return responseJson.toUser()
         } catch (e: Exception) {
-            Log.e("RETROFIT_USER_INSERT", "❌ Gagal insert: ${e.message}")
+            Log.e("RETROFIT_USER_INSERT", "❌ Gagal insert user: ${e.message}")
             throw e
         }
     }
 
-    //UPDATE
+    //UPDATE SCHEDULE
     override suspend fun updateSchedule(schedule: Schedule) {
         try {
-            // 💡 Mengubah objek Schedule murni (Long) menjadi format teks JSON Request untuk MySQL
             val requestBody = schedule.toScheduleRequest()
-
-            // Tembak endpoint PUT api/updateSchedule/{id} via Retrofit WebService
             val response = webService.updateSchedule(schedule.id, requestBody)
-
-            if (response.isSuccessful) {
-                android.util.Log.d("RETROFIT_UPDATE", "✅ Berhasil mengupdate jadwal ID: ${schedule.id} di server backend.")
-            } else {
-                android.util.Log.e("RETROFIT_UPDATE", "⚠️ Server menolak update. Code: ${response.code()} -> ${response.errorBody()?.string()}")
-                throw Exception("Gagal update di server dengan HTTP Code: ${response.code()}")
+            if (!response.isSuccessful) {
+                throw Exception("Gagal update jadwal di server dengan HTTP Code: ${response.code()}")
             }
         } catch (e: Exception) {
-            android.util.Log.e("RETROFIT_UPDATE", "❌ Error koneksi saat updateSchedule: ${e.message}")
-            throw e // Lempar error ke atas agar ditangkap oleh try-catch milik AdminViewModel
+            Log.e("RETROFIT_UPDATE", "❌ Error koneksi saat updateSchedule: ${e.message}")
+            throw e
         }
     }
+
+    // 💡 IMPLEMENTASI BARU: UPDATE USER
     override suspend fun updateUser(user: User) {
         try {
-            val requestBody = UserRequest.fromModel(user)
+            val requestBody = user.toUserRequest()
+            val response = webService.updateUser(user.id, requestBody)
+            if (!response.isSuccessful) {
+                throw Exception("Gagal update user di server. Code: ${response.code()}")
+            }
         } catch (e: Exception) {
-            Log.e("RETROFIT_INSERT", "❌ Gagal insert: ${e.message}")
+            Log.e("RETROFIT_USER_UPDATE", "❌ Gagal update user: ${e.message}")
             throw e
         }
     }
@@ -210,13 +220,24 @@ TODO("makan")
                 throw Exception("Gagal menghapus jadwal di server. Code: ${response.code()}")
             }
         } catch (e: Exception) {
-            android.util.Log.e("RETROFIT_DELETE", "❌ Error saat deleteSchedule: ${e.message}")
+            Log.e("RETROFIT_DELETE", "❌ Error saat deleteSchedule: ${e.message}")
             throw e
         }
     }
 
+    override suspend fun deleteUser(id: Int) {
+        try {
+            val response = webService.deleteUser(id)
+            if (!response.isSuccessful) {
+                throw Exception("Gagal menghapus user di server. Code: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("RETROFIT_DELETE", "❌ Error saat delete user: ${e.message}")
+            throw e
+        }
+    }
 
-    //SYNC
+    //SYNC SCHEDULE
     override suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule> {
         try {
             val requestBody = schedule.map { it.toScheduleJsonForSync() }

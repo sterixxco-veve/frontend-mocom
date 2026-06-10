@@ -2,6 +2,7 @@ package com.example.myapplication.data.sources.local
 
 import com.example.myapplication.data.sources.local.database.AppDatabase
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
+import com.example.myapplication.data.sources.local.entities.UserEntity
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import java.text.SimpleDateFormat
@@ -63,6 +64,32 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
     }
 }
 
+    override suspend fun updateUserLocal(user: User) {
+        try {
+            // 1. Konversi dari model Domain (User) ke bentuk Room Entity (UserEntity)
+            val entity = UserEntity(
+                id = user.id,              // Pastikan ID user lama disertakan agar ditimpa di baris yang sama
+                role_id = user.role_id,
+                company_id = user.company_id,
+                full_name = user.full_name,
+                username = user.username,
+                email = user.email,
+                password = user.password,
+                is_active = user.is_active,
+                created_at = user.created_at, // Pertahankan waktu pembuatan awal
+                updated_at = java.util.Date().time // Update waktu edit lokal ke milidetik sekarang
+            )
+
+            // 2. Eksekusi fungsi update menggunakan UserDao, bukan scheduleDao lagi!
+            userDao.updateUser(entity)
+
+            android.util.Log.d("ROOM_LOCAL_DATA", "✅ Berhasil memperbarui User ID: ${user.id} di Room Lokal")
+        } catch (e: Exception) {
+            android.util.Log.e("ROOM_LOCAL_DATA", "❌ Gagal memperbarui user di Room: ${e.message}")
+            throw e
+        }
+    }
+
     // =========================================================================
     // 💡 IMPLEMENTASI HAPUS JADWAL LOKAL BY ID
     // =========================================================================
@@ -77,11 +104,23 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
         }
     }
 
+    override suspend fun deleteUserLocalById(id: Int) {
+        try {
+            userDao.deleteUserById(id)
+            android.util.Log.d("ROOM_LOCAL_DATA", "🗑️ Berhasil menghapus User ID: $id dari Room Lokal")
+        } catch (e: Exception) {
+            android.util.Log.e("ROOM_LOCAL_DATA", "❌ Gagal menghapus jadwal di Room: ${e.message}")
+            throw e
+        }
+    }
+
 
     override suspend fun getUnsynced(): List<Schedule> {
         return scheduleDao.getAll().filter { it.id == 0 }.map { it.toRawModel() }
     }
 
+
+    //INSERT
     override suspend fun insert(
         createdBy: Int,
         title: String,
@@ -100,10 +139,38 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
             start_time = startTime,
             end_time = endTime,
             location = location,
-//            created_at = sdf.format(Date())
         )
         scheduleDao.insert(entity)
         return entity.toRawModel()
+    }
+
+    override suspend fun insertUser(
+        role_id: Int,
+        company_id: Int,
+        full_name: String,
+        username: String,
+        email: String,
+        password: String,
+        is_active: Int
+    ): User {
+        val entity = UserEntity(
+            id = 0, // Nilai 0 ini wajib agar memicu autoGenerate di Room SQLite
+            role_id = role_id,
+            company_id = company_id,
+            full_name = full_name,
+            username = username,
+            email = email,
+            password = password,
+            is_active = is_active
+        )
+
+        // =========================================================================
+        // 💡 PERBAIKAN: Gunakan 'val' (bukan const) untuk menangkap ID Auto-Increment
+        // =========================================================================
+        val generatedId = userDao.insertUser(entity)
+
+        // Kembalikan objek User dengan menyuntikkan ID asli hasil generate database lokal
+        return entity.toRawModel().copy(id = generatedId.toInt())
     }
 
     override suspend fun sync(schedules: List<Schedule>) {

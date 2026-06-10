@@ -20,6 +20,10 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE company_id = :id")
     suspend fun getUsersByCompanyId(id: Int): List<UserEntity>
 
+    @Query("DELETE FROM users WHERE id = :userId")
+    suspend fun deleteUserById(userId: Int)
+    @Update
+    suspend fun updateUser(user: UserEntity)
     @Insert
-    suspend fun insertUser(user: UserEntity)
+    suspend fun insertUser(user: UserEntity): Long
 }

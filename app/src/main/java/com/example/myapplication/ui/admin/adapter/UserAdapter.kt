@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
@@ -13,7 +14,8 @@ import java.util.Locale
 
 class UserAdapter(
     private var userList: List<User>,
-    private val onOptionsClick: (User, View) -> Unit
+    // 💡 Kita sesuaikan callback agar mengirimkan User beserta ID Aksi Menu (1 = Edit, 2 = Hapus)
+    private val onMenuActionClick: (User, actionId: Int) -> Unit
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     inner class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -27,31 +29,24 @@ class UserAdapter(
             tvUserName.text = user.full_name
             tvUserEmail.text = user.email ?: "- Tidak ada Email -"
 
-            // =========================================================================
-            // 💡 PERBAIKAN 1: Tampilkan Nama Role Asli (Staff / Member) Berdasarkan role_id
-            // =========================================================================
+            // Tampilkan Nama Role Asli (Staff / Member) Berdasarkan role_id
             val roleName = when (user.role_id) {
-                2 -> "Staff / Asisten"
-                3 -> "Member / Mhs"
+                2 -> "Staff"
+                3 -> "Member"
                 else -> "User"
             }
 
-            // =========================================================================
-            // 💡 PERBAIKAN 2: Logika Warna Status Keaktifan (1 = Aktif, 0 = Nonaktif)
-            // =========================================================================
+            // Logika Warna Status Keaktifan (1 = Aktif, 0 = Nonaktif)
             when (user.is_active) {
                 1 -> {
-                    // Status Aktif (Teks Berwarna Hijau)
                     tvUserRole.text = "$roleName • Active ✔"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_green_dark))
                 }
                 0 -> {
-                    // Status Nonaktif (Teks Berwarna Merah - Disinkronkan dari angka 2 ke 0)
                     tvUserRole.text = "$roleName • Nonaktif ❌"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.holo_red_dark))
                 }
                 else -> {
-                    // Fallback jika status tidak terdefinisi (Abu-abu)
                     tvUserRole.text = "$roleName • Unknown"
                     tvUserRole.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.darker_gray))
                 }
@@ -65,10 +60,25 @@ class UserAdapter(
                 user.full_name.take(2).uppercase(Locale.getDefault())
             }
             tvAvatarInitials.text = initials
-
-            // Trigger Callback Menu Opsi Titik Tiga Beserta Anchor View-nya
             btnUserOptions.setOnClickListener { view ->
-                onOptionsClick(user, view)
+                val popup = PopupMenu(itemView.context, view)
+                popup.menu.add(0, 1, 0, "Edit Pengguna")
+                popup.menu.add(0, 2, 1, "Hapus Pengguna")
+
+                popup.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        1 -> {
+                            onMenuActionClick(user, 1) // 💡 Mengirim angka 1 ke fragment
+                            true
+                        }
+                        2 -> {
+                            onMenuActionClick(user, 2) // 💡 Mengirim angka 2 ke fragment
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                popup.show()
             }
         }
     }
@@ -84,7 +94,6 @@ class UserAdapter(
 
     override fun getItemCount(): Int = userList.size
 
-    // Memperbarui isi list secara dinamis saat tombol filter atau swipe-refresh dipicu
     fun submitList(newList: List<User>) {
         this.userList = newList
         notifyDataSetChanged()

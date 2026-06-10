@@ -7,14 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.App
 import com.example.myapplication.R
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.databinding.FragmentAdminUserManagementBinding // 💡 Import kelas binding hasil generate XML-mu
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.example.myapplication.ui.admin.adapters.UserAdapter
@@ -27,9 +27,10 @@ class AdminUserManagementFragment : Fragment() {
     }
 
     private lateinit var userAdapter: UserAdapter
-    private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var btnStaff: Button
-    private lateinit var btnMember: Button
+
+    // 💡 Variabel Binding dengan penanganan null agar terhindar dari Memory Leak
+    private var _binding: FragmentAdminUserManagementBinding? = null
+    private val binding get() = _binding!!
 
     private var currentSelectedRoleId: Int = 2 // Default: 2 (Staff / Asisten)
     private var rawUserList: List<User> = emptyList()
@@ -37,78 +38,80 @@ class AdminUserManagementFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_admin_user_management, container, false)
+    ): View {
+        // 💡 INSTANSIASI VIEW BINDING
+        _binding = FragmentAdminUserManagementBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Inisialisasi View berdasarkan XML baru ala Monitoring Absensi
-        btnStaff = view.findViewById(R.id.btn_filter_staff)
-        btnMember = view.findViewById(R.id.btn_filter_member)
-        swipeRefresh = view.findViewById(R.id.swipeRefreshUser)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rvAdminUserManagement)
-
         val currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
 
-        // 2. Setup RecyclerView & Adapter
-        userAdapter = UserAdapter(
-            userList = emptyList(),
-            onOptionsClick = { userTerpilih, anchorView ->
-                openUserOptionsBottomSheet(userTerpilih, anchorView)
+        // 1. Setup RecyclerView & Adapter dengan Lambda Callback Aksi Menu
+        userAdapter = UserAdapter(emptyList()) { selectedUser, actionId ->
+            when (actionId) {
+                1 -> {
+                    // 📝 JALUR EDIT: Tampilkan BottomSheet Edit / Detail User
+                    openEditUserBottomSheet(selectedUser)
+                }
+                2 -> {
+                    // 🗑️ JALUR HAPUS: Jalankan fungsi konfirmasi hapus data
+                    showDeleteConfirmationDialog(selectedUser)
+                }
             }
-        )
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = userAdapter
+        }
 
-        // 3. Amati LiveData dari ViewModel
+        // 💡 AKSES VIEW VIA BINDING (Sangat bersih tanpa findViewById)
+        binding.rvAdminUserManagement.layoutManager = LinearLayoutManager(context)
+        binding.rvAdminUserManagement.adapter = userAdapter
+
+        // 2. Amati LiveData dari ViewModel
         viewModel.users.observe(viewLifecycleOwner) { userList ->
             rawUserList = userList
             filterAndDisplayData()
 
-            // Hentikan loading spinner SwipeRefreshLayout jika sedang berputar
-            if (swipeRefresh.isRefreshing) {
-                swipeRefresh.isRefreshing = false
+            // 💡 Matikan loading spinner via binding jika sedang berputar
+            if (binding.swipeRefreshUser.isRefreshing) {
+                binding.swipeRefreshUser.isRefreshing = false
             }
         }
 
-        // 4. Listener klik untuk Tombol Staff / Asisten (Role 2)
-        btnStaff.setOnClickListener {
+        // 3. Listener klik untuk Tombol Staff / Asisten (Role 2) via Binding
+        binding.btnFilterStaff.setOnClickListener {
             currentSelectedRoleId = 2
-            changeButtonState(activeButton = btnStaff, inactiveButton = btnMember)
+            changeButtonState(activeButton = binding.btnFilterStaff, inactiveButton = binding.btnFilterMember)
             filterAndDisplayData()
         }
 
-        // 5. Listener klik untuk Tombol Member / Mahasiswa (Role 3)
-        btnMember.setOnClickListener {
+        // 4. Listener klik untuk Tombol Member / Mahasiswa (Role 3) via Binding
+        binding.btnFilterMember.setOnClickListener {
             currentSelectedRoleId = 3
-            changeButtonState(activeButton = btnMember, inactiveButton = btnStaff)
+            changeButtonState(activeButton = binding.btnFilterMember, inactiveButton = binding.btnFilterStaff)
             filterAndDisplayData()
         }
 
-        // 6. Listener Swipe Refresh (Tarik untuk menyegarkan data)
-        swipeRefresh.setOnRefreshListener {
+        // 5. Listener Swipe Refresh via Binding
+        binding.swipeRefreshUser.setOnRefreshListener {
             viewModel.loadUserByCompanyId(currentCompanyId)
+        }
+
+        // 6. Listener FAB Tambah User via Binding
+        binding.fabAddUser.setOnClickListener {
+            val addUserModal = AddUserBottomSheetFragment()
+            addUserModal.show(childFragmentManager, "ADD_USER_BOTTOM_SHEET")
         }
     }
 
-    /**
-     * Fungsi untuk memfilter data berdasarkan Role ID yang dipilih
-     * dan mengurutkan status Aktif (1) agar selalu berada di posisi paling atas.
-     */
     private fun filterAndDisplayData() {
         val filteredList = rawUserList
             .filter { it.role_id == currentSelectedRoleId }
-            .sortedByDescending { it.is_active } // 💡 1 (Aktif) otomatis naik ke atas 0 (Nonaktif)
+            .sortedByDescending { it.is_active } // User Aktif otomatis naik ke atas
 
         userAdapter.submitList(filteredList)
     }
 
-    /**
-     * Fungsi pembantu untuk mengubah warna background dan text button filter
-     * secara dinamis agar seragam dengan gaya desain tombol absensi.
-     */
     private fun changeButtonState(activeButton: Button, inactiveButton: Button) {
         // State Aktif (Warna Biru Premium)
         activeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4361EE"))
@@ -121,16 +124,46 @@ class AdminUserManagementFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Ambil data terbaru dari server Cloud MySQL saat fragment kembali terbuka
         val currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
         viewModel.loadUserByCompanyId(currentCompanyId)
     }
 
-    private fun openUserOptionsBottomSheet(user: User, anchorView: View) {
-        android.widget.Toast.makeText(
-            context,
-            "Mengelola opsi untuk: ${user.full_name}",
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
+    private fun openEditUserBottomSheet(user: User) {
+        val editUserModal = AddUserBottomSheetFragment.newInstance(user)
+        editUserModal.show(childFragmentManager, "EDIT_USER_BOTTOM_SHEET")
+    }
+
+    private fun showDeleteConfirmationDialog(user: User) {
+        val currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Hapus Pengguna")
+            .setMessage("Apakah Anda yakin ingin menghapus ${user.full_name} dari sistem EduStaff Pro?")
+            .setPositiveButton("Hapus") { dialog, _ ->
+
+                // 1. Tembak fungsi delete ke ViewModel
+                viewModel.deleteUser(user.id) { success ->
+                    if (success) {
+                        Toast.makeText(context, "${user.full_name} berhasil dihapus!", Toast.LENGTH_SHORT).show()
+
+                        // 2. Refresh ulang list user di layar agar baris yang dihapus langsung hilang
+                        viewModel.loadUserByCompanyId(currentCompanyId)
+                    } else {
+                        Toast.makeText(context, "Gagal menghapus ${user.full_name} dari server", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                dialog.dismiss()
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // 💡 WAJIB: Bersihkan binding ketika view hancur untuk mencegah kebocoran memori (leak)
+        _binding = null
     }
 }

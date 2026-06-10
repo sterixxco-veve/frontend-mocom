@@ -141,6 +141,17 @@ class AdminViewModel (
             }
         }
     }
+    fun addUser(user: User, companyId: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userRepository.insertUser(user)
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("TRACK_SCHEDULE", "❌ Gagal menambahkan: ${e.message}")
+                onResult(false)
+            }
+        }
+    }
 
 
     //UPDATE
@@ -159,6 +170,17 @@ class AdminViewModel (
             }
         }
     }
+    fun updateUser(user: User, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userRepository.updateUser(user)
+                onResult(true)
+            } catch (e: Exception) {
+                android.util.Log.e("VIEWMODEL_UPDATE", "❌ Gagal update: ${e.message}")
+                onResult(false)
+            }
+        }
+    }
 
 
     //DELETE
@@ -170,6 +192,17 @@ class AdminViewModel (
             } catch (e: Exception) {
                 android.util.Log.e("VIEWMODEL_DELETE", "Gagal hapus: ${e.message}")
                 onResult(false) // Kirim sinyal gagal
+            }
+        }
+    }
+    fun deleteUser(id: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userRepository.deleteUser(id)
+                onResult(true)
+            } catch (e: Exception) {
+                android.util.Log.e("VIEWMODEL_DELETE", "Gagal hapus: ${e.message}")
+                onResult(false)
             }
         }
     }

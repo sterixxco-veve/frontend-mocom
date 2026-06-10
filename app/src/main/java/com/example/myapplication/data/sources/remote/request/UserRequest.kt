@@ -15,7 +15,7 @@ data class UserRequest(
     val email: String,
     val password: String,
     val is_active: Int,
-    val creaated_at: String,
+    val created_at: String,
     val updated_at: String
 ) {
     companion object {
@@ -32,7 +32,7 @@ data class UserRequest(
                 email = user.email,
                 password = user.password,
                 is_active = user.is_active,
-                creaated_at = timeFormat.format(Date(user.created_at)),
+                created_at = timeFormat.format(Date(user.created_at)),
                 updated_at = timeFormat.format(Date(user.updated_at)),
             )
         }

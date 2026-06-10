@@ -29,9 +29,21 @@ interface LocalDataSource {
         endTime: Long
     ): Schedule
 
+    suspend fun insertUser(
+        role_id: Int,
+        company_id: Int,
+        full_name: String,
+        username: String,
+        email: String,
+        password: String,
+        is_active: Int
+    ): User
+
     suspend fun deleteScheduleLocalById(id: Int)
+    suspend fun deleteUserLocalById(id: Int)
 
     suspend fun updateScheduleLocal(schedule: Schedule)
+    suspend fun updateUserLocal(user: User)
 
     suspend fun sync(schedules: List<Schedule>)
 }

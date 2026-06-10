@@ -7,6 +7,7 @@ interface UserRepository {
     suspend fun getUserById(id: Int): User?
     suspend fun getUserByCompanyId(company_id: Int): List<User>
     suspend fun insertUser(user: User): User
+    suspend fun deleteUser(id: Int)
     suspend fun sync()
     suspend fun updateUser(user: User)
 }

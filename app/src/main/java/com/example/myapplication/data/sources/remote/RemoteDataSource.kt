@@ -25,6 +25,7 @@ interface RemoteDataSource {
 
     //DELETE
     suspend fun deleteSchedule(id: Int)
+    suspend fun deleteUser(id: Int)
 
     //
     suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule>
