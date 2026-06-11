@@ -8,7 +8,6 @@ import com.example.myapplication.R
 import com.example.myapplication.databinding.ActivityAdminBinding
 
 class AdminActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityAdminBinding
     private var currentUserId: Int = -1
     private var currentCompanyId: Int = -1
@@ -20,11 +19,10 @@ class AdminActivity : AppCompatActivity() {
         currentUserId = intent.getIntExtra("EXTRA_USER_ID", -1)
         currentCompanyId = intent.getIntExtra("EXTRA_COMPANY_ID", -1)
 
-        // Hubungkan Bottom Navigation dengan Jetpack Navigation Controller
+// Hubungkan Bottom Navigation dengan Jetpack Navigation Controller
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
-
         binding.bottomNav.setupWithNavController(navController)
     }
 }

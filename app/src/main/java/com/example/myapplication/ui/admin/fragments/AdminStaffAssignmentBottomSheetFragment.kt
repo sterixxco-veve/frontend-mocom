@@ -14,22 +14,19 @@ import androidx.fragment.app.viewModels
 import com.example.myapplication.App
 import com.example.myapplication.R
 import com.example.myapplication.data.sources.models.Schedule
-import com.example.myapplication.data.sources.models.User // 💡 IMPORT MODEL USER MURNI
+import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Schedule) : BottomSheetDialogFragment() {
 
-    // =========================================================================
-    // 💡 PERBAIKAN 1: Inisialisasi ViewModel Factory dengan 2 Repositori agar seragam
-    // =========================================================================
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
         AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
     }
 
-    // 💡 PERBAIKAN 2: Ubah dari List<UserJson> menjadi List<User> murni
+    // List penampung staff yang sudah terfilter role_id = 2
     private var currentStaffList: List<User> = emptyList()
 
     override fun onCreateView(
@@ -48,29 +45,32 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
         tvSelectedSchedule.text = "Jadwal: ${selectedSchedule.title} (${selectedSchedule.location})"
 
         // =========================================================================
-        // 💡 PERBAIKAN 3: Amati LiveData 'userList' (List<User>) yang sudah kita buat kemarin
+        // 💡 PERBAIKAN UTAMA: Tambahkan penyaringan .filter { it.role_id == 2 }
         // =========================================================================
         viewModel.users.observe(viewLifecycleOwner) { listUsers ->
             if (listUsers != null) {
-                currentStaffList = listUsers
+                // 🎯 Saring runtime: Hanya ambil user yang memiliki role_id bernilai 2
+                currentStaffList = listUsers.filter { it.role_id == 2 }
 
-                // Ambil daftar nama lengkap saja untuk ditampilkan di Dropdown teks
-                val staffNames = listUsers.map { it.full_name }
+                // Ambil daftar nama lengkap dari hasil staff yang sudah terfilter saja
+                val staffNames = currentStaffList.map { it.full_name }
 
-                val adapterDropdown = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, staffNames)
+                val adapterDropdown = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    staffNames
+                )
                 actvStaff.setAdapter(adapterDropdown)
             }
         }
 
-        // =========================================================================
-        // 💡 PERBAIKAN 4: Ganti loadAllUsers() menjadi loadUsersByCompany via SharedPreferences
-        // =========================================================================
+        // Ambil ID perusahaan aktif untuk memicu penarikan data dari cloud MySQL
         val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", Context.MODE_PRIVATE)
         val currentCompanyId = sharedPref.getInt("LOGIN_COMPANY_ID", 1)
 
         viewModel.loadUserByCompanyId(currentCompanyId)
 
-        // 3. Logika Validasi Ketat Klik Tombol Konfirmasi Penugasan
+        // Logika Validasi Ketat Klik Tombol Konfirmasi Penugasan
         btnConfirmAssignment.setOnClickListener {
             val inputNama = actvStaff.text.toString().trim()
 
@@ -79,19 +79,19 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                 return@setOnClickListener
             }
 
-            // Cari nama staf yang diinput apakah ada di list users database
+            // Cari nama staf yang diinput dari list terfilter
             val staffTerpilih = currentStaffList.find { it.full_name.equals(inputNama, ignoreCase = true) }
 
             if (staffTerpilih == null) {
-                actvStaff.setError("Nama tidak terdaftar! Silakan pilih nama dari list dropdown.")
+                actvStaff.setError("Nama tidak terdaftar sebagai Staff! Pilih nama dari list dropdown.")
                 Toast.makeText(context, "Staff tidak valid! Pilih dari daftar yang tersedia.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
             val staffIdDariSql = staffTerpilih.id
 
-            // Kode pemicu HTTP POST/PUT penugasan kamu di bawah ini nanti tinggal diaktifkan...
-            Toast.makeText(context, "Valid! Menugaskan ID #$staffIdDariSql", Toast.LENGTH_SHORT).show()
+            // Siap ditembakkan ke endpoint penugasan HTTP POST kamu berikutnya, Bob!
+            Toast.makeText(context, "Valid! Menugaskan ${staffTerpilih.full_name} (ID #$staffIdDariSql)", Toast.LENGTH_SHORT).show()
         }
     }
 }

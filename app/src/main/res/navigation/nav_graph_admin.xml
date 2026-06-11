@@ -20,7 +20,7 @@
         android:id="@+id/navigation_crud"
         android:name="com.example.myapplication.ui.admin.fragments.AdminScheduleFragment"
         android:label="Kelola Jadwal"
-        tools:layout="@layout/fragment_schedule_crud" />
+        tools:layout="@layout/fragment_admin_schedule" />
 
     <fragment
         android:id="@+id/navigation_attendance"

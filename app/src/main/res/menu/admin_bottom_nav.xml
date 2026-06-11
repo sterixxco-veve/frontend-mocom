@@ -2,12 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!--
-        PENTING: ID item di bawah ini harus sama persis dengan ID fragment
-        yang ada di dalam res/navigation/nav_graph_admin.xml agar
-        setupWithNavController() dapat bekerja secara otomatis.
-    -->
-
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@android:drawable/ic_menu_today"
@@ -22,7 +16,7 @@
 
     <item
         android:id="@+id/navigation_user_list"
-        android:icon="@android:drawable/ic_menu_myplaces"
+        android:icon="@drawable/group"
         android:title="Daftar User"
         app:showAsAction="ifRoom" />
 

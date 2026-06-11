@@ -6,27 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.data.sources.models.Attendance // 💡 Murni menggunakan model domain Attendance
+import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.databinding.ItemAttendanceBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class AttendanceAdapter(
-    // 💡 KUNCI 1: List utama menggunakan model Attendance
     private var attendanceList: List<Attendance>
 ) : RecyclerView.Adapter<AttendanceAdapter.AttendanceViewHolder>() {
 
     inner class AttendanceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val binding = ItemAttendanceBinding.bind(itemView)
-        private val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-        // 💡 KUNCI 2: Fungsi bind menerima model Attendance yang sama
         fun bind(attendance: Attendance) {
             binding.tvEmployeeName.text = "Staff Penugasan #${attendance.assignment_id}"
+            binding.tvAvatarInitials.text = "ST"
 
-            // Format tipe data Long ke String Jam secara aman
+            // 1. Set formatter jam khusus Waktu Indonesia Barat (WIB)
+            val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+                timeZone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
+            }
+
+            // =========================================================================
+            // 💡 BERSIH & EFISIEN: Langsung konversi Long milidetik ke objek Date
+            // =========================================================================
             val checkInTime = if (attendance.check_in != null && attendance.check_in > 0) {
                 timeFormatter.format(Date(attendance.check_in))
             } else {
@@ -41,9 +46,10 @@ class AttendanceAdapter(
 
             binding.tvTimeCheckIn.text = "In: $checkInTime"
             binding.tvTimeCheckOut.text = "Out: $checkOutTime"
-            binding.tvAvatarInitials.text = "ST"
 
-            // Pewarnaan Badge Status Kehadiran
+            // =========================================================================
+            // 🎨 Pewarnaan Badge Status Kehadiran
+            // =========================================================================
             when (attendance.status.lowercase(Locale.getDefault())) {
                 "present" -> {
                     binding.tvAttendanceBadge.text = "Present"
@@ -79,13 +85,11 @@ class AttendanceAdapter(
     }
 
     override fun onBindViewHolder(holder: AttendanceViewHolder, position: Int) {
-        // 👍 SEKARANG SINKRON: Tipe data list [Attendance] masuk ke parameter bind [Attendance]
         holder.bind(attendanceList[position])
     }
 
     override fun getItemCount(): Int = attendanceList.size
 
-    // 💡 KUNCI 3: Parameter submitList disesuaikan ke bentuk Attendance
     fun submitList(newList: List<Attendance>) {
         this.attendanceList = newList
         notifyDataSetChanged()
