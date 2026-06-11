@@ -3,6 +3,7 @@ package com.example.myapplication.data.sources.local
 import com.example.myapplication.data.sources.local.database.AppDatabase
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
+import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import java.text.SimpleDateFormat
@@ -11,6 +12,7 @@ import java.util.Locale
 class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
     private val scheduleDao = database.scheduleDao()
     private val userDao = database.userDao()
+    private val attendanceDao = database.attendanceDao()
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     //GET ALL
@@ -28,6 +30,10 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
 
     override suspend fun getUserByCompanyId(company_id: Int): List<User> {
         return userDao.getUsersByCompanyId(company_id).map { it.toRawModel() }
+    }
+
+    override suspend fun getAttendanceByCompanyId(company_id: Int): List<Attendance> {
+        return attendanceDao.getAttendanceByCompanyId(company_id).map { it.toRawModel() }
     }
 
 //GET BY ID

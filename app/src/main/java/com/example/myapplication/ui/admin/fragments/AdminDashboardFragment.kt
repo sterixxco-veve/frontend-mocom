@@ -19,7 +19,7 @@ class AdminDashboardFragment : Fragment(R.layout.fragment_admin_dashboard) {
 
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

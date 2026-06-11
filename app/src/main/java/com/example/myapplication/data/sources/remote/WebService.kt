@@ -1,5 +1,7 @@
 package com.example.myapplication.data.sources.remote
 
+import com.example.myapplication.data.sources.local.entities.AttendanceEntity
+import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
@@ -27,6 +29,10 @@ interface WebService {
     suspend fun getUsersByCompanyId(
         @Path("company_id") companyId: Int
     ): retrofit2.Response<List<UserJson>>
+    @GET("api/getAttendancesByCompanyId/{company_id}")
+    suspend fun getAttendancesByCompanyId(
+        @Path("company_id") companyId: Int
+    ): retrofit2.Response<List<AttendanceJson>>
 
     //GET BY ID
     @GET("api/getScheduleById/{id}")

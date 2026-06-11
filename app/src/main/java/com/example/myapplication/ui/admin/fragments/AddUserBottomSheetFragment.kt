@@ -18,7 +18,7 @@ class AddUserBottomSheetFragment : BottomSheetDialogFragment() {
 
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
     }
 
     private var _binding: FragmentAddUserBinding? = null

@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.repositories.AttendanceRepository
 import com.example.myapplication.data.repositories.ScheduleRepository
 import com.example.myapplication.data.repositories.UserRepository
+import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.google.ai.client.generativeai.GenerativeModel
@@ -14,16 +16,21 @@ import kotlinx.coroutines.launch
 
 class AdminViewModel (
     private val scheduleRepository: ScheduleRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val attendanceRepository: AttendanceRepository
 ): ViewModel() {
     private val _scheduleList = ArrayList<Schedule>()
     private val _userList = ArrayList<User>()
+    private val _attendanceList = ArrayList<Attendance>()
     private val _schedules = MutableLiveData(_scheduleList.toList())
     val schedules: LiveData<List<Schedule>>
         get() = _schedules
     private val _users = MutableLiveData(_userList.toList())
     val users: LiveData<List<User>>
         get() = _users
+    private val _attendances = MutableLiveData(_attendanceList.toList())
+    val attendances: LiveData<List<Attendance>>
+        get() = _attendances
 
 
     // Inisialisasi Model Gemini SDK
@@ -125,6 +132,32 @@ class AdminViewModel (
                 _users.postValue(emptyList())
             }
             android.util.Log.d("TRACK_SCHEDULE", "========================================")
+        }
+    }
+    fun loadAttendanceByCompanyId(companyId: Int) {
+        Log.d("TRACK_ATTENDANCE", "========================================")
+        Log.d("TRACK_ATTENDANCE", "🔄 loadAttendanceByCompanyId() dipicu untuk Company ID: $companyId")
+
+        viewModelScope.launch {
+            try {
+                val result = attendanceRepository.getAttendanceByCompanyId(companyId)
+
+                Log.d("TRACK_ATTENDANCE", "✅ BERHASIL! Mendapatkan ${result?.size ?: 0} data dari repositori.")
+                if (result != null && result.isNotEmpty()) {
+                    result.forEachIndexed { index, assignment ->
+                        Log.d("TRACK_USER", "   [Data ke-$index] assignment_id: ${assignment.assignment_id} | check_in: ${assignment.check_in} | check_out: ${assignment.check_out}")
+                    }
+                } else {
+                    Log.w("TRACK_ATTENDANCE", "⚠️ Data kosong [] - Periksa apakah company_id $companyId memiliki jadwal di DB MySQL.")
+                }
+
+                _attendances.postValue(result ?: emptyList())
+            } catch (e: Exception) {
+                android.util.Log.e("TRACK_ATTENDANCE", "❌ GAGAL mengambil jadwal karena Error: ${e.javaClass.simpleName} -> ${e.message}")
+                e.printStackTrace()
+                _attendances.postValue(emptyList())
+            }
+            Log.d("TRACK_ATTENDANCE", "========================================")
         }
     }
 

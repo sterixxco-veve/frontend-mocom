@@ -28,7 +28,7 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
     // =========================================================================
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

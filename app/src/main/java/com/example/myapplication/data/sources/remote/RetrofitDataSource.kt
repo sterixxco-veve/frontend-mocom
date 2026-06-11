@@ -1,6 +1,7 @@
 package com.example.myapplication.data.sources.remote
 
 import android.util.Log
+import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.models.Schedule
@@ -119,7 +120,7 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         }
     }
 
-    //GET SCHEDULE BY COMPANY ID
+    //GET BY COMPANY ID
     override suspend fun fetchScheduleByCompanyId(company_id: Int): List<Schedule> {
         return try {
             val responseList = webService.getSchedulesByCompanyId(company_id)
@@ -130,7 +131,6 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         }
     }
 
-    //GET USER BY COMPANY ID
     override suspend fun fetchUserByCompanyId(company_id: Int): List<User> {
         return try {
             val response = webService.getUsersByCompanyId(company_id)
@@ -146,6 +146,20 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         }
     }
 
+    override suspend fun fetchAttendanceByCompanyId(company_id: Int): List<Attendance> {
+        return try {
+            val response = webService.getAttendancesByCompanyId(company_id)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!.map { it.toAttendance() }
+            } else {
+                Log.e("DEBUG_FETCH", "⚠️ Gagal! Server merespon dengan Code: ${response.code()}")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
+            emptyList()
+        }
+    }
     // 💡 IMPLEMENTASI BARU: FETCH USER BY ID
     override suspend fun fetchUserById(id: Int): User? {
         return try {
