@@ -44,6 +44,11 @@ interface ApiService {
         @Body company: Company
     ): Response<Company>
 
+    @GET("api/getCompanyDetail/{id}")
+    suspend fun getCompanyDetail(
+        @Path("id") id: Int
+    ): Response<Company>
+
     @GET("api/getAllStaffCompany/{company_id}")
     suspend fun getAllStaffCompany(
         @Path("company_id") companyId: Int

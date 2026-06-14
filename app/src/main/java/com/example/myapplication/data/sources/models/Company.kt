@@ -10,7 +10,7 @@ data class Company(
     val password: String = "",
     val phone_number: String = "",
     val address: String = "",
-    val isActive: Int,
-    val created_at: Date,
-    val updated_at: Date
+    val isActive: Int = 1,
+    val created_at: Date = Date(),
+    val updated_at: Date = Date()
 ) : Serializable

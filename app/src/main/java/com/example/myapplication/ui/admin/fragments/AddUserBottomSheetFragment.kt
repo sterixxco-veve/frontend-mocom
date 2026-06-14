@@ -92,7 +92,7 @@ class AddUserBottomSheetFragment : BottomSheetDialogFragment() {
                 return@setOnClickListener
             }
 
-            val roleId = if (selectedRoleText == "Staff / Asisten Laboratorium") 2 else 3
+            val roleId = if (selectedRoleText == "Staff" || selectedRoleText == "Staff / Asisten Laboratorium") 2 else 3
             val isActiveStatus = if (binding.switchActiveStatus.isChecked) 1 else 0
 
             if (isEditMode) {

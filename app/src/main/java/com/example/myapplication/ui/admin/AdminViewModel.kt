@@ -12,6 +12,7 @@ import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.google.ai.client.generativeai.GenerativeModel
+import com.example.myapplication.RetrofitClient
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,50 +40,30 @@ class AdminViewModel (
     val burnoutAnalysis: LiveData<String>
         get() = _burnoutAnalysis
 
-    fun generateBurnoutAnalysis(companyId: Int) {
+    private val _companyName = MutableLiveData<String>()
+    val companyName: LiveData<String>
+        get() = _companyName
+
+    fun loadCompanyName(companyId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getCompanyDetail(companyId)
+                if (response.isSuccessful && response.body() != null) {
+                    _companyName.postValue(response.body()!!.company_name)
+                } else {
+                    _companyName.postValue("Perusahaan #$companyId")
+                }
+            } catch (e: Exception) {
+                _companyName.postValue("Perusahaan #$companyId")
+            }
+        }
+    }
+
+    fun generateBurnoutAnalysis(prompt: String) {
         _burnoutAnalysis.value = "Sedang memuat data dan menganalisis..."
         viewModelScope.launch {
             try {
-                val staffList = userRepository.getUserByCompanyId(companyId) ?: emptyList()
-                val attendanceList = attendanceRepository.getAttendanceByCompanyId(companyId) ?: emptyList()
-
-                if (attendanceList.isEmpty()) {
-                    _burnoutAnalysis.postValue("Tidak ada data absensi untuk dianalisis.")
-                    return@launch
-                }
-
-                val promptBuilder = StringBuilder()
-                promptBuilder.append("Analisis tingkat burnout asisten berikut:\n\n")
-                promptBuilder.append("Daftar Asisten Aktif:\n")
-                
-                val assistants = staffList.filter { it.role_id == 2 }
-                if (assistants.isEmpty()) {
-                    promptBuilder.append("- Tidak ada asisten aktif terdaftar.\n")
-                } else {
-                    assistants.forEach {
-                        promptBuilder.append("- ID #${it.id}: ${it.full_name} (Status: ${if (it.is_active == 1) "Aktif" else "Nonaktif"})\n")
-                    }
-                }
-                
-                promptBuilder.append("\nRiwayat Kehadiran:\n")
-                
-                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).apply {
-                    timeZone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
-                }
-                
-                attendanceList.forEach { att ->
-                    val checkInStr = if (att.check_in > 0) sdf.format(Date(att.check_in)) else "--"
-                    val checkOutStr = if (att.check_out > 0) sdf.format(Date(att.check_out)) else "--"
-                    promptBuilder.append("- Penugasan #${att.assignment_id}: Status=${att.status}, CheckIn=$checkInStr, CheckOut=$checkOutStr\n")
-                }
-                
-                promptBuilder.append("\nHarap berikan analisis dalam Bahasa Indonesia yang mencakup:\n")
-                promptBuilder.append("1. Ringkasan singkat statistik kehadiran (berapa persen Present, Late, Absent).\n")
-                promptBuilder.append("2. Deteksi asisten yang memiliki indikasi burnout (terlalu sering terlambat/absen atau pola tidak sehat).\n")
-                promptBuilder.append("3. Rekomendasi konkret bagi koordinator untuk meningkatkan kebugaran kerja asisten.\n")
-                promptBuilder.append("Berikan hasil dengan format dokumen resmi yang rapi tanpa menyertakan kode markdown seperti asteriks tebal berlebih, tapi gunakan spasi paragraf yang bagus.")
-
-                val response = generativeModel.generateContent(promptBuilder.toString())
+                val response = generativeModel.generateContent(prompt)
                 _burnoutAnalysis.postValue(response.text ?: "Gagal memproses rekomendasi AI.")
             } catch (e: Exception) {
                 android.util.Log.e("GEMINI_REPORT", "Error: ${e.message}", e)

@@ -1,9 +1,35 @@
+import java.net.NetworkInterface
+
 plugins {
     alias(libs.plugins.android.application)
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.devtools.ksp")
 }
+
+fun getLocalIp(): String {
+    try {
+        val interfaces = NetworkInterface.getNetworkInterfaces()
+        while (interfaces.hasMoreElements()) {
+            val iface = interfaces.nextElement()
+            val addresses = iface.inetAddresses
+            while (addresses.hasMoreElements()) {
+                val addr = addresses.nextElement()
+                if (!addr.isLoopbackAddress) {
+                    val sAddr = addr.hostAddress ?: ""
+                    val isIPv4 = sAddr.indexOf(':') < 0
+                    if (isIPv4 && (sAddr.startsWith("192.168.") || sAddr.startsWith("10.") || sAddr.startsWith("172."))) {
+                        return sAddr
+                    }
+                }
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return "127.0.0.1"
+}
+
 android {
     namespace = "com.example.myapplication"
     compileSdk {
@@ -11,6 +37,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     defaultConfig {
         applicationId = "com.example.myapplication"
@@ -20,9 +47,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    buildFeatures {
-        viewBinding = true
+        
+        buildConfigField("String", "DEVELOPER_IP", "\"${getLocalIp()}\"")
     }
 
     buildTypes {

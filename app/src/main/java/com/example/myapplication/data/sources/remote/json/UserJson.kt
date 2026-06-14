@@ -21,9 +21,9 @@ data class UserJson(
             full_name = this.full_name,
             username = this.username,
             email = this.email,
-            password = "",
-            company_id = this.company_id,
-            is_active = this.is_active,
+            password = this.password ?: "",
+            company_id = this.company_id ?: 0,
+            is_active = this.is_active ?: 1,
         )
     }
 }

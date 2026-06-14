@@ -7,9 +7,35 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory // Pastikan pakai GSON murni
 import retrofit2.converter.moshi.MoshiConverterFactory
+import com.example.myapplication.BuildConfig
+
+import android.os.Build
+
+fun isEmulator(): Boolean {
+    return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+            || Build.FINGERPRINT.startsWith("generic")
+            || Build.FINGERPRINT.startsWith("unknown")
+            || Build.HARDWARE.contains("goldfish")
+            || Build.HARDWARE.contains("ranchu")
+            || Build.MODEL.contains("google_sdk")
+            || Build.MODEL.contains("Emulator")
+            || Build.MODEL.contains("Android SDK built for x86")
+            || Build.MANUFACTURER.contains("Genymotion")
+            || Build.PRODUCT.contains("sdk_gphone")
+            || Build.PRODUCT.contains("google_sdk")
+            || Build.PRODUCT.contains("sdk")
+            || Build.PRODUCT.contains("sdk_x86")
+            || Build.PRODUCT.contains("vbox86p")
+            || Build.PRODUCT.contains("emulator")
+            || Build.PRODUCT.contains("simulator")
+}
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3000"
+    val BASE_URL = if (isEmulator()) {
+        "http://10.0.2.2:3000"
+    } else {
+        "http://${BuildConfig.DEVELOPER_IP}:3000"
+    }
 
     private val gson = GsonBuilder()
         .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -17,7 +43,7 @@ object RetrofitClient {
 
     val webService: WebService by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL + "/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(WebService::class.java)
@@ -25,7 +51,7 @@ object RetrofitClient {
     
     val apiService: ApiService by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL + "/")
             .addConverterFactory(GsonConverterFactory.create(gson)) // Memakai gson date format
             .build()
             .create(ApiService::class.java)
