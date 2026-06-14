@@ -1,5 +1,6 @@
 package com.example.myapplication.data.sources.remote
 
+import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
@@ -9,10 +10,13 @@ interface RemoteDataSource {
     suspend fun fetchAllSchedules(): List<Schedule>
     suspend fun fetchAllUsers(): List<User>
 
+    suspend fun fetchAssignmentByUserId(user_id: Int): List<Assignment>
+
     //FETCH BY COMPANY ID
     suspend fun fetchScheduleByCompanyId(company_id: Int): List<Schedule>
     suspend fun fetchUserByCompanyId(company_id: Int): List<User>
     suspend fun fetchAttendanceByCompanyId(company_id: Int): List<Attendance>
+
 
     //FETCH BY ID
     suspend fun fetchUserById(id: Int): User?

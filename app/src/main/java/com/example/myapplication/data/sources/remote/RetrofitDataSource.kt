@@ -1,6 +1,7 @@
 package com.example.myapplication.data.sources.remote
 
 import android.util.Log
+import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
@@ -114,6 +115,16 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         return try {
             val responseList = webService.getAllUsers()
             responseList.map { it.toUser() }
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchAssignmentByUserId(user_id: Int): List<Assignment> {
+        return try {
+            val responseList = webService.getAssignmentByUserId(user_id)
+            responseList.map { it.toAssignment() }
         } catch (e: Exception) {
             Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.myapplication.data.sources.local.dao.AssignmentDao
 import com.example.myapplication.data.sources.local.dao.AttendanceDao
 import com.example.myapplication.data.sources.local.dao.ScheduleDao
 import com.example.myapplication.data.sources.local.dao.UserDao
@@ -21,6 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDao
     abstract fun userDao(): UserDao
     abstract fun attendanceDao(): AttendanceDao
+
+    abstract fun assignmentDao(): AssignmentDao
 
     companion object {
         @Volatile

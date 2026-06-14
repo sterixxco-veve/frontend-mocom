@@ -1,5 +1,6 @@
 package com.example.myapplication.data.sources.local
 
+import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
@@ -8,6 +9,8 @@ interface LocalDataSource {
 //GET ALL
     suspend fun getAllSchedule(): List<Schedule>
     suspend fun getAllUser(): List<User>
+
+    suspend fun getAssignmentByUserId(user_id: Int): List<Assignment>
 
     //GET BY COMPANY ID
     suspend fun getScheduleByCompanyId(company_id: Int): List<Schedule>
