@@ -1,6 +1,7 @@
 package com.example.myapplication.data.sources.remote
 
 import com.example.myapplication.data.sources.local.entities.AttendanceEntity
+import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
@@ -19,6 +20,11 @@ interface WebService {
     suspend fun getAllSchedules(): List<ScheduleJson>
     @GET("api/getAllUsers")
     suspend fun getAllUsers(): List<UserJson>
+
+    @GET("api/getAssignmentByUserId/{user_id}")
+    suspend fun getAssignmentByUserId(
+        @Path("user_id") userId: Int
+    ): List<AssignmentJson>
 
     //GET BY COMPANY ID//
     @GET("api/getSchedulesByCompanyId/{company_id}")
