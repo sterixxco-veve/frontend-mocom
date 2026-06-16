@@ -1,10 +1,13 @@
 package com.example.myapplication.data.sources.remote
 
 import com.example.myapplication.data.sources.local.entities.AttendanceEntity
+import com.example.myapplication.data.sources.models.Announcement
+import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import com.example.myapplication.data.sources.remote.request.UserRequest
 import retrofit2.http.Body
@@ -89,4 +92,22 @@ interface WebService {
 
     @GET("api/getMember")
     suspend fun getMember(): List<UserJson>
+
+    @GET("api/getAttendancesByUserId/{user_id}")
+    suspend fun getAttendancesByUserId(
+        @Path("user_id") userId: Int
+    ): List<Attendance>
+
+    @POST("api/checkIn")
+    suspend fun checkIn(
+        @Body request: CheckInRequest
+    ): Attendance
+
+    @PUT("api/checkOut/{attendance_id}")
+    suspend fun checkOut(
+        @Path("attendance_id") attendanceId: Int
+    ): Attendance
+
+    @GET("api/getAnnouncements")
+    suspend fun getAnnouncements(): List<Announcement>
 }

@@ -51,4 +51,6 @@ interface LocalDataSource {
     suspend fun updateUserLocal(user: User)
 
     suspend fun sync(schedules: List<Schedule>)
+
+    suspend fun getAttendanceByUserId(user_id: Int): List<Attendance>
 }

@@ -11,6 +11,7 @@ import com.example.myapplication.data.sources.models.Resource
 import com.example.myapplication.data.sources.models.Role
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -91,6 +92,8 @@ interface ApiService {
     suspend fun insertAssignments(
         @Body assignment: Assignment
     ): Response<Assignment>
+
+
 
     @GET("api/getAssignmentsByUserId/{user_id}")
     suspend fun getAssignmentsByUserId(
@@ -173,4 +176,20 @@ interface ApiService {
 
     @GET("api/getAllAnnouncements")
     suspend fun getAllAnnouncements(): Response<List<Announcement>>
+
+//  staff
+    @GET("api/getAttendancesByUserId/{user_id}")
+    suspend fun getAttendancesByUserId(
+        @Path("user_id") userId: Int
+    ): List<Attendance>
+
+    @POST("api/checkIn")
+    suspend fun checkIn(
+        @Body request: CheckInRequest
+    ): Attendance
+
+    @PUT("api/checkOut/{attendance_id}")
+    suspend fun checkOut(
+        @Path("attendance_id") attendanceId: Int
+    ): Attendance
 }

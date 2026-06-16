@@ -1,12 +1,14 @@
 package com.example.myapplication.data.sources.remote
 
 import android.util.Log
+import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import com.example.myapplication.data.sources.remote.request.UserRequest
 import java.text.SimpleDateFormat
@@ -273,4 +275,38 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             return schedule
         }
     }
+
+    override suspend fun fetchAttendanceByUserId(
+        user_id: Int
+    ): List<Attendance> {
+        return try {
+            webService.getAttendancesByUserId(user_id)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun checkIn(
+        assignmentId: Int
+    ): Attendance {
+
+        return webService.checkIn(
+            CheckInRequest(
+                assignment_id = assignmentId
+            )
+        )
+    }
+
+    override suspend fun checkOut(
+        attendanceId: Int
+    ): Boolean {
+
+        val response = webService.checkOut(attendanceId)
+        return response != null
+    }
+
+    override suspend fun fetchAnnouncements(): List<Announcement> {
+        return webService.getAnnouncements()
+    }
+
 }

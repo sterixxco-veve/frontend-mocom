@@ -14,14 +14,12 @@ class DefaultAttendanceRepository(
 
     override suspend fun checkIn(
         assignmentId: Int,
-        checkInTime: String,
-        status: String
     ): Attendance {
-        TODO("Not yet implemented")
+        return remoteDataSource.checkIn(assignmentId)
     }
 
-    override suspend fun checkOut(attendanceId: Int, checkOutTime: String): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun checkOut(attendanceId: Int): Boolean {
+        return remoteDataSource.checkOut(attendanceId)
     }
 
     override suspend fun getAttendanceByCompanyId(company_id: Int): List<Attendance> {
@@ -31,6 +29,16 @@ class DefaultAttendanceRepository(
         } catch (e: Exception) {
             Log.e("REPOSITORY_GET_COMP", "⚠️ Server offline, memuat data lokal terfilter untuk Company ID ${company_id}")
             localDataSource.getAttendanceByCompanyId(company_id)
+        }
+    }
+
+    override suspend fun getAttendanceByUserId(
+        user_id: Int
+    ): List<Attendance> {
+        return try {
+            remoteDataSource.fetchAttendanceByUserId(user_id)
+        } catch (e: Exception) {
+            localDataSource.getAttendanceByUserId(user_id)
         }
     }
 }

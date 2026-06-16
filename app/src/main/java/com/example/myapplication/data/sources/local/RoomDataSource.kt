@@ -186,6 +186,14 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
         return entity.toRawModel().copy(id = generatedId.toInt())
     }
 
+    override suspend fun getAttendanceByUserId(
+        user_id: Int
+    ): List<Attendance> {
+        throw UnsupportedOperationException(
+            "Attendance local belum diimplementasikan"
+        )
+    }
+
     override suspend fun sync(schedules: List<Schedule>) {
         // Hapus data dummy lokal yang id-nya masih 0 karena akan digantikan data asli MySQL
         scheduleDao.getAll().filter { it.id == 0 }
