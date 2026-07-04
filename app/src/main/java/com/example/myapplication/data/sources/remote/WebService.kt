@@ -5,6 +5,7 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.AttendanceJson
+import com.example.myapplication.data.sources.remote.json.MyScheduleJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
@@ -110,4 +111,10 @@ interface WebService {
 
     @GET("api/getAnnouncements")
     suspend fun getAnnouncements(): List<Announcement>
+
+    @GET("api/mySchedule/{user_id}")
+    suspend fun getMySchedule(
+        @Path("user_id") userId: Int
+    ): List<MyScheduleJson>
+
 }

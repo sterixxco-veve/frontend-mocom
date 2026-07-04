@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
+import com.example.myapplication.data.sources.models.MySchedule
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.models.Schedule
@@ -309,4 +310,20 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         return webService.getAnnouncements()
     }
 
+    override suspend fun getMySchedule(userId: Int): List<MySchedule> {
+        return try {
+
+            val responseList = webService.getMySchedule(userId)
+
+            responseList.map {
+                it.toMySchedule()
+            }
+
+        } catch (e: Exception) {
+
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
+
+            emptyList()
+        }
+    }
 }

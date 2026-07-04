@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/staff_nav_graph"
+
+    app:startDestination="@id/staffScheduleFragment">
+
+    <fragment
+        android:id="@+id/staffScheduleFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.StaffScheduleFragment"
+        android:label="Jadwal Saya"/>
+
+</navigation>
