@@ -5,6 +5,6 @@
     <item
         android:id="@+id/staffScheduleFragment"
         android:title="Jadwal"
-        android:icon="@android:drawable/ic_schedule"/>
+        android:icon="@android:drawable/arrow_down_float"/>
 
 </menu>
