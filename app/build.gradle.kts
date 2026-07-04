@@ -9,6 +9,9 @@ plugins {
 
 fun getLocalIp(): String {
     try {
+        val wifiNames = listOf("wlan", "wi-fi", "wlp", "en0", "wireless")
+        var fallbackIp: String? = null
+
         val interfaces = NetworkInterface.getNetworkInterfaces()
         while (interfaces.hasMoreElements()) {
             val iface = interfaces.nextElement()
@@ -19,14 +22,30 @@ fun getLocalIp(): String {
                     val sAddr = addr.hostAddress ?: ""
                     val isIPv4 = sAddr.indexOf(':') < 0
                     if (isIPv4 && (sAddr.startsWith("192.168.") || sAddr.startsWith("10.") || sAddr.startsWith("172."))) {
-                        return sAddr
+                        println("[getLocalIp] Found: name=${iface.name}, displayName=${iface.displayName}, ip=$sAddr")
+                        val ifaceName = iface.displayName.lowercase()
+                        val ifaceNameShort = iface.name.lowercase()
+                        // Prioritaskan adapter Wi-Fi (cek displayName dan name)
+                        if (wifiNames.any { ifaceName.contains(it) || ifaceNameShort.contains(it) }) {
+                            println("[getLocalIp] ✅ Selected Wi-Fi IP: $sAddr")
+                            return sAddr
+                        }
+                        // Simpan sebagai fallback jika tidak ada Wi-Fi
+                        if (fallbackIp == null) {
+                            fallbackIp = sAddr
+                        }
                     }
                 }
             }
         }
+        if (fallbackIp != null) {
+            println("[getLocalIp] ⚠️ No Wi-Fi found, using fallback IP: $fallbackIp")
+            return fallbackIp
+        }
     } catch (e: Exception) {
         e.printStackTrace()
     }
+    println("[getLocalIp] ❌ No IP found, using 127.0.0.1")
     return "127.0.0.1"
 }
 
