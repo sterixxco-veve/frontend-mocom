@@ -13,6 +13,7 @@ import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.google.ai.client.generativeai.GenerativeModel
 import com.example.myapplication.RetrofitClient
+import com.example.myapplication.data.sources.models.Assignment
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -275,6 +276,43 @@ class AdminViewModel (
                 onResult(true)
             } catch (e: Exception) {
                 android.util.Log.e("VIEWMODEL_DELETE", "Gagal hapus: ${e.message}")
+                onResult(false)
+            }
+        }
+    }
+
+    //Assign Staff
+    // =========================================================================
+// 🛠️ TAMBAHKAN FUNGSI INI DI DALAM ADMINVIEWMODEL
+// =========================================================================
+    fun assignStaffToSchedule(scheduleId: Int, staffId: Int, onResult: (Boolean) -> Unit) {
+        Log.d("TRACK_ASSIGNMENT", "➕ Mencoba menugaskan Staff ID $staffId ke Schedule ID $scheduleId")
+
+        viewModelScope.launch {
+            try {
+                // Buat objek Assignment sesuai model yang dibutuhkan API Anda
+                // Sesuaikan nama parameter (misal: schedule_id atau user_id) dengan constructor class Assignment Anda
+                val newAssignment = Assignment(
+                    id = 0, // Biasanya 0 atau null untuk auto-increment di MySQL
+                    schedule_id = scheduleId,
+                    user_id = staffId
+                )
+
+                // Panggil API lewat repository penugasan Anda
+                // Catatan: Jika Anda belum melakukan inject AssignmentRepository ke ViewModel,
+                // Anda bisa menembaknya langsung via RetrofitClient.apiService.insertAssignments(newAssignment)
+                val response = RetrofitClient.apiService.insertAssignments(newAssignment)
+
+                if (response.isSuccessful && response.body() != null) {
+                    Log.d("TRACK_ASSIGNMENT", "✅ Berhasil menyimpan penugasan ke database server.")
+                    onResult(true)
+                } else {
+                    Log.e("TRACK_ASSIGNMENT", "❌ Server menolak menyimpan: ${response.errorBody()?.string()}")
+                    onResult(false)
+                }
+            } catch (e: Exception) {
+                Log.e("TRACK_ASSIGNMENT", "❌ Gagal menyimpan penugasan karena Error: ${e.message}")
+                e.printStackTrace()
                 onResult(false)
             }
         }

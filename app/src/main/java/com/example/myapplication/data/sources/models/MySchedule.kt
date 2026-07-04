@@ -8,13 +8,13 @@ data class MySchedule(
 
     val role_in_event: String?,
     val job_desc: String?,
-    val status: String,
+    val status: String? = null,
 
     val title: String,
-    val description: String?,
+    val description: String? = null,
 
-    val start_time: Long,
-    val end_time: Long,
+    val start_time: String,
+    val end_time: String,
 
     val location: String?
 

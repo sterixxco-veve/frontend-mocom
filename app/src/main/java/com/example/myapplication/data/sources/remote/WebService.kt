@@ -112,7 +112,7 @@ interface WebService {
     @GET("api/getAnnouncements")
     suspend fun getAnnouncements(): List<Announcement>
 
-    @GET("api/mySchedule/{user_id}")
+    @GET("api/getAssignmentsByUserId/{user_id}")
     suspend fun getMySchedule(
         @Path("user_id") userId: Int
     ): List<MyScheduleJson>

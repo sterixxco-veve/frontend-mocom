@@ -37,20 +37,36 @@ class MyScheduleAdapter(
             binding.tvRole.text =
                 schedule.role_in_event ?: "-"
 
-            binding.tvStatus.text =
-                schedule.status
 
+            binding.tvStatus.text =
+                schedule.status ?: "-"
             val timeFormat =
                 SimpleDateFormat("HH:mm", Locale.getDefault())
 
             timeFormat.timeZone =
                 TimeZone.getTimeZone("Asia/Jakarta")
 
+            val parser =
+                SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm:ss",
+                    Locale.getDefault()
+                )
+
+            val formatter =
+                SimpleDateFormat(
+                    "HH:mm",
+                    Locale.getDefault()
+                )
+
             val start =
-                timeFormat.format(Date(schedule.start_time))
+                parser.parse(schedule.start_time)?.let {
+                    formatter.format(it)
+                } ?: "--:--"
 
             val end =
-                timeFormat.format(Date(schedule.end_time))
+                parser.parse(schedule.end_time)?.let {
+                    formatter.format(it)
+                } ?: "--:--"
 
             binding.tvTime.text =
                 "$start - $end"

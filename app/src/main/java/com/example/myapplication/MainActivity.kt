@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.ui.admin.AdminActivity
+import com.example.myapplication.ui.staff.StaffActivity
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -109,6 +110,18 @@ class MainActivity : AppCompatActivity() {
                     val staffCompanyId = loggedInUser.company_id
                     val staffUserId = loggedInUser.id
                     val staffName = loggedInUser.full_name ?: loggedInUser.username ?: "Staff"
+                    val userRoleId = loggedInUser.role_id
+
+                    // =========================================================================
+                    // 🎯 TAMBAHKAN KODE INI: Simpan data ke SharedPreferences (Session)
+                    // =========================================================================
+                    val sharedPref = getSharedPreferences("EduStaffSession", android.content.Context.MODE_PRIVATE)
+                    sharedPref.edit().apply {
+                        putInt("LOGIN_USER_ID", staffUserId)
+                        putInt("LOGIN_COMPANY_ID", staffCompanyId)
+                        apply() // Eksekusi penyimpanan di background
+                    }
+                    // =========================================================================
 
                     Toast.makeText(
                         this@MainActivity,
@@ -119,13 +132,23 @@ class MainActivity : AppCompatActivity() {
                     android.util.Log.d("TRACK_ID", "🔄 dipicu untuk Company ID: ${staffCompanyId}")
                     android.util.Log.d("TRACK_ID", "🔄 dipicu untuk user ID: ${staffUserId}")
 
-                    // Skenario Pindah Halaman:
-                    val intent = Intent(this@MainActivity, AdminActivity::class.java).apply {
-                        putExtra("EXTRA_COMPANY_ID", staffCompanyId)
-                        putExtra("EXTRA_USER_ID", staffUserId)
+                    if(userRoleId == 1){
+                        val intent = Intent(this@MainActivity, AdminActivity::class.java).apply {
+                            putExtra("EXTRA_COMPANY_ID", staffCompanyId)
+                            putExtra("EXTRA_USER_ID", staffUserId)
+                        }
+                        startActivity(intent)
+                        finish() // Bagus jika ditambahkan agar user tidak bisa back ke login lagi
+                    } else if(userRoleId == 2){
+                        val intent = Intent(this@MainActivity, StaffActivity::class.java).apply {
+                            putExtra("EXTRA_COMPANY_ID", staffCompanyId)
+                            putExtra("EXTRA_USER_ID", staffUserId)
+                        }
+                        startActivity(intent)
+                        finish() // Bagus jika ditambahkan agar user tidak bisa back ke login lagi
+                    } else {
+                        Toast.makeText(this@MainActivity, "Role tidak ditemukan", Toast.LENGTH_SHORT).show()
                     }
-                    startActivity(intent)
-                    finish()
 
                 } else {
                     Toast.makeText(

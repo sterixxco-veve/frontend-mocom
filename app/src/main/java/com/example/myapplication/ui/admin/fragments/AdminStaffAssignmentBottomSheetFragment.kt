@@ -6,53 +6,46 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.myapplication.App
 import com.example.myapplication.R
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.databinding.FragmentAdminStaffAssignmentBinding
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Schedule) : BottomSheetDialogFragment() {
 
+    // Gunakan View Binding untuk fragment
+    private var _binding: FragmentAdminStaffAssignmentBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
         AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
     }
 
-    // List penampung staff yang sudah terfilter role_id = 2
     private var currentStaffList: List<User> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_admin_staff_assignment, container, false)
+    ): View {
+        _binding = FragmentAdminStaffAssignmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tvSelectedSchedule = view.findViewById<TextView>(R.id.tvSelectedSchedule)
-        val actvStaff = view.findViewById<AutoCompleteTextView>(R.id.actvStaff)
-        val btnConfirmAssignment = view.findViewById<Button>(R.id.btnConfirmAssignment)
+        binding.tvSelectedSchedule.text = "Jadwal: ${selectedSchedule.title} (${selectedSchedule.location})"
 
-        tvSelectedSchedule.text = "Jadwal: ${selectedSchedule.title} (${selectedSchedule.location})"
-
-        // =========================================================================
-        // 💡 PERBAIKAN UTAMA: Tambahkan penyaringan .filter { it.role_id == 2 }
-        // =========================================================================
+        // Mengamati data user (Staff)
         viewModel.users.observe(viewLifecycleOwner) { listUsers ->
             if (listUsers != null) {
-                // 🎯 Saring runtime: Hanya ambil user yang memiliki role_id bernilai 2
                 currentStaffList = listUsers.filter { it.role_id == 2 }
-
-                // Ambil daftar nama lengkap dari hasil staff yang sudah terfilter saja
                 val staffNames = currentStaffList.map { it.full_name }
 
                 val adapterDropdown = ArrayAdapter(
@@ -60,38 +53,64 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                     android.R.layout.simple_dropdown_item_1line,
                     staffNames
                 )
-                actvStaff.setAdapter(adapterDropdown)
+                binding.actvStaff.setAdapter(adapterDropdown)
             }
         }
 
-        // Ambil ID perusahaan aktif untuk memicu penarikan data dari cloud MySQL
+        // 💡 OPSIONAL: Ambil response/status simpan dari ViewModel (jika Anda membuat livedata status)
+        // viewModel.assignmentResult.observe(viewLifecycleOwner) { isSuccess ->
+        //     if (isSuccess) {
+        //         Toast.makeText(context, "Penugasan Berhasil Disimpan!", Toast.LENGTH_SHORT).show()
+        //         dismiss() // Tutup BottomSheet jika berhasil
+        //     } else {
+        //         Toast.makeText(context, "Gagal menyimpan penugasan.", Toast.LENGTH_SHORT).show()
+        //     }
+        // }
+
         val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", Context.MODE_PRIVATE)
         val currentCompanyId = sharedPref.getInt("LOGIN_COMPANY_ID", 1)
-
         viewModel.loadUserByCompanyId(currentCompanyId)
 
-        // Logika Validasi Ketat Klik Tombol Konfirmasi Penugasan
-        btnConfirmAssignment.setOnClickListener {
-            val inputNama = actvStaff.text.toString().trim()
+        // Logika Klik Tombol Konfirmasi Penugasan
+        binding.btnConfirmAssignment.setOnClickListener {
+            val inputNama = binding.actvStaff.text.toString().trim()
 
             if (inputNama.isEmpty()) {
-                Toast.makeText(context, "Silakan pilih staff terlebih dahulu!", Toast.LENGTH_SHORT).show()
+                binding.actvStaff.error = "Silakan pilih staff terlebih dahulu!"
                 return@setOnClickListener
             }
 
-            // Cari nama staf yang diinput dari list terfilter
             val staffTerpilih = currentStaffList.find { it.full_name.equals(inputNama, ignoreCase = true) }
 
             if (staffTerpilih == null) {
-                actvStaff.setError("Nama tidak terdaftar sebagai Staff! Pilih nama dari list dropdown.")
-                Toast.makeText(context, "Staff tidak valid! Pilih dari daftar yang tersedia.", Toast.LENGTH_LONG).show()
+                binding.actvStaff.error = "Nama tidak terdaftar sebagai Staff!"
                 return@setOnClickListener
             }
 
+            // Di dalam btnConfirmAssignment.setOnClickListener fragment Anda:
             val staffIdDariSql = staffTerpilih.id
+            val scheduleId = selectedSchedule.id
 
-            // Siap ditembakkan ke endpoint penugasan HTTP POST kamu berikutnya, Bob!
-            Toast.makeText(context, "Valid! Menugaskan ${staffTerpilih.full_name} (ID #$staffIdDariSql)", Toast.LENGTH_SHORT).show()
+// Tampilkan loading/proses berjalan awal
+            Toast.makeText(context, "Sedang menugaskan ${staffTerpilih.full_name}...", Toast.LENGTH_SHORT).show()
+
+// Panggil fungsi ViewModel dengan callback onResult
+            viewModel.assignStaffToSchedule(scheduleId, staffIdDariSql) { isSuccess ->
+                if (isSuccess) {
+                    Toast.makeText(context, "Penugasan ${staffTerpilih.full_name} BERHASIL disimpan!", Toast.LENGTH_SHORT).show()
+                    dismiss() // Tutup bottom sheet hanya jika sukses disimpan ke DB
+                } else {
+                    Toast.makeText(context, "Gagal menyimpan penugasan ke database. Coba lagi!", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            // Jika Anda belum membuat LiveData penampung response di atas, Anda bisa langsung dismiss di sini sementara:
+            dismiss()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Hindari memory leak
     }
 }
