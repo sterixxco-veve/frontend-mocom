@@ -5,12 +5,14 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Company
+import com.example.myapplication.data.sources.models.MySchedule
 import com.example.myapplication.data.sources.models.Notification
 import com.example.myapplication.data.sources.models.Replacement
 import com.example.myapplication.data.sources.models.Resource
 import com.example.myapplication.data.sources.models.Role
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.json.MyScheduleJson
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -98,7 +100,7 @@ interface ApiService {
     @GET("api/getAssignmentsByUserId/{user_id}")
     suspend fun getAssignmentsByUserId(
         @Path("user_id") userId: Int
-    ): Response<List<Assignment>>
+    ): Response<List<MyScheduleJson>>
 
     /* =========================
        ATTENDANCES

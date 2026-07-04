@@ -29,17 +29,17 @@ class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
 
     }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentStaffScheduleBinding.bind(view)
 
-        val userId = requireActivity()
-            .intent
-            .getIntExtra("EXTRA_USER_ID", -1)
+        // =========================================================================
+        // 🎯 PERBAIKAN DI SINI: Ambil userId dari SharedPreferences Sesi Login
+        // =========================================================================
+        val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", android.content.Context.MODE_PRIVATE)
+
+        // Pastikan key "LOGIN_USER_ID" ini namanya sama dengan yang Anda pakai saat save sesi di halaman Login
+        val userId = sharedPref.getInt("LOGIN_USER_ID", -1)
 
         myScheduleAdapter = MyScheduleAdapter(
             myScheduleList = emptyList(),
@@ -57,6 +57,7 @@ class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
             myScheduleAdapter.submitList(schedules)
         }
 
+        // Pemicu load data dengan ID yang valid dari session
         viewModel.loadMySchedule(userId)
     }
 

@@ -34,7 +34,7 @@ object RetrofitClient {
     val BASE_URL = if (isEmulator()) {
         "http://10.0.2.2:3000"
     } else {
-        "http://10.50.224.102:3000"
+        "http://192.168.3.59:3000"
     }
 
     private val gson = GsonBuilder()
