@@ -23,15 +23,11 @@
 
         <!-- Aksi Menuju Halaman Request Izin Pengganti -->
         <action
-            android:id="@+id/action_staffHomeFragment_to_staffReplacementFragment"
-            app:destination="@id/staffReplacementFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-        <action
             android:id="@+id/action_staffHomeFragment_to_staffProfileFragment"
             app:destination="@id/staffProfileFragment" />
+        <action
+            android:id="@+id/action_staffHomeFragment_to_leaveRequestFragment"
+            app:destination="@id/leaveRequestFragment" />
     </fragment>
 
     <!-- 2. HALAMAN LIHAT JADWAL FULL (SEMINGGU) -->
@@ -44,13 +40,12 @@
     <!-- 3. HALAMAN REQUEST PENGGANTI (IZIN STAFF) -->
     <!-- Catatan: Sesuaikan nilai android:name jika nanti Anda membuat kelas fragmennya -->
     <fragment
-        android:id="@+id/staffReplacementFragment"
-        android:name="com.example.myapplication.ui.staff.fragments.StaffReplacementFragment"
-        android:label="Request Pengganti"
-        tools:layout="@layout/fragment_item_assignment" />
-    <fragment
         android:id="@+id/staffProfileFragment"
         android:name="com.example.myapplication.ui.staff.fragments.StaffProfileFragment"
         android:label="StaffProfileFragment" />
+    <fragment
+        android:id="@+id/leaveRequestFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.LeaveRequestFragment"
+        android:label="LeaveRequestFragment" />
 
 </navigation>

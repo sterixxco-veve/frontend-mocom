@@ -13,7 +13,7 @@
         android:title="Jadwal" />
 
     <item
-        android:id="@+id/replacementFragment"
+        android:id="@+id/leaveRequestFragment"
         android:icon="@drawable/envelope_solid"
         android:title="Izin" />
 

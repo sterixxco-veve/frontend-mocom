@@ -12,7 +12,11 @@ import com.example.myapplication.data.sources.models.Resource
 import com.example.myapplication.data.sources.models.Role
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.json.AssignmentJson
+import com.example.myapplication.data.sources.remote.json.GeneralResponse
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
+import com.example.myapplication.data.sources.remote.json.ReplacementRequest
+import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.NfcCheckInRequest
 import com.example.myapplication.data.sources.remote.request.NfcRequest
@@ -206,4 +210,12 @@ interface ApiService {
     suspend fun checkInWithNfc(
         @Body request: NfcCheckInRequest
     ): retrofit2.Response<Map<String, Any>>
+
+    // Ambil rekan kerja satu perusahaan untuk calon pengganti
+    @GET("api/getUsersByCompanyId/{company_id}")
+    suspend fun getUsersByCompanyId(@Path("company_id") companyId: Int): List<UserJson>
+
+    // Kirim permohonan pelimpahan izin baru
+    @POST("api/insertReplacements")
+    suspend fun insertReplacements(@Body request: ReplacementRequest): Response<GeneralResponse>
 }
