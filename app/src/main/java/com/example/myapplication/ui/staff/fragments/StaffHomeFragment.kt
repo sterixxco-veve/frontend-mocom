@@ -159,11 +159,44 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
             try {
                 val response = RetrofitClient.apiService.getTodayAssignmentsByUserId(currentUserId)
                 if (response.isSuccessful && response.body() != null) {
-                    val listShiftHariIni = response.body()!!
+                    val listAllAssignments = response.body()!!
 
-                    // Pasang ke RecyclerView menggunakan ShiftTodayAdapter yang kita buat tadi!
+                    val parser = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                    val cal = java.util.Calendar.getInstance()
+                    val currentMonth = cal.get(java.util.Calendar.MONTH) // 0-11
+                    val currentYear = cal.get(java.util.Calendar.YEAR)
+
+                    // Mengatur nama bulan secara dinamis pada teks header
+                    val monthNames = arrayOf("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
+                    binding.tvShiftTitle.text = "Shift Bulan ${monthNames[currentMonth]}"
+
+                    val monthlyList = listAllAssignments.filter { assignment ->
+                        val date = try {
+                            if (assignment.assigned_at != null) parser.parse(assignment.assigned_at) else null
+                        } catch (e: Exception) {
+                            null
+                        }
+                        if (date != null) {
+                            val c = java.util.Calendar.getInstance().apply { time = date }
+                            c.get(java.util.Calendar.MONTH) == currentMonth && c.get(java.util.Calendar.YEAR) == currentYear
+                        } else {
+                            val scheduleDate = try {
+                                parser.parse(assignment.start_time)
+                            } catch (e: Exception) {
+                                null
+                            }
+                            if (scheduleDate != null) {
+                                val c = java.util.Calendar.getInstance().apply { time = scheduleDate }
+                                c.get(java.util.Calendar.MONTH) == currentMonth && c.get(java.util.Calendar.YEAR) == currentYear
+                            } else {
+                                false
+                            }
+                        }
+                    }
+
+                    // Pasang ke RecyclerView menggunakan ShiftTodayAdapter
                     binding.rvShiftToday.layoutManager = LinearLayoutManager(requireContext())
-                    binding.rvShiftToday.adapter = ShiftTodayAdapter(listShiftHariIni)
+                    binding.rvShiftToday.adapter = ShiftTodayAdapter(monthlyList)
                 }
             } catch (e: Exception) {
                 android.util.Log.e("HOME_SHIFT_ERROR", "Gagal load shift hari ini", e)

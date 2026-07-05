@@ -285,8 +285,8 @@ class AdminViewModel (
     // =========================================================================
 // 🛠️ TAMBAHKAN FUNGSI INI DI DALAM ADMINVIEWMODEL
 // =========================================================================
-    fun assignStaffToSchedule(scheduleId: Int, staffId: Int, onResult: (Boolean) -> Unit) {
-        Log.d("TRACK_ASSIGNMENT", "➕ Mencoba menugaskan Staff ID $staffId ke Schedule ID $scheduleId")
+    fun assignStaffToSchedule(scheduleId: Int, staffId: Int, roleInEvent: String, jobDesc: String, dateMillis: Long, onResult: (Boolean) -> Unit) {
+        Log.d("TRACK_ASSIGNMENT", "➕ Mencoba menugaskan Staff ID $staffId ke Schedule ID $scheduleId dengan Role $roleInEvent, JobDesc $jobDesc, Tanggal $dateMillis")
 
         viewModelScope.launch {
             try {
@@ -295,7 +295,10 @@ class AdminViewModel (
                 val newAssignment = Assignment(
                     id = 0, // Biasanya 0 atau null untuk auto-increment di MySQL
                     schedule_id = scheduleId,
-                    user_id = staffId
+                    user_id = staffId,
+                    role_in_event = roleInEvent,
+                    job_desc = jobDesc,
+                    assigned_at = dateMillis
                 )
 
                 // Panggil API lewat repository penugasan Anda

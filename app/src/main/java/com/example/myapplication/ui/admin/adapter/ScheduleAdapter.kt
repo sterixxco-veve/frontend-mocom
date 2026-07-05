@@ -26,12 +26,16 @@ class ScheduleAdapter(
             binding.tvDescription.text = schedule.description ?: "Tidak ada deskripsi"
             binding.tvLocation.text = "📍 ${schedule.location ?: "Online / Tidak Diketahui"}"
 
-            // Konversi dari format Timestamp Long ke format Jam (HH:mm)
+            // Konversi dari format Timestamp Long ke format Jam (HH:mm) dan Tanggal (dd MMM yyyy)
             val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             timeFormat.timeZone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
+            val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            dateFormat.timeZone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
+
             val startTimeStr = timeFormat.format(Date(schedule.start_time))
             val endTimeStr = timeFormat.format(Date(schedule.end_time))
-            binding.tvTime.text = "$startTimeStr - $endTimeStr"
+            val dateStr = dateFormat.format(Date(schedule.start_time))
+            binding.tvTime.text = "🕒 $dateStr | $startTimeStr - $endTimeStr"
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Judul Jadwal: ${schedule.title}")
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi Start: ${schedule.start_time}")
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi End  : ${schedule.end_time}")

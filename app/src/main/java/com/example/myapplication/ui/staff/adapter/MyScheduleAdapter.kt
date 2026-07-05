@@ -40,36 +40,32 @@ class MyScheduleAdapter(
 
             binding.tvStatus.text =
                 schedule.status ?: "-"
-            val timeFormat =
-                SimpleDateFormat("HH:mm", Locale.getDefault())
-
-            timeFormat.timeZone =
-                TimeZone.getTimeZone("Asia/Jakarta")
-
             val parser =
                 SimpleDateFormat(
                     "yyyy-MM-dd HH:mm:ss",
                     Locale.getDefault()
                 )
 
-            val formatter =
+            val formatterTime =
                 SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
                 )
 
-            val start =
-                parser.parse(schedule.start_time)?.let {
-                    formatter.format(it)
-                } ?: "--:--"
+            val formatterDate =
+                SimpleDateFormat(
+                    "dd MMM yyyy",
+                    Locale.getDefault()
+                )
 
-            val end =
-                parser.parse(schedule.end_time)?.let {
-                    formatter.format(it)
-                } ?: "--:--"
+            val parsedStart = try { parser.parse(schedule.start_time) } catch (e: Exception) { null }
+            val parsedEnd = try { parser.parse(schedule.end_time) } catch (e: Exception) { null }
 
-            binding.tvTime.text =
-                "$start - $end"
+            val start = parsedStart?.let { formatterTime.format(it) } ?: "--:--"
+            val end = parsedEnd?.let { formatterTime.format(it) } ?: "--:--"
+            val dateStr = parsedStart?.let { formatterDate.format(it) } ?: ""
+
+            binding.tvTime.text = if (dateStr.isNotEmpty()) "🕒 $dateStr | $start - $end" else "🕒 $start - $end"
 
             binding.root.setOnClickListener {
 

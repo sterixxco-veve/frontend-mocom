@@ -87,9 +87,10 @@
                 android:padding="20dp">
 
                 <TextView
+                    android:id="@+id/tvShiftTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Shift Hari Ini"
+                    android:text="Shift Bulan Ini"
                     android:textStyle="bold"
                     android:textColor="#4F46E5"
                     android:fontFamily="sans-serif-medium"

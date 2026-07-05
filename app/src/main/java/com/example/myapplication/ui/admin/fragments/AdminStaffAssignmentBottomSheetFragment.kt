@@ -29,6 +29,7 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
     }
 
     private var currentStaffList: List<User> = emptyList()
+    private val selectedCalendar = java.util.Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -41,6 +42,25 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvSelectedSchedule.text = "Jadwal: ${selectedSchedule.title} (${selectedSchedule.location})"
+
+        // Set default date (today) dan setup DatePickerDialog
+        val dateSdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+        binding.etDate.setText(dateSdf.format(selectedCalendar.time))
+        binding.etDate.setOnClickListener {
+            val datePickerDialog = android.app.DatePickerDialog(
+                requireContext(),
+                { _, year, month, dayOfMonth ->
+                    selectedCalendar.set(java.util.Calendar.YEAR, year)
+                    selectedCalendar.set(java.util.Calendar.MONTH, month)
+                    selectedCalendar.set(java.util.Calendar.DAY_OF_MONTH, dayOfMonth)
+                    binding.etDate.setText(dateSdf.format(selectedCalendar.time))
+                },
+                selectedCalendar.get(java.util.Calendar.YEAR),
+                selectedCalendar.get(java.util.Calendar.MONTH),
+                selectedCalendar.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+            datePickerDialog.show()
+        }
 
         // Mengamati data user (Staff)
         viewModel.users.observe(viewLifecycleOwner) { listUsers ->
@@ -87,6 +107,10 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                 return@setOnClickListener
             }
 
+            val roleVal = binding.etRole.text.toString().trim()
+            val jobDescVal = binding.etJobDesc.text.toString().trim()
+            val dateMillis = selectedCalendar.timeInMillis
+
             // Di dalam btnConfirmAssignment.setOnClickListener fragment Anda:
             val staffIdDariSql = staffTerpilih.id
             val scheduleId = selectedSchedule.id
@@ -95,7 +119,7 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
             Toast.makeText(context, "Sedang menugaskan ${staffTerpilih.full_name}...", Toast.LENGTH_SHORT).show()
 
 // Panggil fungsi ViewModel dengan callback onResult
-            viewModel.assignStaffToSchedule(scheduleId, staffIdDariSql) { isSuccess ->
+            viewModel.assignStaffToSchedule(scheduleId, staffIdDariSql, roleVal, jobDescVal, dateMillis) { isSuccess ->
                 if (isAdded && context != null) {
                     if (isSuccess) {
                         Toast.makeText(requireContext(), "Berhasil menugaskan staff!", Toast.LENGTH_SHORT).show()
@@ -106,9 +130,6 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                     }
                 }
             }
-
-            // Jika Anda belum membuat LiveData penampung response di atas, Anda bisa langsung dismiss di sini sementara:
-            dismiss()
         }
     }
 

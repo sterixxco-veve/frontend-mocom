@@ -33,6 +33,25 @@ class StaffActivity : AppCompatActivity() {
 
         binding.bottomNavigation.setupWithNavController(navController)
 
+        // Inflate menu logout pada toolbar atas dan handle klik item untuk Staff
+        binding.toolbar.inflateMenu(R.menu.staff_top_menu)
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_logout) {
+                // Hapus data sesi SharedPreferences
+                val sharedPref = getSharedPreferences("EduStaffSession", android.content.Context.MODE_PRIVATE)
+                sharedPref.edit().clear().apply()
+
+                // Redirect ke MainActivity (Halaman Login) dan bersihkan tumpukan aktivitas
+                val intent = android.content.Intent(this, com.example.myapplication.MainActivity::class.java).apply {
+                    flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+                true
+            } else {
+                false
+            }
+        }
     }
 
 }
