@@ -93,38 +93,15 @@
                     android:textStyle="bold"
                     android:textColor="#4F46E5"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:layout_marginBottom="4dp"/>
 
-                <TextView
-                    android:id="@+id/tvShiftTitle"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvShiftToday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Nama Shift Kerja"
-                    android:textColor="#0F172A"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif-medium"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvShiftTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="⏱️ --:-- - --:--"
-                    android:textColor="#475569"
-                    android:fontFamily="sans-serif"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvShiftLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="📍 Nama Lokasi Kantor"
-                    android:textColor="#475569"
-                    android:fontFamily="sans-serif"
-                    android:textSize="13sp" />
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

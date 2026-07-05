@@ -17,6 +17,8 @@ import com.example.myapplication.ui.staff.StaffHomeViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.nfc.tech.Ndef
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myapplication.ui.staff.adapters.ShiftTodayAdapter
 import kotlin.text.Charsets
 
 class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.ReaderCallback {
@@ -150,6 +152,21 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
                     binding.btnCheckIn.isEnabled = true
                     binding.btnCheckIn.text = if (currentAction == "CHECK_IN") "Mulai Check In" else "Mulai Check Out"
                 }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getTodayAssignmentsByUserId(currentUserId)
+                if (response.isSuccessful && response.body() != null) {
+                    val listShiftHariIni = response.body()!!
+
+                    // Pasang ke RecyclerView menggunakan ShiftTodayAdapter yang kita buat tadi!
+                    binding.rvShiftToday.layoutManager = LinearLayoutManager(requireContext())
+                    binding.rvShiftToday.adapter = ShiftTodayAdapter(listShiftHariIni)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("HOME_SHIFT_ERROR", "Gagal load shift hari ini", e)
             }
         }
     }

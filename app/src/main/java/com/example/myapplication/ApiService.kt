@@ -218,4 +218,7 @@ interface ApiService {
     // Kirim permohonan pelimpahan izin baru
     @POST("api/insertReplacements")
     suspend fun insertReplacements(@Body request: ReplacementRequest): Response<GeneralResponse>
+
+    @GET("api/getTodayAssignmentsByUserId/{user_id}")
+    suspend fun getTodayAssignmentsByUserId(@Path("user_id") userId: Int): Response<List<AssignmentJson>>
 }

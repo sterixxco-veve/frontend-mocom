@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:id="@+id/tvShiftTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nama Shift Kerja"
+            android:textColor="#0F172A"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvShiftTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="⏱️ 08:00 - 16:00"
+            android:textColor="#475569"
+            android:fontFamily="sans-serif"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvShiftLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="📍 Gedung Rektorat Lantai 2"
+            android:textColor="#475569"
+            android:fontFamily="sans-serif"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F1F5F9" />
+</LinearLayout>

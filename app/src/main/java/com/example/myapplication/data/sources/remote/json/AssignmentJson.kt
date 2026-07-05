@@ -1,19 +1,31 @@
 package com.example.myapplication.data.sources.remote.json
 
 import com.example.myapplication.data.sources.models.Assignment
-import com.example.myapplication.data.sources.models.Schedule
+import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
 data class AssignmentJson(
+    // 🟢 Menggunakan alternate agar aman membaca key "id" maupun "assignment_id" dari Node.js
+    @SerializedName(value = "id", alternate = ["assignment_id"])
     val id: Int,
+
     val schedule_id: Int,
     val user_id: Int,
     val role_in_event: String,
     val job_desc: String,
     val status: String,
-    val assigned_at: String? = null
+    val assigned_at: String? = null,
+
+    // =========================================================================
+    // 🟢 TAMBAHAN PROPERTI HASIL JOIN UNTUK RECYCLER VIEW SHIFT HARI INI
+    // =========================================================================
+    val title: String = "",
+    val description: String? = null,
+    val start_time: String = "",
+    val end_time: String = "",
+    val location: String = ""
 ) {
     fun toAssignment(): Assignment {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
