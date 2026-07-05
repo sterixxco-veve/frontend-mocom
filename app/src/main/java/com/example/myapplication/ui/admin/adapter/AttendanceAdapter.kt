@@ -32,13 +32,13 @@ class AttendanceAdapter(
             // =========================================================================
             // 💡 BERSIH & EFISIEN: Langsung konversi Long milidetik ke objek Date
             // =========================================================================
-            val checkInTime = if (attendance.check_in != null && attendance.check_in > 0) {
+            val checkInTime = if (attendance.check_in != null && attendance.check_in.isEmpty()) {
                 timeFormatter.format(Date(attendance.check_in))
             } else {
                 "--:--"
             }
 
-            val checkOutTime = if (attendance.check_out != null && attendance.check_out > 0) {
+            val checkOutTime = if (attendance.check_out != null && attendance.check_out.isEmpty()) {
                 timeFormatter.format(Date(attendance.check_out))
             } else {
                 "--:--"

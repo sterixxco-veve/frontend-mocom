@@ -96,11 +96,14 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
 
 // Panggil fungsi ViewModel dengan callback onResult
             viewModel.assignStaffToSchedule(scheduleId, staffIdDariSql) { isSuccess ->
-                if (isSuccess) {
-                    Toast.makeText(context, "Penugasan ${staffTerpilih.full_name} BERHASIL disimpan!", Toast.LENGTH_SHORT).show()
-                    dismiss() // Tutup bottom sheet hanya jika sukses disimpan ke DB
-                } else {
-                    Toast.makeText(context, "Gagal menyimpan penugasan ke database. Coba lagi!", Toast.LENGTH_LONG).show()
+                if (isAdded && context != null) {
+                    if (isSuccess) {
+                        Toast.makeText(requireContext(), "Berhasil menugaskan staff!", Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    } else {
+                        // Gunakan requireContext() secara aman atau activity?.applicationContext
+                        Toast.makeText(requireContext(), "Gagal", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
 

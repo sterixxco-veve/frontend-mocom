@@ -1,18 +1,21 @@
 package com.example.myapplication.data.sources.remote.json
 
 import com.example.myapplication.data.sources.models.User
+import com.google.gson.annotations.SerializedName
 
 data class UserJson(
-    val id: Int,
-    val role_id: Int,
-    val full_name: String,
-    val username: String,
-    val email: String,
-    val password: String,
-    val is_active: Int,
-    val company_id: Int,
-    val updated_at: String,
-    val created_at: String,
+    @SerializedName("id") val id: Int,
+    @SerializedName("role_id") val role_id: Int,
+    @SerializedName("company_id") val company_id: Int,
+    @SerializedName("full_name") val full_name: String, // 🟢 Wajib pakai SerializedName snake_case sesuai MySQL
+    @SerializedName("username") val username: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("password") val password: String,
+    @SerializedName("is_active") val is_active: Int,
+    @SerializedName("created_at") val created_at: String?,
+    @SerializedName("updated_at") val updated_at: String?,
+    @SerializedName("deleted_at") val deleted_at: String?,
+
 ) {
     fun toUser(): User {
         return User(

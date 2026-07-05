@@ -14,6 +14,8 @@ import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
+import com.example.myapplication.data.sources.remote.request.NfcCheckInRequest
+import com.example.myapplication.data.sources.remote.request.NfcRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -194,4 +196,14 @@ interface ApiService {
     suspend fun checkOut(
         @Path("attendance_id") attendanceId: Int
     ): Attendance
+
+    @POST("api/assignNfc")
+    suspend fun assignNfc(
+        @Body request: NfcRequest
+    ): Response<Map<String, Any>>
+
+    @POST("api/checkInNfc")
+    suspend fun checkInWithNfc(
+        @Body request: NfcCheckInRequest
+    ): retrofit2.Response<Map<String, Any>>
 }

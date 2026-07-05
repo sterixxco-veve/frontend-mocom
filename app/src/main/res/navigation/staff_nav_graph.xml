@@ -1,16 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<navigation
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/staff_nav_graph"
+    app:startDestination="@id/staffHomeFragment">
 
-    app:startDestination="@id/staffScheduleFragment">
+    <!-- 1. HALAMAN UTAMA STAFF (DASHBOARD) -->
+    <fragment
+        android:id="@+id/staffHomeFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.StaffHomeFragment"
+        android:label="Home Staff"
+        tools:layout="@layout/fragment_staff_home">
 
+        <!-- Aksi Menuju Halaman Lihat Semua Jadwal -->
+        <action
+            android:id="@+id/action_staffHomeFragment_to_staffScheduleFragment"
+            app:destination="@id/staffScheduleFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+        <!-- Aksi Menuju Halaman Request Izin Pengganti -->
+        <action
+            android:id="@+id/action_staffHomeFragment_to_staffReplacementFragment"
+            app:destination="@id/staffReplacementFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_staffHomeFragment_to_staffProfileFragment"
+            app:destination="@id/staffProfileFragment" />
+    </fragment>
+
+    <!-- 2. HALAMAN LIHAT JADWAL FULL (SEMINGGU) -->
     <fragment
         android:id="@+id/staffScheduleFragment"
         android:name="com.example.myapplication.ui.staff.fragments.StaffScheduleFragment"
-        android:label="Jadwal Saya"/>
+        android:label="Jadwal Kerja"
+        tools:layout="@layout/fragment_staff_schedule" />
+
+    <!-- 3. HALAMAN REQUEST PENGGANTI (IZIN STAFF) -->
+    <!-- Catatan: Sesuaikan nilai android:name jika nanti Anda membuat kelas fragmennya -->
+    <fragment
+        android:id="@+id/staffReplacementFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.StaffReplacementFragment"
+        android:label="Request Pengganti"
+        tools:layout="@layout/fragment_item_assignment" />
+    <fragment
+        android:id="@+id/staffProfileFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.StaffProfileFragment"
+        android:label="StaffProfileFragment" />
 
 </navigation>

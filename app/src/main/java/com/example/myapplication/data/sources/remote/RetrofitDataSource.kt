@@ -5,10 +5,10 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
-import com.example.myapplication.data.sources.remote.json.ScheduleJson
-import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.json.ScheduleJson
+import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import com.example.myapplication.data.sources.remote.request.UserRequest
@@ -174,6 +174,7 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             emptyList()
         }
     }
+
     // 💡 IMPLEMENTASI BARU: FETCH USER BY ID
     override suspend fun fetchUserById(id: Int): User? {
         return try {
@@ -277,33 +278,24 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         }
     }
 
-    override suspend fun fetchAttendanceByUserId(
-        user_id: Int
-    ): List<Attendance> {
+    override suspend fun fetchAttendanceByUserId(user_id: Int): List<Attendance> {
         return try {
-            webService.getAttendancesByUserId(user_id)
+            val remoteLogs = webService.getAttendancesByUserId(userId = user_id)
+            // 🟢 Jauh lebih aman dan bersih dari typo penulisan parameter constructor
+            remoteLogs.map { it.toAttendance() }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun checkIn(
-        assignmentId: Int
-    ): Attendance {
-
-        return webService.checkIn(
-            CheckInRequest(
-                assignment_id = assignmentId
-            )
-        )
+    override suspend fun checkIn(request: CheckInRequest): Attendance {
+        // 🟢 Mereturn murni objek domain Entity setelah dikonversi otomatis
+        return webService.checkIn(request).toAttendance()
     }
 
-    override suspend fun checkOut(
-        attendanceId: Int
-    ): Boolean {
-
-        val response = webService.checkOut(attendanceId)
-        return response != null
+    override suspend fun checkOut(attendanceId: Int): Attendance {
+        // 🟢 Mereturn murni objek domain Entity setelah dikonversi otomatis
+        return webService.checkOut(attendanceId).toAttendance()
     }
 
     override suspend fun fetchAnnouncements(): List<Announcement> {

@@ -15,7 +15,7 @@ import com.example.myapplication.data.sources.local.entities.UserEntity
 
 @Database(
     entities = [ScheduleEntity::class, UserEntity::class, AttendanceEntity::class, AssignmentEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -35,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "proyek_mocom"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

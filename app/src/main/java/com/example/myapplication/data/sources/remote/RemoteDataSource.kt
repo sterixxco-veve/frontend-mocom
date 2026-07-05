@@ -6,6 +6,7 @@ import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.request.CheckInRequest
 
 interface RemoteDataSource {
     //FETCH ALL
@@ -39,9 +40,9 @@ interface RemoteDataSource {
     //
     suspend fun syncSchedule(schedule: List<Schedule>): List<Schedule>
 
-    suspend fun checkIn(assignmentId: Int): Attendance
+    suspend fun checkIn(request: CheckInRequest): Attendance
 
-    suspend fun checkOut(attendanceId: Int): Boolean
+    suspend fun checkOut(attendanceId: Int): Attendance
 
     suspend fun fetchAnnouncements(): List<Announcement>
 

@@ -25,13 +25,13 @@ data class AttendanceRequest(
             }
 
             // Lakukan konversi aman. Jika nilai <= 0 atau null, kirimkan null ke server
-            val checkInStr = if (attendance.check_in != null && attendance.check_in > 0) {
+            val checkInStr = if (attendance.check_in != null && attendance.check_in.isEmpty()) {
                 databaseFormat.format(Date(attendance.check_in))
             } else {
                 null
             }
 
-            val checkOutStr = if (attendance.check_out != null && attendance.check_out > 0) {
+            val checkOutStr = if (attendance.check_out != null && attendance.check_out.isEmpty()) {
                 databaseFormat.format(Date(attendance.check_out))
             } else {
                 null

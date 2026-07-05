@@ -97,17 +97,17 @@ interface WebService {
     @GET("api/getAttendancesByUserId/{user_id}")
     suspend fun getAttendancesByUserId(
         @Path("user_id") userId: Int
-    ): List<Attendance>
+    ): List<AttendanceJson>
 
     @POST("api/checkIn")
     suspend fun checkIn(
         @Body request: CheckInRequest
-    ): Attendance
+    ): AttendanceJson // 🟢 BENAR: Mengembalikan objek json hasil record server
 
     @PUT("api/checkOut/{attendance_id}")
     suspend fun checkOut(
         @Path("attendance_id") attendanceId: Int
-    ): Attendance
+    ): AttendanceJson // 🟢 BENAR: Mengembalikan objek json hasil record server
 
     @GET("api/getAnnouncements")
     suspend fun getAnnouncements(): List<Announcement>

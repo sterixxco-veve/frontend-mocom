@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#F8FAFC">
 
-    <TextView
+    <!-- HEADER SECTION DENGAN SUBTITLE BIAR UTAS DESAINNYA PRESTISIUS -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Jadwal Saya"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:padding="16dp"/>
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="28dp"
+        android:paddingBottom="12dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jadwal Saya"
+            android:textStyle="bold"
+            android:textColor="#0F172A"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Daftar penugasan shift aktif dan log absensi Anda"
+            android:textColor="#64748B"
+            android:fontFamily="sans-serif"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
+    <!-- RECYCLER VIEW DENGAN PADDING HALUS DAN PENGAMAN CLIP-TO-PADDING -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMySchedule"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"/>
 
 </LinearLayout>

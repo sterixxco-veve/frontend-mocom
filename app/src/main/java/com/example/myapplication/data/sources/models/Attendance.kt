@@ -14,21 +14,21 @@ class Attendance(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val assignment_id: Int,
-    val check_in: Long = Date().time,
-    val check_out: Long = Date().time,
+    val check_in: String? = "",
+    val check_out: String? = "",
     val status: String,
     val sync_status: String,
-    val created_at: Long = Date().time,
+    val created_at: String? = "",
 ) : Parcelable {
     companion object {
         fun create(
             id: Int = 0,
             assignment_id: Int,
-            check_in: Long,
-            check_out: Long,
+            check_in: String,
+            check_out: String,
             status: String,
             sync_status: String,
-            created_at: Long,
+            created_at: String,
         ): Attendance {
             return Attendance(
                 id = id,
@@ -45,11 +45,11 @@ class Attendance(
     fun copy(
         id: Int = this.id,
         assignment_id: Int = this.assignment_id,
-        check_in: Long = this.check_in,
-        check_out: Long = this.check_out,
+        check_in: String? = this.check_in,
+        check_out: String? = this.check_out,
         status: String = this.status,
         sync_status: String = this.sync_status,
-        created_at: Long = this.created_at,
+        created_at: String? = this.created_at,
     ): Attendance{
         return Attendance(
             id,

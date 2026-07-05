@@ -3,8 +3,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/staffHomeFragment"
+        android:icon="@drawable/home"
+        android:title="Home" />
+
+    <item
         android:id="@+id/staffScheduleFragment"
-        android:title="Jadwal"
-        android:icon="@android:drawable/arrow_down_float"/>
+        android:icon="@drawable/alarm_clock_solid"
+        android:title="Jadwal" />
+
+    <item
+        android:id="@+id/replacementFragment"
+        android:icon="@drawable/envelope_solid"
+        android:title="Izin" />
+
+    <item
+        android:id="@+id/staffProfileFragment"
+        android:icon="@drawable/circle_user_solid"
+        android:title="Profil" />
 
 </menu>
