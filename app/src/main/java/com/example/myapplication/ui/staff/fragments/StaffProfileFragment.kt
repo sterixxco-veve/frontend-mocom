@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.tech.Ndef
+import androidx.navigation.fragment.findNavController
 import kotlin.text.Charsets
 
 class StaffProfileFragment : Fragment(R.layout.fragment_staff_profile), NfcAdapter.ReaderCallback {
@@ -53,6 +54,12 @@ class StaffProfileFragment : Fragment(R.layout.fragment_staff_profile), NfcAdapt
 
         binding.btnStartNfcScan.setOnClickListener {
             startNfcListeningMode()
+        }
+
+        binding.btnChangePassword.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_staffProfileFragment_to_changePasswordFragment
+            )
         }
 
         viewModel.loadUserProfile(currentUserId)

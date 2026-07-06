@@ -86,6 +86,15 @@ class DefaultUserRepository(
         }
     }
 
+    override suspend fun updatePassword(
+        id: Int,
+        password: String
+    ) {
+        remoteDataSource.updatePassword(
+            id,
+            password
+        )
+    }
 
     override suspend fun sync() {
         try {

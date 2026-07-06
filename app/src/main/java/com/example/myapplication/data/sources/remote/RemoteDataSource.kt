@@ -50,4 +50,9 @@ interface RemoteDataSource {
         userId: Int
     ): List<MySchedule>
 
+    suspend fun updatePassword(
+        id: Int,
+        password: String
+    )
+
 }

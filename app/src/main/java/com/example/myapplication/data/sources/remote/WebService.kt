@@ -8,9 +8,11 @@ import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.ChangePasswordRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import com.example.myapplication.data.sources.remote.request.UserRequest
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -116,5 +118,11 @@ interface WebService {
     suspend fun getMySchedule(
         @Path("user_id") userId: Int
     ): List<MyScheduleJson>
+
+    @PUT("api/users/{id}/password")
+    suspend fun updatePassword(
+        @Path("id") id: Int,
+        @Body request: ChangePasswordRequest
+    ): Response<Unit>
 
 }

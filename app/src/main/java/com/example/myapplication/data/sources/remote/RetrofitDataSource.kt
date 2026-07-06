@@ -9,6 +9,7 @@ import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.ChangePasswordRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
 import com.example.myapplication.data.sources.remote.request.UserRequest
@@ -316,6 +317,32 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             Log.e("DEBUG_FETCH", "Error: ${e.message}")
 
             emptyList()
+        }
+    }
+
+    override suspend fun updatePassword(
+        id: Int,
+        password: String
+    ) {
+        try {
+
+            val response = webService.updatePassword(
+                id,
+                ChangePasswordRequest(password)
+            )
+
+            if (!response.isSuccessful) {
+                throw Exception(
+                    "Gagal mengganti password. Code : ${response.code()}"
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e(
+                "RETROFIT_PASSWORD",
+                "❌ ${e.message}"
+            )
+            throw e
         }
     }
 }

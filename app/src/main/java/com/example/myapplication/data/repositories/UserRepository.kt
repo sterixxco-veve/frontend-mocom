@@ -10,4 +10,9 @@ interface UserRepository {
     suspend fun deleteUser(id: Int)
     suspend fun sync()
     suspend fun updateUser(user: User)
+
+    suspend fun updatePassword(
+        id: Int,
+        password: String
+    )
 }

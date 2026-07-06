@@ -42,7 +42,15 @@
     <fragment
         android:id="@+id/staffProfileFragment"
         android:name="com.example.myapplication.ui.staff.fragments.StaffProfileFragment"
-        android:label="StaffProfileFragment" />
+        android:label="StaffProfileFragment">
+        <action
+            android:id="@+id/action_staffProfileFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.myapplication.ui.staff.fragments.ChangePasswordFragment"
+        android:label="Ubah Password" />
     <fragment
         android:id="@+id/leaveRequestFragment"
         android:name="com.example.myapplication.ui.staff.fragments.LeaveRequestFragment"
