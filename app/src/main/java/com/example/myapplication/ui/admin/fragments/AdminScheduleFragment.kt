@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.admin.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -10,11 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.App
 import com.example.myapplication.R
-import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.databinding.FragmentAdminScheduleBinding
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
-import com.example.myapplication.ui.admin.adapter.ScheduleAdapter
+import com.example.myapplication.ui.admin.adapter.ScheduleAdapter // 💡 Menggunakan AdminScheduleAdapter pengunci visual kita
 
 class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
 
@@ -26,23 +26,20 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
     private var selectedMonthPosition = currentCal.get(java.util.Calendar.MONTH) + 1
     private var selectedYearValue = currentCal.get(java.util.Calendar.YEAR)
 
-    // =========================================================================
-    // 💡 PERBAIKAN UTAMA: Gunakan Factory Terpusat yang Mengambil Data dari App.kt
-    // Menggunakan scope 'requireActivity()' agar ViewModel di-share otomatis ke BottomSheet
-    // =========================================================================
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdminScheduleBinding.bind(view)
 
-        // Ambil nilai EXTRA_COMPANY_ID yang dikirim dari MainActivity lewat AdminActivity
-        val companyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", -1)
-        val userId = requireActivity().intent.getIntExtra("EXTRA_USER_ID", -1)
+        // Ambil ID dari SharedPreferences agar sinkron dengan session login global admin
+        val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", Context.MODE_PRIVATE)
+        val companyId = sharedPref.getInt("LOGIN_COMPANY_ID", -1)
 
+        // Setup Adapter RecyclerView (AdminScheduleAdapter untuk deteksi gembok)
         // Setup Adapter RecyclerView
         scheduleAdapter = ScheduleAdapter(
             scheduleList = emptyList(),
@@ -61,7 +58,6 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
                     putLong("EDIT_START", scheduleTerpilih.start_time)
                     putLong("EDIT_END", scheduleTerpilih.end_time)
                 }
-
                 val addScheduleBottomSheet = AddScheduleBottomSheetFragment().apply {
                     arguments = bundle
                 }
@@ -80,28 +76,38 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         )
 
         // Setup Filter Dropdowns (Bulan & Tahun)
-        val months = arrayOf("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
-        val years = arrayOf("2024", "2025", "2026", "2027", "2028")
+        val months = arrayOf("Semua Bulan", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
+        val years = arrayOf("Semua Tahun", "2024", "2025", "2026", "2027", "2028")
 
+// Jika ingin default-nya langsung menampilkan "Semua", set ke 0
+// Jika ingin default-nya tetap bulan/tahun ini, gunakan posisi asli + 1 untuk bulan
+        selectedMonthPosition = 0
+        selectedYearValue = 0
+
+// Setup Dropdown Bulan
         val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, months)
         binding.actvFilterMonth.setAdapter(monthAdapter)
-        val defaultMonthName = months[selectedMonthPosition - 1]
-        binding.actvFilterMonth.setText(defaultMonthName, false)
+        binding.actvFilterMonth.setText(months[selectedMonthPosition], false)
+        viewModel.selectedMonth.value = selectedMonthPosition
+
         binding.actvFilterMonth.setOnItemClickListener { _, _, position, _ ->
-            selectedMonthPosition = position + 1
-            filterAndSubmitList(viewModel.schedules.value)
+            selectedMonthPosition = position // 0 = Semua Bulan, 1 = Januari, dst.
+            viewModel.updateDateFilter(selectedMonthPosition, selectedYearValue)
         }
 
+// Setup Dropdown Tahun
         val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, years)
         binding.actvFilterYear.setAdapter(yearAdapter)
-        var defaultYearIdx = years.indexOf(selectedYearValue.toString())
-        if (defaultYearIdx == -1) defaultYearIdx = years.indexOf("2026")
-        if (defaultYearIdx == -1) defaultYearIdx = 0
-        binding.actvFilterYear.setText(years[defaultYearIdx], false)
-        selectedYearValue = years[defaultYearIdx].toInt()
+        binding.actvFilterYear.setText(years[selectedYearValue], false)
+        viewModel.selectedYear.value = selectedYearValue
+
         binding.actvFilterYear.setOnItemClickListener { _, _, position, _ ->
-            selectedYearValue = years[position].toInt()
-            filterAndSubmitList(viewModel.schedules.value)
+            if (position == 0) {
+                selectedYearValue = 0 // 0 = Semua Tahun
+            } else {
+                selectedYearValue = years[position].toInt() // Mengambil angka tahun asli ("2026", dll)
+            }
+            viewModel.updateDateFilter(selectedMonthPosition, selectedYearValue)
         }
 
         binding.rvSchedule.apply {
@@ -113,22 +119,30 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         binding.swipeRefresh.setColorSchemeColors(Color.parseColor("#06B6D4"))
         binding.swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#1E293B"))
 
+        // =========================================================================
+// 💡 PERBAIKAN 1: Pemicu Refresh Harus Menarik KEDUA Data Sekaligus dari Server
+// =========================================================================
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadSchedules(companyId)
         }
 
-        // =========================================================================
-        // 💡 KODEAN ANONIM REPOSITORY YANG PANJANG SUDAH DIHAPUS
-        // Karena sekarang data langsung mengalir dari App.kt -> Factory -> ViewModel
-        // =========================================================================
-
-        // Amat-amati perubahan LiveData Schedules dari server
-        viewModel.schedules.observe(viewLifecycleOwner) { listJadwal ->
+// =========================================================================
+// 🎯 PERBAIKAN 2: Observer filteredSchedules (Gunakan .submitList Bawaan Aslimu)
+// =========================================================================
+        viewModel.filteredSchedules.observe(viewLifecycleOwner) { listJadwalTerfilter ->
             binding.swipeRefresh.isRefreshing = false
-            filterAndSubmitList(listJadwal)
+
+            if (listJadwalTerfilter != null) {
+                // Kembali menggunakan fungsi bawaan ScheduleAdapter aslimu agar tidak unresolved reference
+                scheduleAdapter.submitList(listJadwalTerfilter)
+            } else {
+                scheduleAdapter.submitList(emptyList())
+            }
         }
 
-        // Jalankan load data pertama kali dengan memfilter companyId
+// =========================================================================
+// 💡 PERBAIKAN 3: Load Pertama Kali Harus Mengunduh Schedules DAN Assignments
+// =========================================================================
         binding.swipeRefresh.isRefreshing = true
         viewModel.loadSchedules(companyId)
 
@@ -136,28 +150,6 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             val addScheduleBottomSheet = AddScheduleBottomSheetFragment()
             addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
         }
-    }
-
-    private fun filterAndSubmitList(listJadwal: List<Schedule>?) {
-        if (listJadwal == null) {
-            scheduleAdapter.submitList(emptyList())
-            return
-        }
-
-        val filteredList = listJadwal.filter { schedule ->
-            val cal = java.util.Calendar.getInstance().apply {
-                timeInMillis = schedule.start_time
-            }
-            val scheduleMonth = cal.get(java.util.Calendar.MONTH) + 1 // 1-12
-            val scheduleYear = cal.get(java.util.Calendar.YEAR)
-
-            val monthMatch = scheduleMonth == selectedMonthPosition
-            val yearMatch = scheduleYear == selectedYearValue
-
-            monthMatch && yearMatch
-        }
-
-        scheduleAdapter.submitList(filteredList)
     }
 
     override fun onDestroyView() {

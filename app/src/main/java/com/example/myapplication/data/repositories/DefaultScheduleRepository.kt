@@ -14,7 +14,6 @@ class DefaultScheduleRepository(
     override suspend fun getAll(): List<Schedule> {
         return try {
             val remoteData = remoteDataSource.fetchAllSchedules()
-            // 💡 OFFLINE-FIRST: Setiap kali sukses ambil data dari server, timpa data lokal agar paling update
             localDataSource.sync(remoteData)
             remoteData
         } catch (e: Exception) {
@@ -61,7 +60,6 @@ class DefaultScheduleRepository(
     // 💡 INSERT OFFLINE-FIRST
     // =========================================================================
     override suspend fun insert(schedule: Schedule): Schedule {
-        // 1. Selalu buat datanya tersimpan di database SQLite lokal HP terlebih dahulu
         val localSchedule = localDataSource.insert(
             createdBy = schedule.created_by,
             company_id = schedule.company_id,
@@ -73,12 +71,10 @@ class DefaultScheduleRepository(
         )
 
         try {
-            // 2. Setelah Room menghasilkan ID lokal, coba daftarkan ke MySQL Server Cloud
             remoteDataSource.insertSchedule(localSchedule)
             Log.d("REPOSITORY_INSERT", "🚀 Sukses mengunggah jadwal baru ke database server.")
         } catch (e: Exception) {
             Log.e("REPOSITORY_INSERT", "⚠️ Server offline! Jadwal tertahan di database lokal HP.")
-            // Aplikasi tidak akan crash, user melihat jadwalnya berhasil ditambahkan karena Room sudah menyimpannya
         }
 
         return localSchedule

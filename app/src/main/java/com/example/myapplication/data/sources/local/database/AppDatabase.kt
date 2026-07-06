@@ -4,18 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.myapplication.data.sources.local.dao.AnnouncementDao
 import com.example.myapplication.data.sources.local.dao.AssignmentDao
 import com.example.myapplication.data.sources.local.dao.AttendanceDao
 import com.example.myapplication.data.sources.local.dao.ScheduleDao
 import com.example.myapplication.data.sources.local.dao.UserDao
+import com.example.myapplication.data.sources.local.entities.AnnouncementEntity
 import com.example.myapplication.data.sources.local.entities.AssignmentEntity
 import com.example.myapplication.data.sources.local.entities.AttendanceEntity
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
 
 @Database(
-    entities = [ScheduleEntity::class, UserEntity::class, AttendanceEntity::class, AssignmentEntity::class],
-    version = 5,
+    entities = [ScheduleEntity::class, UserEntity::class, AttendanceEntity::class, AssignmentEntity::class, AnnouncementEntity::class],
+    version = 6,
     exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -24,6 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun attendanceDao(): AttendanceDao
 
     abstract fun assignmentDao(): AssignmentDao
+    abstract fun announcementDao(): AnnouncementDao
 
     companion object {
         @Volatile

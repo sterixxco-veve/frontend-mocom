@@ -1,8 +1,10 @@
 package com.example.myapplication
 
 import android.app.Application
+import com.example.myapplication.data.repositories.AnnouncementRepository
 import com.example.myapplication.data.repositories.AssignmentRepository
 import com.example.myapplication.data.repositories.AttendanceRepository
+import com.example.myapplication.data.repositories.DefaultAnnouncementRepository
 import com.example.myapplication.data.repositories.DefaultAssignmentRepository
 import com.example.myapplication.data.repositories.DefaultAttendanceRepository
 import com.example.myapplication.data.repositories.ScheduleRepository
@@ -24,6 +26,7 @@ class App : Application() {
     lateinit var userRepository: UserRepository
     lateinit var attendanceRepository: AttendanceRepository
     lateinit var assignmentRepository: AssignmentRepository
+    lateinit var announcementRepository: AnnouncementRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -54,10 +57,15 @@ class App : Application() {
             RetrofitDataSource(retrofitService)
         )
 
-        assignmentRepository =
-            DefaultAssignmentRepository(
+        assignmentRepository = DefaultAssignmentRepository(
                 RoomDataSource(AppDatabase.getInstance(baseContext)),
                 RetrofitDataSource(retrofitService)
-            )
+        )
+
+        announcementRepository = DefaultAnnouncementRepository(
+            RoomDataSource(AppDatabase.getInstance(baseContext)),
+            RetrofitDataSource(retrofitService)
+        )
+
     }
 }

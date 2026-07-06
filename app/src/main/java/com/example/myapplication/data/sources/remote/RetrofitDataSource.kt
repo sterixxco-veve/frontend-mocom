@@ -7,8 +7,10 @@ import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
+import com.example.myapplication.data.sources.remote.json.AnnouncementJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.AnnouncementRequest
 import com.example.myapplication.data.sources.remote.request.ChangePasswordRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
@@ -98,6 +100,23 @@ fun UserJson.toUser(): User {
     )
 }
 
+fun Announcement.toAnnouncementRequest(): AnnouncementRequest {
+    return AnnouncementRequest(
+        title = this.title,
+        message = this.message,
+        created_by = this.created_by,
+    )
+}
+
+fun AnnouncementJson.toAnnouncement(): Announcement {
+    return Announcement(
+        id = this.id,
+        title = this.title,
+        message = this.message,
+        created_by = this.created_by,
+    )
+}
+
 // =========================================================================
 // 🚀 CLASS RETROFIT DATA SOURCE CORE
 // =========================================================================
@@ -119,6 +138,16 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
         return try {
             val responseList = webService.getAllUsers()
             responseList.map { it.toUser() }
+        } catch (e: Exception) {
+            Log.e("DEBUG_FETCH", "Error: ${e.message}")
+            emptyList()
+        }
+    }
+
+    override suspend fun fetchAllAnnouncement(): List<Announcement> {
+        return try {
+            val responseList = webService.getAllAnnouncements()
+            responseList.map { it.toAnnouncement() }
         } catch (e: Exception) {
             Log.e("DEBUG_FETCH", "Error: ${e.message}")
             emptyList()
@@ -342,6 +371,17 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
                 "RETROFIT_PASSWORD",
                 "❌ ${e.message}"
             )
+            throw e
+        }
+    }
+
+    override suspend fun insertAnnouncement(announcement: Announcement): Announcement {
+        try {
+            val requestBody = announcement.toAnnouncementRequest()
+            val responseJson = webService.insertAnnouncement(requestBody)
+            return responseJson.toAnnouncement()
+        } catch (e: Exception) {
+            Log.e("RETROFIT_USER_INSERT", "❌ Gagal insert announcement: ${e.message}")
             throw e
         }
     }

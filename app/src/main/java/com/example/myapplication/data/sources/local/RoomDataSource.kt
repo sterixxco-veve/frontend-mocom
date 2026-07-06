@@ -1,8 +1,11 @@
 package com.example.myapplication.data.sources.local
 
+import com.example.myapplication.data.sources.local.dao.AnnouncementDao
 import com.example.myapplication.data.sources.local.database.AppDatabase
+import com.example.myapplication.data.sources.local.entities.AnnouncementEntity
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
+import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
@@ -16,6 +19,8 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
 
     private val assignmentDao = database.assignmentDao()
     private val attendanceDao = database.attendanceDao()
+    private val AnnouncementDao = database.announcementDao()
+
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     //GET ALL
@@ -144,7 +149,7 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
         endTime: Long
     ): Schedule {
         val entity = ScheduleEntity(
-            id = 0, // 0 memicu auto-increment lokal Room
+            id = 0,
             created_by = createdBy,
             company_id = company_id,
             title = title,
@@ -176,14 +181,23 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
             password = password,
             is_active = is_active
         )
-
-        // =========================================================================
-        // 💡 PERBAIKAN: Gunakan 'val' (bukan const) untuk menangkap ID Auto-Increment
-        // =========================================================================
         val generatedId = userDao.insertUser(entity)
-
-        // Kembalikan objek User dengan menyuntikkan ID asli hasil generate database lokal
         return entity.toRawModel().copy(id = generatedId.toInt())
+    }
+
+    override suspend fun insertAnnouncement(
+        title: String,
+        message: String,
+        createdBy: Int
+    ): Announcement {
+        val entity = AnnouncementEntity(
+            id = 0,
+            title = title,
+            message = message,
+            created_by = createdBy,
+        )
+        AnnouncementDao.insertAnnouncement(entity)
+        return entity.toRawModel()
     }
 
     override suspend fun getAttendanceByUserId(

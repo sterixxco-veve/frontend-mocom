@@ -12,6 +12,7 @@ interface RemoteDataSource {
     //FETCH ALL
     suspend fun fetchAllSchedules(): List<Schedule>
     suspend fun fetchAllUsers(): List<User>
+    suspend fun fetchAllAnnouncement(): List<Announcement>
 
     suspend fun fetchAssignmentByUserId(user_id: Int): List<Assignment>
 
@@ -28,6 +29,7 @@ interface RemoteDataSource {
     //INSERT
     suspend fun insertSchedule(schedule: Schedule): Schedule
     suspend fun insertUser(user: User): User
+    suspend fun insertAnnouncement(announcement: Announcement): Announcement
 
     //UPDATE
     suspend fun updateSchedule(schedule: Schedule)

@@ -3,11 +3,13 @@ package com.example.myapplication.data.sources.remote
 import com.example.myapplication.data.sources.local.entities.AttendanceEntity
 import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Attendance
+import com.example.myapplication.data.sources.remote.json.AnnouncementJson
 import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.AnnouncementRequest
 import com.example.myapplication.data.sources.remote.request.ChangePasswordRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
@@ -26,6 +28,8 @@ interface WebService {
     suspend fun getAllSchedules(): List<ScheduleJson>
     @GET("api/getAllUsers")
     suspend fun getAllUsers(): List<UserJson>
+    @GET("api/getAllAnnouncements")
+    suspend fun getAllAnnouncements(): List<AnnouncementJson>
 
     @GET("api/getAssignmentByUserId/{user_id}")
     suspend fun getAssignmentByUserId(
@@ -74,6 +78,8 @@ interface WebService {
     suspend fun insertSchedule(@Body request: ScheduleRequest): ScheduleJson
     @POST("api/insertUser")
     suspend fun insertUser(@Body request: UserRequest): UserJson
+    @POST("api/insertAnnouncement")
+    suspend fun insertAnnouncement(@Body request: AnnouncementRequest): AnnouncementJson
 
     //DELETE
     @DELETE("api/deleteSchedule/{id}")

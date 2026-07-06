@@ -9,7 +9,7 @@ import com.example.myapplication.data.sources.local.entities.UserEntity
 import com.example.myapplication.data.sources.models.User
 
 @Dao
-interface UserDao {
+interface UserDao{
 
     @Query("SELECT * FROM users")
     suspend fun getAllUser(): List<UserEntity>

@@ -25,7 +25,7 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
 
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
     }
 
     private var currentStaffList: List<User> = emptyList()
@@ -111,14 +111,11 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
             val jobDescVal = binding.etJobDesc.text.toString().trim()
             val dateMillis = selectedCalendar.timeInMillis
 
-            // Di dalam btnConfirmAssignment.setOnClickListener fragment Anda:
             val staffIdDariSql = staffTerpilih.id
             val scheduleId = selectedSchedule.id
 
-// Tampilkan loading/proses berjalan awal
             Toast.makeText(context, "Sedang menugaskan ${staffTerpilih.full_name}...", Toast.LENGTH_SHORT).show()
 
-// Panggil fungsi ViewModel dengan callback onResult
             viewModel.assignStaffToSchedule(scheduleId, staffIdDariSql, roleVal, jobDescVal, dateMillis) { isSuccess ->
                 if (isAdded && context != null) {
                     if (isSuccess) {

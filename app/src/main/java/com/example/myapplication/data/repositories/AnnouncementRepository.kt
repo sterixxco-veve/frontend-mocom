@@ -7,4 +7,5 @@ import com.example.myapplication.data.sources.models.User
 
 interface AnnouncementRepository {
     suspend fun getAnnouncements(): List<Announcement>
+    suspend fun insert(announcement: Announcement): Announcement
 }

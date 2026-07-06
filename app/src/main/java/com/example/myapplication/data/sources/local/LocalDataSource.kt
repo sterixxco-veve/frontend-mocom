@@ -1,5 +1,6 @@
 package com.example.myapplication.data.sources.local
 
+import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.Schedule
@@ -43,6 +44,12 @@ interface LocalDataSource {
         password: String,
         is_active: Int
     ): User
+
+    suspend fun insertAnnouncement(
+        title: String,
+        message: String,
+        createdBy: Int,
+    ): Announcement
 
     suspend fun deleteScheduleLocalById(id: Int)
     suspend fun deleteUserLocalById(id: Int)

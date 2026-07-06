@@ -28,7 +28,7 @@ class AddScheduleBottomSheetFragment : BottomSheetDialogFragment() {
 
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
     }
 
     private var scheduleId: Int? = null

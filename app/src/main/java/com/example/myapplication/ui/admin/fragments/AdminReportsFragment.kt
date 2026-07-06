@@ -39,7 +39,7 @@ class AdminReportsFragment : Fragment(R.layout.fragment_admin_reports) {
 
     private val viewModel: AdminViewModel by viewModels {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
     }
 
     private var currentCompanyId: Int = 1
