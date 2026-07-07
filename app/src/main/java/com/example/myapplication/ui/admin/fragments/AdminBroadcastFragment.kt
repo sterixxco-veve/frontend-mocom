@@ -29,7 +29,7 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
     private val binding get() = _binding!!
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository, app.replacementRepository)
     }
     private lateinit var broadcastAdapter: BroadcastAdapter
 

@@ -15,8 +15,11 @@ import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.GeneralResponse
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
+import com.example.myapplication.data.sources.remote.json.ReplacementDetailJson
+import com.example.myapplication.data.sources.remote.json.ReplacementListJson
 import com.example.myapplication.data.sources.remote.json.ReplacementRequest
 import com.example.myapplication.data.sources.remote.json.UserJson
+import com.example.myapplication.data.sources.remote.request.ApproveReplacementRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.NfcCheckInRequest
 import com.example.myapplication.data.sources.remote.request.NfcRequest
@@ -221,4 +224,25 @@ interface ApiService {
 
     @GET("api/getTodayAssignmentsByUserId/{user_id}")
     suspend fun getTodayAssignmentsByUserId(@Path("user_id") userId: Int): Response<List<AssignmentJson>>
+
+    @GET("api/getReplacementRequests/{company_id}")
+    suspend fun getReplacementRequests(
+        @Path("company_id") companyId:Int
+    ): List<ReplacementListJson>
+
+    @GET("api/replacements/{id}")
+    suspend fun getReplacementDetail(
+        @Path("id") id:Int
+    ): ReplacementDetailJson
+
+    @PUT("api/replacements/{id}/approve")
+    suspend fun approveReplacement(
+        @Path("id") id:Int,
+        @Body body: ApproveReplacementRequest
+    ): Response<GeneralResponse>
+
+    @PUT("api/replacements/{id}/reject")
+    suspend fun rejectReplacement(
+        @Path("id") id:Int
+    ): Response<GeneralResponse>
 }

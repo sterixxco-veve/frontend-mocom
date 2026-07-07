@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_dashboard_to_crud"
             app:destination="@id/navigation_crud" />
+        <action
+            android:id="@+id/action_to_view_request"
+            app:destination="@id/viewRequest"/>
     </fragment>
 
     <fragment
@@ -21,6 +24,16 @@
         android:name="com.example.myapplication.ui.admin.fragments.AdminScheduleFragment"
         android:label="Kelola Jadwal"
         tools:layout="@layout/fragment_admin_schedule" />
+
+    <fragment
+        android:id="@+id/viewRequest"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminReplacementFragment"
+        android:label="Lihat Request Ganti Jadwal"
+        tools:layout="@layout/fragment_admin_replacement">
+        <action
+            android:id="@+id/action_replacement_to_detail"
+            app:destination="@id/navigation_replacement_detail"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_attendance"
@@ -44,4 +57,9 @@
         android:name="com.example.myapplication.ui.admin.fragments.AdminUserManagementFragment"
         android:label="Manajemen User"
         tools:layout="@layout/fragment_admin_user_management" />
+    <fragment
+        android:id="@+id/navigation_replacement_detail"
+        android:name="com.example.myapplication.ui.admin.fragments.AdminReplacementDetailFragment"
+        android:label="Detail Replacement"
+        tools:layout="@layout/fragment_admin_replacement_detail"/>
 </navigation>

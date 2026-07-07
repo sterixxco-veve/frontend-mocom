@@ -5,12 +5,17 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
+import com.example.myapplication.data.sources.models.ReplacementDetail
+import com.example.myapplication.data.sources.models.ReplacementItem
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.json.AnnouncementJson
+import com.example.myapplication.data.sources.remote.json.ReplacementDetailJson
+import com.example.myapplication.data.sources.remote.json.ReplacementListJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
 import com.example.myapplication.data.sources.remote.json.UserJson
 import com.example.myapplication.data.sources.remote.request.AnnouncementRequest
+import com.example.myapplication.data.sources.remote.request.ApproveReplacementRequest
 import com.example.myapplication.data.sources.remote.request.ChangePasswordRequest
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
 import com.example.myapplication.data.sources.remote.request.ScheduleRequest
@@ -385,4 +390,72 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             throw e
         }
     }
+
+    override suspend fun fetchReplacementRequests(
+        companyId:Int
+    ): List<ReplacementItem> {
+
+        return webService
+            .getReplacementRequests(companyId)
+            .map { it.toReplacementItem() }
+
+    }
+
+    override suspend fun fetchReplacementDetail(
+        id:Int
+    ): ReplacementDetail {
+
+        return webService
+            .getReplacementDetail(id)
+            .toReplacementDetail()
+
+    }
+
+    override suspend fun approveReplacement(
+        replacementId:Int,
+        approvedBy:Int
+    ){
+
+        val response = webService.approveReplacement(
+
+            replacementId,
+
+            ApproveReplacementRequest(
+                approved_by = approvedBy
+            )
+
+        )
+
+        if(!response.isSuccessful){
+
+            throw Exception(
+                response.body()?.message
+                    ?: "Approve gagal."
+            )
+
+        }
+
+    }
+
+    override suspend fun rejectReplacement(
+        replacementId:Int
+    ){
+
+        val response =
+            webService.rejectReplacement(
+                replacementId
+            )
+
+        if(!response.isSuccessful){
+
+            throw Exception(
+                response.body()?.message
+                    ?: "Reject gagal."
+            )
+
+        }
+
+    }
+
+
 }

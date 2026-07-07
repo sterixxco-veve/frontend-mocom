@@ -4,6 +4,8 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
+import com.example.myapplication.data.sources.models.ReplacementDetail
+import com.example.myapplication.data.sources.models.ReplacementItem
 import com.example.myapplication.data.sources.models.Schedule
 import com.example.myapplication.data.sources.models.User
 import com.example.myapplication.data.sources.remote.request.CheckInRequest
@@ -54,6 +56,23 @@ interface RemoteDataSource {
     suspend fun updatePassword(
         id: Int,
         password: String
+    )
+
+    suspend fun fetchReplacementRequests(
+        companyId:Int
+    ): List<ReplacementItem>
+
+    suspend fun fetchReplacementDetail(
+        id:Int
+    ): ReplacementDetail
+
+    suspend fun approveReplacement(
+        replacementId:Int,
+        approvedBy:Int
+    )
+
+    suspend fun rejectReplacement(
+        replacementId:Int
     )
 
 }

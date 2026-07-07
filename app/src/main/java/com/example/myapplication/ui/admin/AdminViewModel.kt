@@ -16,8 +16,11 @@ import com.example.myapplication.data.sources.models.User
 import com.google.ai.client.generativeai.GenerativeModel
 import com.example.myapplication.RetrofitClient
 import com.example.myapplication.data.repositories.AnnouncementRepository
+import com.example.myapplication.data.repositories.ReplacementRepository
 import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
+import com.example.myapplication.data.sources.models.ReplacementDetail
+import com.example.myapplication.data.sources.models.ReplacementItem
 import com.example.myapplication.data.sources.remote.json.AnnouncementJson
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -30,7 +33,8 @@ class AdminViewModel (
     private val scheduleRepository: ScheduleRepository,
     private val userRepository: UserRepository,
     private val attendanceRepository: AttendanceRepository,
-    private val announcementRepository: AnnouncementRepository
+    private val announcementRepository: AnnouncementRepository,
+    private val replacementRepository: ReplacementRepository
 ): ViewModel() {
     private val _scheduleList = ArrayList<Schedule>()
     private val _userList = ArrayList<User>()
@@ -70,6 +74,27 @@ class AdminViewModel (
     private val _companyName = MutableLiveData<String>()
     val companyName: LiveData<String>
         get() = _companyName
+
+    private val _replacementRequests =
+        MutableLiveData<List<ReplacementItem>>()
+
+    val replacementRequests :
+            LiveData<List<ReplacementItem>>
+            = _replacementRequests
+
+    private val _replacementDetail =
+        MutableLiveData<ReplacementDetail>()
+
+    val replacementDetail :
+            LiveData<ReplacementDetail>
+            = _replacementDetail
+
+    private val _replacementAction =
+        MutableLiveData<Boolean>()
+
+    val replacementAction :
+            LiveData<Boolean>
+            = _replacementAction
 
     val availableYears = MediatorLiveData<List<String>>()
 
@@ -433,5 +458,118 @@ class AdminViewModel (
                 onResult(false)
             }
         }
+    }
+
+    fun loadReplacementRequests(
+        companyId:Int
+    ){
+
+        viewModelScope.launch {
+
+            try{
+
+                _replacementRequests.value =
+                    replacementRepository
+                        .getReplacementRequests(companyId)
+
+            }catch(e:Exception){
+
+                _replacementRequests.value =
+                    emptyList()
+
+            }
+
+        }
+
+    }
+
+    fun loadReplacementDetail(id:Int){
+
+        Log.d("DETAIL","Load id = $id")
+
+        viewModelScope.launch {
+
+            try{
+
+                val result =
+                    replacementRepository
+                        .getReplacementDetail(id)
+
+                Log.d("DETAIL",result.toString())
+
+                _replacementDetail.value=result
+
+            }catch(e:Exception){
+
+                Log.e("DETAIL",e.message,e)
+
+            }
+
+        }
+
+    }
+
+    fun approveReplacement(
+
+        replacementId:Int,
+
+        approvedBy:Int
+
+    ){
+
+        viewModelScope.launch {
+
+            try{
+
+                replacementRepository.approveReplacement(
+
+                    replacementId,
+
+                    approvedBy
+
+                )
+
+                _replacementAction.value = true
+
+            }catch (e:Exception){
+
+                e.printStackTrace()
+
+                Log.e("APPROVE", e.message ?: "Unknown error")
+
+                _replacementAction.value = false
+
+            }
+
+        }
+
+    }
+
+    fun rejectReplacement(
+
+        replacementId:Int
+
+    ){
+
+        viewModelScope.launch {
+
+            try{
+
+                replacementRepository.rejectReplacement(
+
+                    replacementId
+
+                )
+
+                _replacementAction.value = true
+
+            }catch (e:Exception){
+
+                _replacementAction.value = false
+
+            }
+
+        }
+
     }
 }

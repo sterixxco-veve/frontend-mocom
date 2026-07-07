@@ -79,6 +79,20 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLihatLeaveRequest"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:text="Lihat Permintaan Ganti Jadwal"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#4F46E5"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/card_stats"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <TextView
             android:id="@+id/tv_ai_title"
             android:layout_width="0dp"
@@ -88,7 +102,7 @@
             android:textColor="#4361EE" android:textSize="20sp"
             android:fontFamily="sans-serif-black"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/card_stats"
+            app:layout_constraintTop_toBottomOf="@id/btnLihatLeaveRequest"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_refresh_ai" />
 

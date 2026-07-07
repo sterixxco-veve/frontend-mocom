@@ -7,10 +7,12 @@ import com.example.myapplication.data.repositories.AttendanceRepository
 import com.example.myapplication.data.repositories.DefaultAnnouncementRepository
 import com.example.myapplication.data.repositories.DefaultAssignmentRepository
 import com.example.myapplication.data.repositories.DefaultAttendanceRepository
+import com.example.myapplication.data.repositories.DefaultReplacementRepository
 import com.example.myapplication.data.repositories.ScheduleRepository
 import com.example.myapplication.data.repositories.DefaultScheduleRepository
 import com.example.myapplication.data.repositories.UserRepository
 import com.example.myapplication.data.repositories.DefaultUserRepository // 💡 Pastikan kamu mengimpor kelas repositori user kamu
+import com.example.myapplication.data.repositories.ReplacementRepository
 import com.example.myapplication.data.sources.local.RoomDataSource
 import com.example.myapplication.data.sources.local.database.AppDatabase
 import com.example.myapplication.data.sources.remote.RetrofitDataSource
@@ -27,6 +29,7 @@ class App : Application() {
     lateinit var attendanceRepository: AttendanceRepository
     lateinit var assignmentRepository: AssignmentRepository
     lateinit var announcementRepository: AnnouncementRepository
+    lateinit var replacementRepository: ReplacementRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -64,6 +67,10 @@ class App : Application() {
 
         announcementRepository = DefaultAnnouncementRepository(
             RoomDataSource(AppDatabase.getInstance(baseContext)),
+            RetrofitDataSource(retrofitService)
+        )
+
+        replacementRepository = DefaultReplacementRepository(
             RetrofitDataSource(retrofitService)
         )
 

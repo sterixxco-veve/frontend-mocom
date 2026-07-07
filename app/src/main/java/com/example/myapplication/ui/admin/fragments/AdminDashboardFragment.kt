@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.myapplication.App
 import com.example.myapplication.R
 import com.example.myapplication.ui.admin.AdminViewModel
@@ -19,12 +20,17 @@ class AdminDashboardFragment : Fragment(R.layout.fragment_admin_dashboard) {
 
     private val viewModel: AdminViewModel by viewModels({ requireParentFragment() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository, app.replacementRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAdminDashboardBinding.bind(view)
+        binding.btnLihatLeaveRequest.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_to_view_request
+            )
+        }
     }
 
     override fun onDestroyView() {

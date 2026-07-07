@@ -25,7 +25,7 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
 
     private val viewModel: AdminViewModel by viewModels({ requireActivity() }) {
         val app = requireActivity().application as App
-        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository)
+        AdminViewModelFactory(app.scheduleRepository, app.userRepository, app.attendanceRepository, app.announcementRepository, app.replacementRepository)
     }
 
     private var currentStaffList: List<User> = emptyList()
