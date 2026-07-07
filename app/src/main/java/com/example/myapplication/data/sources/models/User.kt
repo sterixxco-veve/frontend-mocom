@@ -23,6 +23,10 @@ class User(
     val created_at: Long = Date().time,
     val updated_at: Long = Date().time,
 ) : Parcelable {
+    override fun toString(): String {
+        return "User(id=$id, username=$username, full_name=$full_name, company_id=$company_id)"
+    }
+
     companion object {
         fun create(
             id: Int = 0,

@@ -13,7 +13,6 @@ interface RemoteDataSource {
     suspend fun fetchAllSchedules(): List<Schedule>
     suspend fun fetchAllUsers(): List<User>
     suspend fun fetchAllAnnouncement(): List<Announcement>
-
     suspend fun fetchAssignmentByUserId(user_id: Int): List<Assignment>
 
     //FETCH BY COMPANY ID

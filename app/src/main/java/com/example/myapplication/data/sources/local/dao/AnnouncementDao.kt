@@ -21,5 +21,5 @@ interface AnnouncementDao{
 //    @Update
 //    suspend fun updateUser(user: UserEntity)
     @Insert
-    suspend fun insertAnnouncement(announcement: AnnouncementEntity): Long
+    suspend fun insertAnnouncement(announcement: AnnouncementEntity)
 }

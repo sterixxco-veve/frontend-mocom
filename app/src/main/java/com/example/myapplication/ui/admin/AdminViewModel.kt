@@ -154,91 +154,77 @@ class AdminViewModel (
         }
     }
 
-//    fun loadAnnouncements(companyId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                loadUsers() // pastikan userList sudah terisi dari API/DB
-//
-//                val result = announcementRepository.getAnnouncements()
-//
-//                val userMap = _userList.associateBy { it.id }
-//
-//                val validUserIds = _userList.filter { user ->
-//                    user.company_id == companyId
-//                }.map { user ->
-//                    user.id
-//                }.toSet()
-//
-//                val todayDateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-//
-//                val filteredList = result.filter { announcement ->
-//                    val isCompanyUserMatch = validUserIds.contains(announcement.created_by)
-//
-//                    val createdAtStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//                        .format(Date(announcement.created_at))
-//                    val isToday = createdAtStr == todayDateStr
-//
-//                    isCompanyUserMatch && isToday
-//                }.map { announcement ->
-//                    announcement.apply {
-//                        authorName = userMap[created_by]?.full_name ?: "Admin"
-//                    }
-//                }
-//
-//                _announcements.value = filteredList
-//            } catch (e: Exception) {
-//                android.util.Log.e("LOAD_ANNOUNCEMENT", "Gagal memproses filter: ${e.message}")
-//                _announcements.value = emptyList()
-//            }
-//        }
-//    }
-
     fun loadAnnouncements(companyId: Int) {
+        Log.d("LOAD_ANNOUNCEMENT", "loadAnnouncements DIPANGGIL, companyId=$companyId")
         viewModelScope.launch {
             try {
-                // 1. Ambil data response dari Retrofit
+                val result = userRepository.getAllUser()
+                Log.d("TRACK_USER", "Data user dari repository: $result")
+                _users.postValue(result ?: emptyList())
+                val userList = _users.value ?: emptyList()
+                Log.d("LOAD_ANNOUNCEMENT", "Jumlah user ter-load: ${userList.size}")
+                Log.d("LOAD_ANNOUNCEMENT", "Isi userList: $userList")
+
+                val userMap = userList.associateBy { it.id }
+                Log.d("LOAD_ANNOUNCEMENT", "Isi userMap keys: ${userMap.keys}")
+
                 val response = RetrofitClient.apiService.getAllAnnouncements()
-
-                // 🎯 PERBAIKAN 1: Ambil body-nya langsung dan amankan tipenya sebagai List
                 val responseList = response.body()
+                Log.d("LOAD_ANNOUNCEMENT", "Jumlah announcement dari server: ${responseList?.size}")
 
-                loadUsers()
-                val userMap = _userList.associateBy { it.id }
-
-                // Kita pakai ini jika sewaktu-waktu kamu ingin memformat ulang string tanggalnya
-                val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).apply {
-                    timeZone = TimeZone.getTimeZone("UTC")
-                }
-
-                // 🎯 PERBAIKAN 2: Gunakan penanganan standar list agar tidak memicu Unresolved 'isNullOrEmpty'
                 if (responseList != null && responseList.isNotEmpty()) {
+                    val demoList = responseList.mapNotNull { announcementJson ->
+                        Log.d("LOAD_ANNOUNCEMENT", "Mencari user id=${announcementJson.created_by} di userMap")
+                        val matchedUser = userMap[announcementJson.created_by]
+                        Log.d("LOAD_ANNOUNCEMENT", "User ditemukan: $matchedUser")
 
-                    val demoList = responseList.map { announcementJson ->
+                        // Skip kalau user tidak ditemukan sama sekali
+                        if (matchedUser == null) {
+                            Log.d("LOAD_ANNOUNCEMENT", "Announcement id=${announcementJson.id} di-skip, created_by tidak match user manapun")
+                            return@mapNotNull null
+                        }
 
-                        // 🎯 PERBAIKAN 3: Sesuai eror 'String!' was expected,
-                        // kita langsung masukkan string tanggal asli dari backend tanpa diubah ke Long milidetik
-                        val announcement = Announcement(
+                        // Skip kalau user ditemukan tapi company_id-nya beda
+                        if (matchedUser.company_id != companyId) {
+                            Log.d("LOAD_ANNOUNCEMENT", "Announcement id=${announcementJson.id} di-skip, company_id user (${matchedUser.company_id}) tidak sama dengan companyId ($companyId)")
+                            return@mapNotNull null
+                        }
+
+                        Announcement(
                             id = announcementJson.id,
                             title = announcementJson.title,
                             message = announcementJson.message,
                             created_by = announcementJson.created_by,
-                            created_at = announcementJson.created_at// 💡 Diisi String murni sesuai keinginan modelmu
-                        )
-
-                        // Pasang nama lengkap pembuat ke properti @Ignore untuk kebutuhan tampilan adapter
-                        announcement.apply {
-                            this.authorName = userMap[announcementJson.created_by]?.full_name ?: "Admin"
+                            created_at = announcementJson.created_at
+                        ).apply {
+                            authorName = matchedUser.full_name
+                            Log.d("LOAD_ANNOUNCEMENT", "authorName di-set jadi: $authorName")
                         }
                     }
-
+                    Log.d("LOAD_ANNOUNCEMENT", "demoList final: $demoList")
                     _announcements.value = demoList
                 } else {
                     _announcements.value = emptyList()
                 }
-
             } catch (e: Exception) {
                 Log.e("LOAD_ANNOUNCEMENT", "Gagal load data demo: ${e.message}")
                 _announcements.value = emptyList()
+            }
+        }
+    }
+
+    fun InsertAnnouncement(announcement: Announcement,companyId: Int) {
+        viewModelScope.launch {
+            try {
+                val result = RetrofitClient.apiService.insertAnnouncements(announcement)
+                if (result != null) {
+                    Log.d("INSERT_ANNOUNCEMENT", "Berhasil insert: $result")
+                    loadAnnouncements(companyId)
+                } else {
+                    Log.e("INSERT_ANNOUNCEMENT", "Gagal insert, response body null")
+                }
+            } catch (e: Exception) {
+                Log.e("INSERT_ANNOUNCEMENT", "Gagal insert announcement: ${e.message}")
             }
         }
     }
@@ -273,21 +259,21 @@ class AdminViewModel (
     }
 
     fun loadSchedules(companyId: Int) {
-        android.util.Log.d("TRACK_SCHEDULE", "========================================")
-        android.util.Log.d("TRACK_SCHEDULE", "🔄 loadSchedules() dipicu untuk Company ID: $companyId")
+        Log.d("TRACK_SCHEDULE", "========================================")
+        Log.d("TRACK_SCHEDULE", "🔄 loadSchedules() dipicu untuk Company ID: $companyId")
 
         viewModelScope.launch {
             try {
                 val result = scheduleRepository.getByCompanyId(companyId)
-                android.util.Log.d("TRACK_SCHEDULE", "✅ BERHASIL! Mendapatkan ${result?.size ?: 0} data dari repositori.")
+                Log.d("TRACK_SCHEDULE", "✅ BERHASIL! Mendapatkan ${result?.size ?: 0} data dari repositori.")
 
                 _schedules.postValue(result ?: emptyList())
             } catch (e: Exception) {
-                android.util.Log.e("TRACK_SCHEDULE", "❌ GAGAL mengambil jadwal karena Error: ${e.javaClass.simpleName} -> ${e.message}")
+                Log.e("TRACK_SCHEDULE", "❌ GAGAL mengambil jadwal karena Error: ${e.javaClass.simpleName} -> ${e.message}")
                 e.printStackTrace()
                 _schedules.postValue(emptyList())
             }
-            android.util.Log.d("TRACK_SCHEDULE", "========================================")
+            Log.d("TRACK_SCHEDULE", "========================================")
         }
     }
 
@@ -311,6 +297,7 @@ class AdminViewModel (
         viewModelScope.launch {
             try {
                 val result = userRepository.getUserByCompanyId(companyId)
+                Log.d("TRACK_USER", "Data user dari repository: $result")
                 _users.postValue(result ?: emptyList())
             } catch (e: Exception) {
                 _users.postValue(emptyList())
@@ -318,15 +305,15 @@ class AdminViewModel (
         }
     }
 
-    fun loadUsers() {
+    suspend fun loadUsers() {
         Log.d("TRACK_USER", "========================================")
-        viewModelScope.launch {
-            try {
-                val result = userRepository.getAllUser()
-                _users.postValue(result ?: emptyList())
-            } catch (e: Exception) {
-                _users.postValue(emptyList())
-            }
+        try {
+            val result = userRepository.getAllUser()
+            Log.d("TRACK_USER", "Data user dari repository: $result")
+            _users.postValue(result ?: emptyList())
+        } catch (e: Exception) {
+            Log.e("TRACK_USER", "Gagal fetch user: ${e.message}")
+            _users.postValue(emptyList())
         }
     }
 

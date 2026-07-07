@@ -13,15 +13,13 @@ data class AnnouncementJson(
     val created_at: String
 ) {
     fun toAnnouncement(): Announcement {
-        val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()).apply {
-            timeZone = TimeZone.getTimeZone("UTC") // 'Z' berarti UTC, bukan Asia/Jakarta
-        }
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+
+        sdf.timeZone = TimeZone.getTimeZone("Asia/Jakarta")
 
         val createdAtLong = try {
-            isoFormat.parse(this.created_at)?.time ?: 0L
-        } catch (e: Exception) {
-            0L
-        }
+            if (this.created_at != null) sdf.parse(this.created_at)?.time ?: 0L else 0L
+        } catch (e: Exception) { 0L }
 
         return Announcement(
             id = this.id,

@@ -11,7 +11,14 @@ class DefaultAnnouncementRepository(
 ) : AnnouncementRepository {
 
     override suspend fun getAnnouncements(): List<Announcement> {
-        return remoteDataSource.fetchAnnouncements()
+        return try {
+            val remoteData = remoteDataSource.fetchAnnouncements()
+            remoteData
+        } catch (e: Exception) {
+            Log.e("REPOSITORY_GET", "⚠️ Server offline, mengambil data dari Room lokal: ${e.message}")
+            localDataSource.getAllAnnouncement()
+        }
+
     }
 
     override suspend fun insert(announcement: Announcement): Announcement {

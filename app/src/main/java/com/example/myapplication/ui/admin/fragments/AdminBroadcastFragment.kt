@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.App
 import com.example.myapplication.R
+import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.databinding.FragmentAdminBroadcastBinding
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
@@ -37,6 +38,7 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
         _binding = FragmentAdminBroadcastBinding.bind(view)
 
         val currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
+        val currentUserId = requireActivity().intent.getIntExtra("EXTRA_USER_ID", 1)
 
         broadcastAdapter = BroadcastAdapter()
         binding.rvBroadcastHistory.apply {
@@ -46,23 +48,35 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
 
         viewModel.loadAnnouncements(currentCompanyId)
 
-        // ACTION SWIPE REFRESH: Jalankan ulang load data dari server saat ditarik
-        binding.swipeRefreshBroadcast.setOnRefreshListener {
-            viewModel.loadAnnouncements(currentCompanyId)
-        }
-
-        // OBSERVER DATA: Matikan lingkaran loading saat data baru mendarat
         viewModel.announcements.observe(viewLifecycleOwner) { listAnnouncement ->
             binding.swipeRefreshBroadcast.isRefreshing = false
-
             if (listAnnouncement != null) {
                 broadcastAdapter.submitList(listAnnouncement)
             }
         }
 
-        binding.btnSendBroadcast.setOnClickListener {
-
+        binding.swipeRefreshBroadcast.setOnRefreshListener {
+            viewModel.loadAnnouncements(currentCompanyId)
         }
+
+        binding.btnSendBroadcast.setOnClickListener {
+            val title = binding.etSubject.text.toString()
+            val message = binding.etMessage.text.toString()
+            val userID = currentUserId
+            val announcement = Announcement(
+                id = 0,
+                title = title,
+                message = message,
+                created_by = userID
+            )
+            viewModel.InsertAnnouncement(announcement, currentCompanyId)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val currentCompanyId = requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", 1)
+        viewModel.loadAnnouncements(currentCompanyId)
     }
 
     override fun onDestroyView() {

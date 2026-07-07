@@ -10,7 +10,7 @@ interface LocalDataSource {
 //GET ALL
     suspend fun getAllSchedule(): List<Schedule>
     suspend fun getAllUser(): List<User>
-
+    suspend fun getAllAnnouncement(): List<Announcement>
     suspend fun getAssignmentByUserId(user_id: Int): List<Assignment>
 
     //GET BY COMPANY ID

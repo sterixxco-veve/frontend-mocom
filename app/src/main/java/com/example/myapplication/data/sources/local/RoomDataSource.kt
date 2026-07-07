@@ -19,7 +19,7 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
 
     private val assignmentDao = database.assignmentDao()
     private val attendanceDao = database.attendanceDao()
-    private val AnnouncementDao = database.announcementDao()
+    private val announcementDao = database.announcementDao()
 
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
@@ -33,6 +33,10 @@ class RoomDataSource(private val database: AppDatabase) : LocalDataSource {
 
     override suspend fun getAssignmentByUserId(user_id: Int): List<Assignment> {
         return assignmentDao.getAssignmentByUserId(user_id).map { it.toRawModel() }
+    }
+
+    override suspend fun getAllAnnouncement(): List<Announcement> {
+        return announcementDao.getAllAnnouncement().map { it.toRawModel() }
     }
 
     //GET BY COMPANY
@@ -196,7 +200,7 @@ override suspend fun updateScheduleLocal(schedule: Schedule) {
             message = message,
             created_by = createdBy,
         )
-        AnnouncementDao.insertAnnouncement(entity)
+        announcementDao.insertAnnouncement(entity)
         return entity.toRawModel()
     }
 

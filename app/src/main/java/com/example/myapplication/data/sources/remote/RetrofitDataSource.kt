@@ -381,7 +381,7 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             val responseJson = webService.insertAnnouncement(requestBody)
             return responseJson.toAnnouncement()
         } catch (e: Exception) {
-            Log.e("RETROFIT_USER_INSERT", "❌ Gagal insert announcement: ${e.message}")
+            Log.e("RETROFIT_USER_INSERT", "Gagal insert announcement: ${e.message}")
             throw e
         }
     }
