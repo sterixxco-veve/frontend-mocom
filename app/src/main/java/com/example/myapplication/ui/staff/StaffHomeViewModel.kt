@@ -1,8 +1,13 @@
 package com.example.myapplication.ui.staff
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.ApiService
+import com.example.myapplication.RetrofitClient
+import com.example.myapplication.data.repositories.AnnouncementRepository
+import com.example.myapplication.data.repositories.UserRepository
+import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.remote.request.NfcCheckInRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -11,7 +16,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class StaffHomeViewModel(private val apiService: ApiService) : ViewModel() {
+class StaffHomeViewModel(private val apiService: ApiService, private val userRepository: UserRepository) : ViewModel() {
 
     // 1. TAMBAHKAN WADAH STATE INI DI BAGIAN ATAS VIEWMODEL
     private val _todayAttendance = MutableStateFlow<Attendance?>(null)
@@ -19,6 +24,9 @@ class StaffHomeViewModel(private val apiService: ApiService) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _announcements = MutableStateFlow<List<Announcement>>(emptyList())
+    val announcements: StateFlow<List<Announcement>> = _announcements
 
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage
@@ -47,6 +55,58 @@ class StaffHomeViewModel(private val apiService: ApiService) : ViewModel() {
         }
     }
 
+    fun loadAnnouncements(companyId: Int) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val users = userRepository.getAllUser()
+
+                val userMap = users.associateBy { it.id }
+
+                val response =
+                    RetrofitClient.apiService.getAllAnnouncements()
+
+                val responseList =
+                    response.body()
+
+                if (responseList != null && responseList.isNotEmpty()) {
+
+                    val result = responseList.mapNotNull { announcement ->
+
+                        val author =
+                            userMap[announcement.created_by]
+                                ?: return@mapNotNull null
+
+                        if (author.company_id != companyId)
+                            return@mapNotNull null
+
+                        announcement.apply {
+                            authorName = author.full_name
+                        }
+
+                    }
+
+                    _announcements.value = result
+
+                } else {
+
+                    _announcements.value = emptyList()
+
+                }
+
+            } catch (e: Exception) {
+
+                Log.e("LOAD_ANNOUNCEMENT", e.toString())
+
+                _announcements.value = emptyList()
+
+            }
+
+        }
+
+    }
     fun checkInWithNfc(userId: Int, nfcUid: String) {
         viewModelScope.launch {
             _isLoading.value = true

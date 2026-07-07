@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.nfc.tech.Ndef
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myapplication.App
+import com.example.myapplication.ui.staff.adapter.BroadcastStaffAdapter
 import com.example.myapplication.ui.staff.adapters.ShiftTodayAdapter
 import kotlin.text.Charsets
 
@@ -27,11 +29,21 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
     private val binding get() = _binding!!
 
     private val viewModel: StaffHomeViewModel by viewModels {
-        StaffHomeViewModelFactory(RetrofitClient.apiService)
+
+        val app = requireActivity().application as App
+
+        StaffHomeViewModelFactory(
+            RetrofitClient.apiService,
+
+            app.userRepository
+        )
+
     }
 
     private var nfcAdapter: NfcAdapter? = null
     private var currentUserId = -1
+
+    private lateinit var announcementAdapter: BroadcastStaffAdapter
 
     // ==========================================
     // 💡 LIVE STATE MACHINE UNTUK KENDALI NFC
@@ -52,6 +64,21 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
         binding.btnCheckIn.setOnClickListener {
             activateNfcScanner()
         }
+
+        announcementAdapter = BroadcastStaffAdapter()
+
+        binding.rvAnnouncements.apply {
+
+            layoutManager = LinearLayoutManager(requireContext())
+
+            adapter = announcementAdapter
+
+        }
+
+        val companyId =
+            requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", -1)
+
+        viewModel.loadAnnouncements(companyId)
 
         viewModel.loadStaffHomeData(currentUserId)
         setupObservers()
@@ -153,6 +180,16 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
                     binding.btnCheckIn.text = if (currentAction == "CHECK_IN") "Mulai Check In" else "Mulai Check Out"
                 }
             }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            viewModel.announcements.collectLatest {
+
+                announcementAdapter.submitList(it)
+
+            }
+
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
