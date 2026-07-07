@@ -35,12 +35,14 @@ data class Announcement(
             title: String,
             message: String,
             created_by: Int,
+            created_at: Long
         ): Announcement {
             return Announcement(
                 id = id,
                 title = title,
                 message = message,
                 created_by = created_by,
+                created_at = created_at
             )
         }
     }

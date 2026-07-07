@@ -19,19 +19,15 @@ class Schedule(
     val end_time: Long = Date().time,
     val location: String?, // Dibuat nullable (?) karena di DB tidak ada "NOT NULL"
     var created_at: Long = Date().time
-
-    // Variabel 'content' DIHAPUS karena tidak ada di tabel database kamu
 ) : Parcelable {
 
     init {
-        // Validasi disesuaikan dengan kolom database
         if (title.isBlank()) {
             throw IllegalArgumentException("Title tidak boleh kosong")
         }
     }
 
     companion object {
-        // Fungsi create disesuaikan (menghapus content)
         fun create(
             id: Int = 0,
             created_by: Int,
