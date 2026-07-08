@@ -8,6 +8,7 @@ import com.example.myapplication.data.sources.remote.json.AssignmentJson
 import com.example.myapplication.data.sources.remote.json.AttendanceJson
 import com.example.myapplication.data.sources.remote.json.GeneralResponse
 import com.example.myapplication.data.sources.remote.json.MyScheduleJson
+import com.example.myapplication.data.sources.remote.json.NotificationReplacementJson
 import com.example.myapplication.data.sources.remote.json.ReplacementDetailJson
 import com.example.myapplication.data.sources.remote.json.ReplacementListJson
 import com.example.myapplication.data.sources.remote.json.ScheduleJson
@@ -155,5 +156,13 @@ interface WebService {
     suspend fun rejectReplacement(
         @Path("id") id:Int
     ): Response<GeneralResponse>
+
+    @GET("api/replacements/user/{user_id}")
+    suspend fun getReplacementNotifications(
+
+        @Path("user_id")
+        userId:Int
+
+    ):List<NotificationReplacementJson>
 
 }

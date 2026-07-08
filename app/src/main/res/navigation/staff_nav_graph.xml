@@ -55,5 +55,10 @@
         android:id="@+id/leaveRequestFragment"
         android:name="com.example.myapplication.ui.staff.fragments.LeaveRequestFragment"
         android:label="LeaveRequestFragment" />
+    <fragment
+        android:id="@+id/navigation_notification"
+        android:name="com.example.myapplication.ui.staff.fragments.StaffNotificationFragment"
+        android:label="Notifikasi"
+        tools:layout="@layout/fragment_staff_notification"/>
 
 </navigation>

@@ -24,4 +24,9 @@ class DefaultReplacementRepository(val remoteDataSource: RemoteDataSource): Repl
             replacementId
         )
     }
+
+    override suspend fun getReplacementNotifications(
+        userId:Int
+    )=remoteDataSource
+        .fetchReplacementNotifications(userId)
 }

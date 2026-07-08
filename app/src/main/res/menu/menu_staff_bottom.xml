@@ -18,8 +18,14 @@
         android:title="Izin" />
 
     <item
+        android:id="@+id/navigation_notification"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="Notifikasi"/>
+
+    <item
         android:id="@+id/staffProfileFragment"
         android:icon="@drawable/circle_user_solid"
         android:title="Profil" />
+
 
 </menu>

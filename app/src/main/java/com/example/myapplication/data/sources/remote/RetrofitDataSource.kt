@@ -5,6 +5,7 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
+import com.example.myapplication.data.sources.models.NotificationReplacement
 import com.example.myapplication.data.sources.models.ReplacementDetail
 import com.example.myapplication.data.sources.models.ReplacementItem
 import com.example.myapplication.data.sources.models.Schedule
@@ -454,6 +455,20 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
             )
 
         }
+
+    }
+
+    override suspend fun fetchReplacementNotifications(
+
+        userId:Int
+
+    ):List<NotificationReplacement>{
+
+        return webService
+            .getReplacementNotifications(userId)
+            .map{
+                it.toNotificationReplacement()
+            }
 
     }
 

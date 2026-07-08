@@ -4,6 +4,7 @@ import com.example.myapplication.data.sources.models.Announcement
 import com.example.myapplication.data.sources.models.Assignment
 import com.example.myapplication.data.sources.models.Attendance
 import com.example.myapplication.data.sources.models.MySchedule
+import com.example.myapplication.data.sources.models.NotificationReplacement
 import com.example.myapplication.data.sources.models.ReplacementDetail
 import com.example.myapplication.data.sources.models.ReplacementItem
 import com.example.myapplication.data.sources.models.Schedule
@@ -74,5 +75,11 @@ interface RemoteDataSource {
     suspend fun rejectReplacement(
         replacementId:Int
     )
+
+    suspend fun fetchReplacementNotifications(
+
+        userId:Int
+
+    ):List<NotificationReplacement>
 
 }
