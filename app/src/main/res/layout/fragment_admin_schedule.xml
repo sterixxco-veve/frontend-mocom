@@ -4,15 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDFDFD" android:padding="24dp">
+    android:background="#FAFAFC"
+    android:padding="24dp">
 
     <TextView
         android:id="@+id/title_crud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-black"
         android:text="Kelola Jadwal"
-        android:textColor="#1E1E24"
+        android:textColor="#0F172A"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +24,7 @@
         android:id="@+id/ll_filters"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/title_crud"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,23 +36,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:hint="Bulan"
-            android:textColorHint="#8D99AE"
+            android:textColorHint="#94A3B8"
             app:hintTextColor="#4361EE"
             app:boxStrokeColor="#4361EE"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
 
             <AutoCompleteTextView
                 android:id="@+id/actvFilterMonth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#1E1E24"
+                android:textColor="#1E293B"
                 android:fontFamily="sans-serif"
-                android:paddingHorizontal="12dp"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="16dp"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,22 +64,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="6dp"
             android:hint="Tahun"
-            android:textColorHint="#8D99AE"
+            android:textColorHint="#94A3B8"
             app:hintTextColor="#4361EE"
             app:boxStrokeColor="#4361EE"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp">
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp">
 
             <AutoCompleteTextView
                 android:id="@+id/actvFilterYear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#1E1E24"
+                android:textColor="#1E293B"
                 android:fontFamily="sans-serif"
-                android:paddingHorizontal="12dp"
+                android:paddingVertical="16dp"
+                android:paddingHorizontal="16dp"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,7 +104,8 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:scrollbars="none"
-            android:paddingBottom="88dp" />
+            android:scrollbarStyle="outsideOverlay"
+            android:paddingBottom="96dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -105,9 +113,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:backgroundTint="#4361EE" app:srcCompat="@android:drawable/ic_input_add"
+        android:backgroundTint="#4361EE"
         app:tint="#FFFFFF"
-        app:elevation="4dp" app:pressedTranslationZ="8dp"
+        app:elevation="4dp"
+        app:hoveredFocusedTranslationZ="6dp"
+        app:pressedTranslationZ="8dp"
         app:fabSize="normal"
         app:useCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"

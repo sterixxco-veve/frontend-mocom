@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 🎯 PERBAIKAN 1: SwipeRefreshLayout diletakkan di paling luar sebagai ROOT -->
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,12 +6,13 @@
     android:id="@+id/swipe_refresh_broadcast"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDFDFD">
+    android:background="#FAFAFC">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -23,8 +23,9 @@
                 android:id="@+id/tv_broadcast_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Admin Broadcast"
-                android:textColor="#1E1E24"
+                android:textColor="#1E293B"
                 android:textSize="26sp"
                 android:fontFamily="sans-serif-black"
                 android:textStyle="bold"
@@ -32,15 +33,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- FORM UNTUK KIRIM BROADCAST -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_form"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                app:cardBackgroundColor="#EEF2F6"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
+                android:layout_marginTop="28dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_broadcast_title">
@@ -54,12 +54,7 @@
                         android:id="@+id/tv_subject_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed-medium"
-                        android:letterSpacing="0.05"
-                        android:text="Judul Broadcast"
-                        android:textColor="#4361EE"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
+                        android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,28 +63,27 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusTopStart="12dp"
+                        android:hint="Judul Broadcast"
+                        android:textColorHint="#94A3B8"
+                        app:hintTextColor="#4361EE"
                         app:boxStrokeColor="#4361EE"
-                        app:hintEnabled="false"
+                        app:boxStrokeWidthFocused="2dp"
+                        app:boxCornerRadiusBottomEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusTopStart="14dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_subject_label">
+                        app:layout_constraintTop_toTopOf="parent">
 
-                        <EditText
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_subject"
                             android:layout_width="match_parent"
-                            android:layout_height="52dp"
-                            android:background="@null"
+                            android:layout_height="wrap_content"
                             android:fontFamily="sans-serif"
-                            android:hint="Contoh: Urgent - Jadwal Ganti Alpro"
                             android:inputType="text"
-                            android:paddingHorizontal="16dp"
-                            android:textColor="#1E1E24"
-                            android:textColorHint="#ADB5BD"
+                            android:paddingVertical="16dp"
+                            android:textColor="#1E293B"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,59 +91,54 @@
                         android:id="@+id/tv_message_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:fontFamily="sans-serif-condensed-medium"
-                        android:letterSpacing="0.05"
-                        android:text="Detail Broadcast"
-                        android:textColor="#4361EE"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/til_subject_wrapper" />
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/til_subject_wrapper"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/til_message_wrapper"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusTopStart="12dp"
+                        android:layout_marginTop="16dp"
+                        android:hint="Detail Broadcast"
+                        android:textColorHint="#94A3B8"
+                        app:hintTextColor="#4361EE"
                         app:boxStrokeColor="#4361EE"
-                        app:hintEnabled="false"
+                        app:boxStrokeWidthFocused="2dp"
+                        app:boxCornerRadiusBottomEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusTopStart="14dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_message_label">
+                        app:layout_constraintTop_toBottomOf="@id/til_subject_wrapper">
 
-                        <EditText
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_message"
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
-                            android:background="@null"
+                            android:layout_height="130dp"
                             android:fontFamily="sans-serif"
                             android:gravity="top|start"
-                            android:hint="Tulis instruksi materi praktikum atau catatan penting di sini..."
                             android:inputType="textMultiLine"
                             android:padding="16dp"
-                            android:textColor="#1E1E24"
-                            android:textColorHint="#ADB5BD"
+                            android:textColor="#1E293B"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_send_broadcast"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
+                        android:layout_height="54dp"
                         android:layout_marginTop="24dp"
                         android:backgroundTint="#4361EE"
                         android:fontFamily="sans-serif-medium"
                         android:stateListAnimator="@null"
                         android:text="Kirim Broadcast"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp"
+                        android:textSize="15sp"
                         android:textStyle="bold"
+                        android:letterSpacing="0.01"
                         app:cornerRadius="14dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -162,9 +151,9 @@
                 android:id="@+id/tv_history_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="32dp"
                 android:text="Riwayat Broadcast Hari Ini"
-                android:textColor="#1E1E24"
+                android:textColor="#1E293B"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
                 android:textStyle="bold"
@@ -172,13 +161,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- 🎯 RECYCLERVIEW HORIZONTAL YANG BISA DIGESER KANAN KIRI -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_broadcast_history"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="14dp"
                 android:clipToPadding="false"
+                android:paddingEnd="24dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_broadcast"

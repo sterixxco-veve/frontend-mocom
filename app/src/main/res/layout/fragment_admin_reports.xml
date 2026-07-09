@@ -2,87 +2,107 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FDFDFD">
+    android:background="#FAFAFC"
+    android:overScrollMode="never"
+    android:scrollbars="none">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="24dp">
 
+        <!-- Title Header -->
         <TextView
             android:id="@+id/tv_title_reports"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Laporan Kehadiran &amp; AI Burnout"
-            android:textColor="#1E1E24"
-            android:textSize="20sp"
+            android:textColor="#0F172A"
+            android:textSize="22sp"
             android:fontFamily="sans-serif-black"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Subtitle Header -->
         <TextView
             android:id="@+id/tv_subtitle_reports"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Unduh berkas PDF resmi serta lakukan peninjauan data secara instan."
-            android:textColor="#8D99AE"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-medium"
-            android:lineSpacingExtra="3dp"
-            android:layout_marginTop="4dp"
+            android:textColor="#64748B"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginTop="6dp"
             app:layout_constraintTop_toBottomOf="@id/tv_title_reports"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
+        <!-- Start Date Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_select_start_date"
-            style="?attr/materialButtonOutlinedStyle"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="6dp"
-            android:text="📅 Mulai: --/--/----"
-            android:textColor="#475569"
-            android:textSize="12sp"
-            android:padding="2dp"
+            android:text="Mulai: --/--/----"
+            android:textColor="#334155"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:strokeColor="#CBD5E1"
-            app:cornerRadius="8dp"
+            app:strokeWidth="1dp"
+            app:cornerRadius="14dp"
             app:layout_constraintTop_toBottomOf="@id/tv_subtitle_reports"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_select_end_date" />
 
-        <Button
+        <!-- End Date Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_select_end_date"
-            style="?attr/materialButtonOutlinedStyle"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
             android:layout_marginStart="6dp"
-            android:text="📅 Selesai: --/--/----"
-            android:textColor="#475569"
-            android:textSize="12sp"
-            android:padding="2dp"
+            android:text="Selesai: --/--/----"
+            android:textColor="#334155"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-medium"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             app:strokeColor="#CBD5E1"
-            app:cornerRadius="8dp"
+            app:strokeWidth="1dp"
+            app:cornerRadius="14dp"
             app:layout_constraintTop_toBottomOf="@id/tv_subtitle_reports"
             app:layout_constraintStart_toEndOf="@id/btn_select_start_date"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Staff Dropdown Wrapper -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layout_select_staff"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="14dp"
+            android:hint="Pilih Staff / Asisten (Opsional)"
+            android:textColorHint="#94A3B8"
+            app:hintTextColor="#4F46E5"
+            app:boxStrokeColor="#4F46E5"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="14dp"
+            app:boxCornerRadiusTopEnd="14dp"
+            app:boxCornerRadiusBottomStart="14dp"
+            app:boxCornerRadiusBottomEnd="14dp"
             app:layout_constraintTop_toBottomOf="@id/btn_select_start_date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -90,173 +110,205 @@
             <AutoCompleteTextView
                 android:id="@+id/actv_select_staff"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:hint="Pilih Staff (Opsional)"
+                android:layout_height="wrap_content"
                 android:inputType="none"
-                android:textSize="13sp"
-                android:textColor="#475569"
-                android:padding="10dp" />
+                android:textSize="14sp"
+                android:textColor="#1E293B"
+                android:paddingVertical="16dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <!-- Preview Attendance Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_preview_attendance"
             android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="8dp"
-            android:text="🔍 Tinjau Laporan Kehadiran"
-            android:backgroundTint="#EEF2F6"
-            android:textColor="#4361EE"
-            android:textSize="13sp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:text="Tinjau Laporan Kehadiran"
+            app:backgroundTint="#EEF2FF"
+            android:textColor="#4F46E5"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="bold"
+            android:letterSpacing="0.01"
             android:stateListAnimator="@null"
-            app:cornerRadius="12dp"
+            app:cornerRadius="14dp"
             app:layout_constraintTop_toBottomOf="@id/layout_select_staff"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
+        <!-- Preview Burnout Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_preview_burnout"
             android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="6dp"
-            android:text="🔥 Tinjau Analisis Burnout AI"
-            android:backgroundTint="#EEF2F6"
-            android:textColor="#4361EE"
-            android:textSize="13sp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="Tinjau Analisis Burnout AI"
+            app:backgroundTint="#EEF2FF"
+            android:textColor="#4F46E5"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="bold"
+            android:letterSpacing="0.01"
             android:stateListAnimator="@null"
-            app:cornerRadius="12dp"
+            app:cornerRadius="14dp"
             app:layout_constraintTop_toBottomOf="@id/btn_preview_attendance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Section Title PDF Viewer -->
         <TextView
             android:id="@+id/tv_pdf_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="PDF Viewer Terintegrasi (Pratinjau Langsung)"
-            android:textColor="#4361EE"
-            android:textSize="13sp"
-            android:fontFamily="sans-serif-bold"
+            android:layout_marginTop="32dp"
+            android:text="Pratinjau Dokumen PDF"
+            android:textColor="#1E293B"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-black"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/btn_preview_burnout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_download_pdf" />
 
-        <Button
+        <!-- Download PDF Action Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_download_pdf"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:text="📥 Unduh PDF"
-            android:textSize="11sp"
+            android:layout_height="38dp"
+            android:text="Unduh PDF"
+            android:textSize="12sp"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#2E7D32"
+            app:backgroundTint="#16A34A"
             android:visibility="gone"
-            app:cornerRadius="8dp"
-            android:paddingHorizontal="12dp"
+            app:cornerRadius="10dp"
+            android:paddingHorizontal="16dp"
             android:layout_marginStart="8dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             app:layout_constraintTop_toTopOf="@id/tv_pdf_title"
             app:layout_constraintBottom_toBottomOf="@id/tv_pdf_title"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Main PDF Viewer Outer Container -->
         <FrameLayout
             android:id="@+id/pdf_viewer_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:background="#EEF2F6"
-            android:paddingBottom="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_pdf_viewer_rounded"
+            android:paddingBottom="8dp"
+            tools:ignore="MissingDefaultResource"
             app:layout_constraintTop_toBottomOf="@id/tv_pdf_title"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/tv_pdf_placeholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Belum ada dokumen PDF yang dibuka.\nSilakan ketuk salah satu tombol di atas."
-                android:textColor="#8D99AE"
-                android:gravity="center"
-                android:fontFamily="sans-serif-medium"
-                android:lineSpacingExtra="4dp"
-                android:padding="24dp"
-                android:textSize="14sp"/>
-
-            <FrameLayout
-                android:id="@+id/sv_pdf_content"
+            <!-- CardView fallback style helper for rounded engine container -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_margin="16dp"
-                android:background="#FFFFFF"
-                android:padding="20dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#F8FAFC">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
+                    <!-- Empty Placeholder State -->
                     <TextView
-                        android:id="@+id/tv_pdf_doc_header"
-                        android:layout_width="0dp"
+                        android:id="@+id/tv_pdf_placeholder"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="EDUSTAFF PRO REPORT"
-                        android:textColor="#4361EE"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-condensed-medium"
-                        android:textStyle="bold"
+                        android:text="Belum ada dokumen PDF yang dibuka.\nSilakan ketuk salah satu tombol di atas."
+                        android:textColor="#94A3B8"
                         android:gravity="center"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tv_pdf_doc_title"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="LAPORAN DATA"
-                        android:textColor="#1E1E24"
-                        android:textSize="18sp"
-                        android:fontFamily="sans-serif-black"
-                        android:textStyle="bold"
-                        android:gravity="center"
-                        android:layout_marginTop="6dp"
-                        app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_header"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <View
-                        android:id="@+id/divider_pdf"
-                        android:layout_width="0dp"
-                        android:layout_height="1.5dp"
-                        android:background="#EEF2F6"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_title"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tv_pdf_doc_body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="20dp"
-                        android:text="Detail Laporan..."
-                        android:textColor="#2D3142"
-                        android:textSize="14sp"
-                        android:fontFamily="sans-serif"
+                        android:fontFamily="sans-serif-medium"
                         android:lineSpacingExtra="5dp"
-                        app:layout_constraintTop_toBottomOf="@id/divider_pdf"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        android:padding="40dp"
+                        android:textSize="14sp"/>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </FrameLayout>
+                    <!-- Real Virtual Document Canvas Paper -->
+                    <FrameLayout
+                        android:id="@+id/sv_pdf_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_margin="16dp"
+                        android:background="#FFFFFF"
+                        android:elevation="3dp"
+                        android:padding="24dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <!-- PDF Doc Type Header -->
+                            <TextView
+                                android:id="@+id/tv_pdf_doc_header"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="OFFICIAL REPORT ACCREDITATION"
+                                android:textColor="#4F46E5"
+                                android:textSize="11sp"
+                                android:fontFamily="sans-serif-condensed-medium"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.05"
+                                android:gravity="center"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <!-- PDF Main Subject Title -->
+                            <TextView
+                                android:id="@+id/tv_pdf_doc_title"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="LAPORAN DATA"
+                                android:textColor="#0F172A"
+                                android:textSize="18sp"
+                                android:fontFamily="sans-serif-black"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginTop="6dp"
+                                app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_header"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <!-- Divider Border Line Line -->
+                            <View
+                                android:id="@+id/divider_pdf"
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:background="#E2E8F0"
+                                android:layout_marginTop="20dp"
+                                app:layout_constraintTop_toBottomOf="@id/tv_pdf_doc_title"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <!-- Main Body Rich Metadata Context Content -->
+                            <TextView
+                                android:id="@+id/tv_pdf_doc_body"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginBottom="12dp"
+                                android:text="Detail Laporan..."
+                                android:textColor="#334155"
+                                android:textSize="14sp"
+                                android:fontFamily="sans-serif"
+                                android:lineSpacingExtra="6dp"
+                                app:layout_constraintTop_toBottomOf="@id/divider_pdf"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E2E8F0">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingVertical="12dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvShiftTitle"
@@ -18,32 +25,29 @@
             android:text="Nama Shift Kerja"
             android:textColor="#0F172A"
             android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif-bold"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvShiftTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="⏱️ 08:00 - 16:00"
-            android:textColor="#475569"
-            android:fontFamily="sans-serif"
+            android:layout_marginTop="8dp"
+            android:text="08:00 - 16:00"
+            android:textColor="#52525B"
+            android:fontFamily="sans-serif-medium"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvShiftLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="📍 Gedung Rektorat Lantai 2"
-            android:textColor="#475569"
+            android:layout_marginTop="4dp"
+            android:text="Gedung Rektorat Lantai 2"
+            android:textColor="#71717A"
             android:fontFamily="sans-serif"
             android:textSize="13sp" />
+
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#F1F5F9" />
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

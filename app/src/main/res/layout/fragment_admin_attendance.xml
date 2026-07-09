@@ -5,15 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDFDFD"
+    android:background="#FAFAFC"
     android:padding="24dp">
 
     <TextView
         android:id="@+id/tv_title_attendance_monitoring"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Monitoring Absensi Staff"
-        android:textColor="#1E1E24"
+        android:textColor="#1E293B"
         android:textSize="26sp"
         android:fontFamily="sans-serif-black"
         android:textStyle="bold"
@@ -26,10 +27,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Pantau rekam jejak jam masuk, keluar, dan keterlambatan asisten/staff laboratorium."
-        android:textColor="#8D99AE"
+        android:textColor="#64748B"
         android:textSize="14sp"
-        android:fontFamily="sans-serif-medium"
-        android:lineSpacingExtra="3dp"
+        android:fontFamily="sans-serif"
+        android:lineSpacingExtra="4dp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/tv_title_attendance_monitoring"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,9 +40,10 @@
         android:id="@+id/hsv_filters"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:scrollbars="none"
         android:overScrollMode="never"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/tv_subtitle_attendance_monitoring"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -50,67 +52,79 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingEnd="24dp"
-            android:paddingBottom="4dp">
+            android:paddingBottom="8dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_filter_all"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:minWidth="105dp"
+                android:layout_height="46dp"
+                android:minWidth="95dp"
                 android:text="Semua"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
-                android:backgroundTint="#4361EE"
+                android:letterSpacing="0.01"
+                app:backgroundTint="#4361EE"
                 android:textColor="@android:color/white"
                 android:stateListAnimator="@null"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="14dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_filter_present"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginStart="12dp"
-                android:minWidth="105dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="10dp"
+                android:minWidth="95dp"
                 android:text="Present"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
-                android:backgroundTint="#EEF2F6"
-                android:textColor="#8D99AE"
+                android:letterSpacing="0.01"
+                app:backgroundTint="#FFFFFF"
+                android:textColor="#64748B"
+                app:strokeColor="#CBD5E1"
+                app:strokeWidth="1dp"
                 android:stateListAnimator="@null"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="14dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_filter_late"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginStart="12dp"
-                android:minWidth="105dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="10dp"
+                android:minWidth="95dp"
                 android:text="Late"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
-                android:backgroundTint="#EEF2F6"
-                android:textColor="#8D99AE"
+                android:letterSpacing="0.01"
+                app:backgroundTint="#FFFFFF"
+                android:textColor="#64748B"
+                app:strokeColor="#CBD5E1"
+                app:strokeWidth="1dp"
                 android:stateListAnimator="@null"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="14dp" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_filter_absent"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginStart="12dp"
-                android:minWidth="105dp"
+                android:layout_height="46dp"
+                android:layout_marginStart="10dp"
+                android:minWidth="95dp"
                 android:text="Absent"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
-                android:backgroundTint="#EEF2F6"
-                android:textColor="#8D99AE"
+                android:letterSpacing="0.01"
+                app:backgroundTint="#FFFFFF"
+                android:textColor="#64748B"
+                app:strokeColor="#CBD5E1"
+                app:strokeWidth="1dp"
                 android:stateListAnimator="@null"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="14dp" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -118,7 +132,7 @@
         android:id="@+id/swipeRefreshAttendance"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/hsv_filters"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -130,6 +144,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="24dp"
+            android:scrollbarStyle="outsideOverlay"
             tools:listitem="@layout/item_attendance" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
