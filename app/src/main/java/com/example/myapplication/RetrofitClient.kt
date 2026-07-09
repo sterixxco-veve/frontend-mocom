@@ -32,9 +32,9 @@ fun isEmulator(): Boolean {
 
 object RetrofitClient {
     val BASE_URL = if (isEmulator()) {
-        "http://10.0.2.2:3000"
+        "http://backend-mocom.vercel.app"
     } else {
-        "http://${BuildConfig.DEVELOPER_IP}:3000"
+        "http://backend-mocom.vercel.app"
     }
 
     private val gson = GsonBuilder()

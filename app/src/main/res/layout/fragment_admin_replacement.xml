@@ -23,12 +23,12 @@
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
-            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="Back"
+            android:src="@drawable/arrow_left_solid"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:contentDescription="Back" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#1C4FC7" />
 
         <TextView
             android:id="@+id/tv_title"
