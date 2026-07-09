@@ -4,152 +4,548 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDFDFD"> <ScrollView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:scrollbars="none"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
+    android:background="#F8FAFC">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp">
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/tv_stat_title"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Statistik Tutor Aktif"
-            android:textColor="#1E1E24"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif-black"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:padding="20dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_stats"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#EEF2F6"
-            app:layout_constraintTop_toBottomOf="@id/tv_stat_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            <!-- Title Header -->
+            <TextView
+                android:id="@+id/tv_dashboard_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dashboard Admin"
+                android:textColor="#0F172A"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-black"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_company_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Memuat nama perusahaan..."
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                app:layout_constraintTop_toBottomOf="@id/tv_dashboard_title"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Summary Cards Grid (2x2) -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_grid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="18dp">
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_company_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/tv_tutor_count"
+                <!-- Card 1: Tutor Aktif -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_tutors"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Tutor Mengajar: 14"
-                    android:textColor="#1E1E24"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-medium"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/tv_empty_schedules" />
+                    app:layout_constraintEnd_toStartOf="@id/card_schedules">
 
-                <TextView
-                    android:id="@+id/tv_empty_schedules"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:id="@+id/img_tutor"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            app:tint="#3B82F6"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_tutor_count_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#1E293B"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-bold"
+                            app:layout_constraintBottom_toTopOf="@id/tv_tutor_lbl"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_tutor_lbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tutor Aktif"
+                            android:textColor="#64748B"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card 2: Total Jadwal -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_schedules"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Jadwal Kosong: 2 ⚠️"
-                    android:textColor="#F43F5E"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-bold"
-                    android:textStyle="bold"
-                    android:textAlignment="viewEnd"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginBottom="12dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tv_tutor_count"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintStart_toEndOf="@id/card_tutors"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:id="@+id/img_schedule"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/ic_menu_today"
+                            app:tint="#10B981"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_schedule_count_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#1E293B"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-bold"
+                            app:layout_constraintBottom_toTopOf="@id/tv_schedule_lbl"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_schedule_lbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Jadwal"
+                            android:textColor="#64748B"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card 3: Persentase Kehadiran -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_attendance"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/card_tutors"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/card_pending">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:id="@+id/img_attendance"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/ic_menu_info_details"
+                            app:tint="#F59E0B"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_attendance_rate_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textColor="#1E293B"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-bold"
+                            app:layout_constraintBottom_toTopOf="@id/tv_attendance_lbl"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_attendance_lbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kehadiran"
+                            android:textColor="#64748B"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card 4: Izin Tertunda -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_pending"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:layout_constraintTop_toBottomOf="@id/card_schedules"
+                    app:layout_constraintStart_toEndOf="@id/card_attendance"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:id="@+id/img_pending"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/ic_menu_manage"
+                            app:tint="#EC4899"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_pending_count_val"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#1E293B"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-bold"
+                            app:layout_constraintBottom_toTopOf="@id/tv_pending_lbl"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_pending_lbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Izin Pending"
+                            android:textColor="#64748B"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLihatLeaveRequest"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_marginTop="16dp"
-            android:text="Lihat Permintaan Ganti Jadwal"
-            android:textStyle="bold"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#4F46E5"
-            android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/card_stats"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <TextView
-            android:id="@+id/tv_ai_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="AI Burnout Optimizer"
-            android:textColor="#4361EE" android:textSize="20sp"
-            android:fontFamily="sans-serif-black"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/btnLihatLeaveRequest"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_refresh_ai" />
-
-        <Button
-            android:id="@+id/btn_refresh_ai"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:icon="@android:drawable/stat_notify_sync"
-            app:iconTint="#4361EE" app:layout_constraintTop_toTopOf="@id/tv_ai_title"
-            app:layout_constraintBottom_toBottomOf="@id/tv_ai_title"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_ai"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#F0F4FF" app:strokeColor="#4361EE" app:strokeWidth="1dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_ai_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Chart Card (Grafik Kehadiran) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_chart_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp">
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:layout_constraintTop_toBottomOf="@id/layout_grid"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/tv_ai_content"
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ketuk tombol refresh di atas untuk meminta rekomendasi pembagian beban kerja optimal dari Gemini AI."
-                    android:textColor="#3A0CA3" android:textSize="14sp"
-                    android:fontFamily="sans-serif"
-                    android:lineSpacingExtra="5dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:padding="20dp">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:id="@+id/tv_chart_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rekap Grafik Kehadiran"
+                        android:textColor="#1E293B"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                    <!-- Stacked Horizontal Bar Chart representation -->
+                    <LinearLayout
+                        android:id="@+id/layout_stacked_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:background="#E2E8F0"
+                        android:weightSum="1"
+                        app:layout_constraintTop_toBottomOf="@id/tv_chart_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <!-- We will adjust layout_weight programmatically for these views -->
+                        <View
+                            android:id="@+id/view_bar_present"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.6"
+                            android:background="#10B981" />
+
+                        <View
+                            android:id="@+id/view_bar_late"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.3"
+                            android:background="#F59E0B" />
+
+                        <View
+                            android:id="@+id/view_bar_absent"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.1"
+                            android:background="#EF4444" />
+
+                    </LinearLayout>
+
+                    <!-- Chart Legend -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:weightSum="3"
+                        app:layout_constraintTop_toBottomOf="@id/layout_stacked_bar"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <!-- Hadir Legend -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:background="#10B981" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="Hadir"
+                                    android:textColor="#64748B"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_legend_present"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0 (0%)"
+                                android:textColor="#1E293B"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Terlambat Legend -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:background="#F59E0B" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="Telat"
+                                    android:textColor="#64748B"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_legend_late"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0 (0%)"
+                                android:textColor="#1E293B"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Alpa Legend -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:background="#EF4444" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="Alpa"
+                                    android:textColor="#64748B"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_legend_absent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="0 (0%)"
+                                android:textColor="#1E293B"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Navigation Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLihatLeaveRequest"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="20dp"
+                android:text="Lihat Permintaan Ganti Jadwal"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#4F46E5"
+                app:layout_constraintTop_toBottomOf="@id/card_chart_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- AI Optimizer Section -->
+            <TextView
+                android:id="@+id/tv_ai_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="AI Burnout Optimizer"
+                android:textColor="#4F46E5"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/btnLihatLeaveRequest"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_refresh_ai" />
+
+            <Button
+                android:id="@+id/btn_refresh_ai"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:icon="@android:drawable/stat_notify_sync"
+                app:iconTint="#4F46E5"
+                app:layout_constraintTop_toTopOf="@id/tv_ai_title"
+                app:layout_constraintBottom_toBottomOf="@id/tv_ai_title"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_ai"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#F0F4FF"
+                app:strokeColor="#C7D2FE"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_ai_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/tv_ai_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ketuk tombol refresh di atas untuk menganalisis dan mendapatkan rekomendasi pembagian beban kerja optimal dari Gemini AI."
+                        android:textColor="#3730A3"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

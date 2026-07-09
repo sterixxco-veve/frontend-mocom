@@ -32,6 +32,26 @@ class AdminActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         binding.bottomNav.setupWithNavController(navController)
 
+        // Perbaikan Bug Backstack Bottom Nav: Pastikan selalu kembali ke Dashboard utama (root) saat tab Dashboard diklik
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId == R.id.navigation_dashboard) {
+                val startDestId = navController.graph.startDestinationId
+                val navOptions = androidx.navigation.NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setRestoreState(false) // 🟢 Jangan restore state sub-fragment agar kembali ke root Dashboard
+                    .setPopUpTo(startDestId, false, true) // Simpan state tab sebelumnya
+                    .build()
+                try {
+                    navController.navigate(item.itemId, null, navOptions)
+                    true
+                } catch (e: Exception) {
+                    androidx.navigation.ui.NavigationUI.onNavDestinationSelected(item, navController)
+                }
+            } else {
+                androidx.navigation.ui.NavigationUI.onNavDestinationSelected(item, navController)
+            }
+        }
+
         // Inflate menu logout pada toolbar atas dan handle klik item
         binding.toolbar.inflateMenu(R.menu.admin_top_menu)
         binding.toolbar.setOnMenuItemClickListener { item ->

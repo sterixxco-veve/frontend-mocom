@@ -49,6 +49,10 @@ class AdminReplacementFragment:Fragment(R.layout.fragment_admin_replacement){
 
         _binding=FragmentAdminReplacementBinding.bind(view)
 
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         adapter=ReplacementAdapter{
 
             val bundle=Bundle()
@@ -69,9 +73,24 @@ class AdminReplacementFragment:Fragment(R.layout.fragment_admin_replacement){
 
         binding.rvReplacement.adapter=adapter
 
+        // Tampilkan loading, sembunyikan recycler view dan empty state
+        binding.pbLoading.visibility = View.VISIBLE
+        binding.rvReplacement.visibility = View.GONE
+        binding.layoutEmpty.visibility = View.GONE
+
         viewModel.replacementRequests.observe(viewLifecycleOwner){
 
-            adapter.submitList(it)
+            // Sembunyikan loading setelah data didapatkan
+            binding.pbLoading.visibility = View.GONE
+
+            if (it.isNullOrEmpty()) {
+                binding.rvReplacement.visibility = View.GONE
+                binding.layoutEmpty.visibility = View.VISIBLE
+            } else {
+                binding.rvReplacement.visibility = View.VISIBLE
+                binding.layoutEmpty.visibility = View.GONE
+                adapter.submitList(it)
+            }
 
         }
 
