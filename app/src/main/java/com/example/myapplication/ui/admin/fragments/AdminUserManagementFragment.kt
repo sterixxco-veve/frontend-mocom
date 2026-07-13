@@ -18,6 +18,8 @@ import com.example.myapplication.databinding.FragmentAdminUserManagementBinding 
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.example.myapplication.ui.admin.adapters.UserAdapter
+import androidx.core.widget.doAfterTextChanged
+import android.widget.ArrayAdapter
 
 class AdminUserManagementFragment : Fragment() {
 
@@ -34,6 +36,8 @@ class AdminUserManagementFragment : Fragment() {
 
     private var currentSelectedRoleId: Int = 2 // Default: 2 (Staff / Asisten)
     private var rawUserList: List<User> = emptyList()
+    private var searchQuery: String = ""
+    private var currentSortOption: String = "name_asc"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,6 +101,38 @@ class AdminUserManagementFragment : Fragment() {
             viewModel.loadUserByCompanyId(currentCompanyId)
         }
 
+        // 5a. Listener Input Pencarian
+        binding.etSearchUser.doAfterTextChanged { text ->
+            searchQuery = text?.toString().orEmpty()
+            filterAndDisplayData()
+        }
+
+        // 5b. Setup Dropdown Sort (Mengatasi bug AutoCompleteTextView yang menyaring pilihan menu)
+        val sortOptions = arrayOf("Nama A-Z", "Nama Z-A", "Terbaru Join", "Terlama Join")
+        val sortKeys = arrayOf("name_asc", "name_desc", "join_desc", "join_asc")
+        val sortAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, sortOptions) {
+            override fun getFilter(): android.widget.Filter {
+                return object : android.widget.Filter() {
+                    override fun performFiltering(constraint: CharSequence?): FilterResults {
+                        val results = FilterResults()
+                        results.values = sortOptions
+                        results.count = sortOptions.size
+                        return results
+                    }
+                    override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                        notifyDataSetChanged()
+                    }
+                }
+            }
+        }
+        binding.actvSortUser.setAdapter(sortAdapter)
+        binding.actvSortUser.setText(sortOptions[0], false)
+        currentSortOption = sortKeys[0]
+        binding.actvSortUser.setOnItemClickListener { _, _, position, _ ->
+            currentSortOption = sortKeys[position]
+            filterAndDisplayData()
+        }
+
         // 6. Listener FAB Tambah User via Binding
         binding.fabAddUser.setOnClickListener {
             val addUserModal = AddUserBottomSheetFragment()
@@ -105,9 +141,22 @@ class AdminUserManagementFragment : Fragment() {
     }
 
     private fun filterAndDisplayData() {
-        val filteredList = rawUserList
+        val query = searchQuery.trim()
+        var filteredList = rawUserList
             .filter { it.role_id == currentSelectedRoleId }
-            .sortedByDescending { it.is_active } // User Aktif otomatis naik ke atas
+            .filter {
+                query.isEmpty() ||
+                it.full_name.contains(query, ignoreCase = true) ||
+                it.email.contains(query, ignoreCase = true)
+            }
+
+        filteredList = when (currentSortOption) {
+            "name_asc" -> filteredList.sortedWith(compareByDescending<User> { it.is_active }.thenBy { it.full_name.lowercase() })
+            "name_desc" -> filteredList.sortedWith(compareByDescending<User> { it.is_active }.thenByDescending { it.full_name.lowercase() })
+            "join_desc" -> filteredList.sortedWith(compareByDescending<User> { it.is_active }.thenByDescending { it.created_at })
+            "join_asc" -> filteredList.sortedWith(compareByDescending<User> { it.is_active }.thenBy { it.created_at })
+            else -> filteredList.sortedWith(compareByDescending<User> { it.is_active }.thenBy { it.full_name.lowercase() })
+        }
 
         userAdapter.submitList(filteredList)
     }

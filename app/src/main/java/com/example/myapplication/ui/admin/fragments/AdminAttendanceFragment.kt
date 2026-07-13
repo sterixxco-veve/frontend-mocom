@@ -20,6 +20,7 @@ import com.example.myapplication.databinding.FragmentAdminAttendanceBinding
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.example.myapplication.ui.admin.adapter.AttendanceAdapter
+import androidx.core.widget.doAfterTextChanged
 import java.util.Locale
 
 class AdminAttendanceFragment : Fragment() {
@@ -39,6 +40,7 @@ class AdminAttendanceFragment : Fragment() {
     private var originalAttendanceList: List<Attendance> = emptyList()
     private var currentCompanyId: Int = 1
     private var currentFilterStatus: String = "all" // Pilihan: "all", "present", "late", "absent"
+    private var searchQuery: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,6 +67,12 @@ class AdminAttendanceFragment : Fragment() {
 
         // 3. Setup Logika Klik Filter 4 Status Kehadiran
         setupFilterButtons()
+
+        // 3a. Setup Logika Pencarian
+        binding.etSearchAttendance.doAfterTextChanged { text ->
+            searchQuery = text?.toString().orEmpty()
+            filterAndDisplayData()
+        }
 
         // 4. Amati pergerakan LiveData Absensi dari ViewModel
         setupObservers()
@@ -128,10 +136,18 @@ class AdminAttendanceFragment : Fragment() {
     // 💡 LOGIKA FILTER: Menyaring data absensi secara runtime lokal di HP
     // =========================================================================
     private fun filterAndDisplayData() {
-        val filteredList = if (currentFilterStatus == "all") {
-            originalAttendanceList
-        } else {
-            originalAttendanceList.filter { it.status.lowercase(Locale.getDefault()) == currentFilterStatus }
+        val query = searchQuery.trim()
+        val filteredList = originalAttendanceList.filter { attendance ->
+            // Filter berdasarkan status tombol
+            val statusMatch = currentFilterStatus == "all" ||
+                    attendance.status.lowercase(Locale.getDefault()) == currentFilterStatus
+
+            // Filter berdasarkan kolom pencarian (ID Penugasan / Nama Staff Penugasan)
+            val searchMatch = query.isEmpty() ||
+                    attendance.assignment_id.toString().contains(query) ||
+                    "staff penugasan #${attendance.assignment_id}".contains(query, ignoreCase = true)
+
+            statusMatch && searchMatch
         }
         attendanceAdapter.submitList(filteredList)
     }

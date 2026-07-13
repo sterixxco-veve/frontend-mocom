@@ -63,6 +63,10 @@ class AdminReplacementDetailFragment :
             replacementId
         )
 
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         viewModel.replacementDetail.observe(viewLifecycleOwner){
 
             binding.tvRequester.text =
@@ -77,8 +81,36 @@ class AdminReplacementDetailFragment :
             binding.tvTime.text =
                 "${it.startTime} - ${it.endTime}"
 
+            binding.tvCreatedAt.text =
+                formatDateTime(it.createdAt)
+
             binding.tvReason.text =
                 it.reason
+
+            // Jika status sudah tidak pending (yaitu approved / rejected), sembunyikan tombol dan tampilkan TextView keterangan di pojok kanan atas
+            val currentStatus = it.status.lowercase()
+            if (currentStatus == "approved" || currentStatus == "rejected") {
+                binding.layoutButtons.visibility = View.GONE
+                binding.tvStatusDetail.visibility = View.VISIBLE
+                
+                val shape = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 24f // Membuat sudut membulat (pill badge)
+                }
+                
+                if (currentStatus == "approved") {
+                    binding.tvStatusDetail.text = "APPROVED"
+                    binding.tvStatusDetail.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
+                    shape.setColor(android.graphics.Color.parseColor("#E8F5E9")) // Background Hijau Muda
+                } else {
+                    binding.tvStatusDetail.text = "REJECTED"
+                    binding.tvStatusDetail.setTextColor(android.graphics.Color.parseColor("#C62828"))
+                    shape.setColor(android.graphics.Color.parseColor("#FFEBEE")) // Background Merah Muda
+                }
+                binding.tvStatusDetail.background = shape
+            } else {
+                binding.layoutButtons.visibility = View.VISIBLE
+                binding.tvStatusDetail.visibility = View.GONE
+            }
 
         }
 
@@ -155,7 +187,28 @@ class AdminReplacementDetailFragment :
         super.onDestroyView()
 
         _binding = null
-
     }
 
+    private fun formatDateTime(dateStr: String?): String {
+        if (dateStr.isNullOrEmpty()) return "-"
+        return try {
+            val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault()).apply {
+                timeZone = java.util.TimeZone.getTimeZone("UTC")
+            }
+            val formatter = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault()).apply {
+                timeZone = java.util.TimeZone.getDefault()
+            }
+            val date = parser.parse(dateStr)
+            if (date != null) formatter.format(date) else dateStr
+        } catch (e: Exception) {
+            try {
+                val parser = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                val formatter = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault())
+                val date = parser.parse(dateStr)
+                if (date != null) formatter.format(date) else dateStr
+            } catch (e2: Exception) {
+                dateStr ?: "-"
+            }
+        }
+    }
 }

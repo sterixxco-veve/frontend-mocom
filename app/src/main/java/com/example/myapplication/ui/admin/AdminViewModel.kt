@@ -63,8 +63,10 @@ class AdminViewModel (
     // 💡 STATE FILTER AKTIF (Default: Juli / Bulan ke-7 dan Tahun 2026 sesuai image_de0505.png)
     val selectedMonth = MutableLiveData<Int>(0)
     val selectedYear = MutableLiveData<Int>(0)
+    val searchQuery = MutableLiveData<String>("")
+    val sortBy = MutableLiveData<String>("date_asc")
 
-    // 🎯 LIVEDATA UTAMA HASIL FILTER GABUNGAN (Bulan + Tahun) UNTUK RECYCLERVIEW FRAGMENT
+    // 🎯 LIVEDATA UTAMA HASIL FILTER GABUNGAN (Bulan + Tahun + Search + Sort) UNTUK RECYCLERVIEW FRAGMENT
     val filteredSchedules = MediatorLiveData<List<Schedule>>()
 
     private val _burnoutAnalysis = MutableLiveData<String>()
@@ -102,6 +104,8 @@ class AdminViewModel (
         filteredSchedules.addSource(_schedules) { combineAndFilterTime() }
         filteredSchedules.addSource(selectedMonth) { combineAndFilterTime() }
         filteredSchedules.addSource(selectedYear) { combineAndFilterTime() }
+        filteredSchedules.addSource(searchQuery) { combineAndFilterTime() }
+        filteredSchedules.addSource(sortBy) { combineAndFilterTime() }
 
         availableYears.addSource(_schedules) { currentSchedules ->
             if (currentSchedules.isNullOrEmpty()) {
@@ -130,15 +134,17 @@ class AdminViewModel (
         }
     }
 
-    // ⚙️ FUNGSI INTI PENYARINGAN WAKTU SECARA REAKTIF
+    // ⚙️ FUNGSI INTI PENYARINGAN WAKTU SECARA REAKTIF DAN SEARCH & SORT
     private fun combineAndFilterTime() {
         val currentSchedules = _schedules.value ?: return
         val month = selectedMonth.value ?: 0
         val year = selectedYear.value ?: 0
+        val query = searchQuery.value.orEmpty().trim()
+        val sort = sortBy.value ?: "date_asc"
 
         val cal = Calendar.getInstance()
 
-        val resultFiltered = currentSchedules.filter { schedule ->
+        var resultFiltered = currentSchedules.filter { schedule ->
             try {
                 cal.timeInMillis = schedule.start_time
 
@@ -147,12 +153,27 @@ class AdminViewModel (
 
                 val isMonthMatch = (month == 0) || (scheduleMonth == month)
                 val isYearMatch = (year == 0) || (scheduleYear == year)
+                
+                val isQueryMatch = query.isEmpty() ||
+                        schedule.title.contains(query, ignoreCase = true) ||
+                        schedule.location.orEmpty().contains(query, ignoreCase = true) ||
+                        schedule.description.orEmpty().contains(query, ignoreCase = true)
 
-                isMonthMatch && isYearMatch
+                isMonthMatch && isYearMatch && isQueryMatch
             } catch (e: Exception) {
                 false
             }
         }
+
+        // Jalankan pengurutan (Sorting)
+        resultFiltered = when (sort) {
+            "date_asc" -> resultFiltered.sortedBy { it.start_time }
+            "date_desc" -> resultFiltered.sortedByDescending { it.start_time }
+            "title_asc" -> resultFiltered.sortedBy { it.title.lowercase() }
+            "title_desc" -> resultFiltered.sortedByDescending { it.title.lowercase() }
+            else -> resultFiltered.sortedBy { it.start_time }
+        }
+
         filteredSchedules.value = resultFiltered
     }
 
@@ -160,6 +181,14 @@ class AdminViewModel (
     fun updateDateFilter(monthId: Int, year: Int) {
         selectedMonth.value = monthId
         selectedYear.value = year
+    }
+
+    fun updateSearchQuery(query: String) {
+        searchQuery.value = query
+    }
+
+    fun updateSortOption(option: String) {
+        sortBy.value = option
     }
 
 

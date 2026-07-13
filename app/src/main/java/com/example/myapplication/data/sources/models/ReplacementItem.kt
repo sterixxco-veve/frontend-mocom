@@ -18,5 +18,9 @@ data class ReplacementItem(
 
     val status: String,
 
+    val startTime: String,
+
+    val endTime: String,
+
     val createdAt: String
 )

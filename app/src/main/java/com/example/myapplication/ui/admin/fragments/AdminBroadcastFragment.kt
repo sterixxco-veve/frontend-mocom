@@ -51,7 +51,9 @@ class AdminBroadcastFragment : Fragment(R.layout.fragment_admin_broadcast) {
         viewModel.announcements.observe(viewLifecycleOwner) { listAnnouncement ->
             binding.swipeRefreshBroadcast.isRefreshing = false
             if (listAnnouncement != null) {
-                broadcastAdapter.submitList(listAnnouncement)
+                val oneDayAgo = System.currentTimeMillis() - 86400000L
+                val filteredList = listAnnouncement.filter { it.created_at >= oneDayAgo }
+                broadcastAdapter.submitList(filteredList)
             }
         }
 

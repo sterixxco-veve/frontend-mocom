@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity() {
                     sharedPref.edit().apply {
                         putInt("LOGIN_USER_ID", staffUserId)
                         putInt("LOGIN_COMPANY_ID", staffCompanyId)
+                        putString("LOGIN_USER_NAME", staffName)
                         apply() // Eksekusi penyimpanan di background
                     }
                     // =========================================================================

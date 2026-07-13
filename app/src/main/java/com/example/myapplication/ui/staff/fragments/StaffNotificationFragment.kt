@@ -74,10 +74,15 @@ class StaffNotificationFragment :
 
         viewModel.loadReplacementNotifications(userId)
 
-        viewModel.replacementNotifications.observe(viewLifecycleOwner){
-
-            adapter.submitList(it)
-
+        viewModel.replacementNotifications.observe(viewLifecycleOwner){ list ->
+            adapter.submitList(list)
+            if (list.isNullOrEmpty()) {
+                binding.llEmptyState.visibility = View.VISIBLE
+                binding.rvNotification.visibility = View.GONE
+            } else {
+                binding.llEmptyState.visibility = View.GONE
+                binding.rvNotification.visibility = View.VISIBLE
+            }
         }
 
     }

@@ -22,6 +22,8 @@ import com.example.myapplication.App
 import com.example.myapplication.ui.staff.adapter.BroadcastStaffAdapter
 import com.example.myapplication.ui.staff.adapters.ShiftTodayAdapter
 import kotlin.text.Charsets
+import androidx.appcompat.app.AlertDialog
+import android.widget.Button
 
 class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.ReaderCallback {
 
@@ -42,7 +44,7 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
 
     private var nfcAdapter: NfcAdapter? = null
     private var currentUserId = -1
-
+    private var nfcDialog: AlertDialog? = null
     private lateinit var announcementAdapter: BroadcastStaffAdapter
 
     // ==========================================
@@ -58,6 +60,8 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
         // Ambil ID dinamis dari session login
         val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", android.content.Context.MODE_PRIVATE)
         currentUserId = sharedPref.getInt("LOGIN_USER_ID", -1)
+        val staffName = sharedPref.getString("LOGIN_USER_NAME", "Staff")
+        binding.tvGreeting.text = "Halo, $staffName!"
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext())
 
@@ -66,13 +70,13 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
         }
 
         announcementAdapter = BroadcastStaffAdapter()
-
         binding.rvAnnouncements.apply {
-
-            layoutManager = LinearLayoutManager(requireContext())
-
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = announcementAdapter
-
+            
+            // Tambahkan snap helper agar RecyclerView berperilaku seperti komidi putar (Carousel)
+            val snapHelper = androidx.recyclerview.widget.PagerSnapHelper()
+            snapHelper.attachToRecyclerView(this)
         }
 
         val companyId =
@@ -108,7 +112,25 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
             binding.btnCheckIn.text = "⌛ Menunggu Tap Check Out..."
         }
 
-        Toast.makeText(requireContext(), "Sensor NFC Aktif! Silakan tempelkan kartu Anda.", Toast.LENGTH_SHORT).show()
+        // Tampilkan dialog scanning nfc kustom kita
+        val builder = AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_nfc_scanning, null)
+        builder.setView(dialogView)
+        builder.setCancelable(false)
+
+        val btnCancel = dialogView.findViewById<Button>(R.id.btn_cancel_nfc)
+        btnCancel.setOnClickListener {
+            isScanningMode = false
+            binding.btnCheckIn.isEnabled = true
+            binding.btnCheckIn.text = if (currentAction == "CHECK_IN") "Mulai Check In" else "Mulai Check Out"
+            nfcDialog?.dismiss()
+            Toast.makeText(requireContext(), "Pemindaian NFC dibatalkan", Toast.LENGTH_SHORT).show()
+        }
+
+        nfcDialog = builder.create().apply {
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+        }
+        nfcDialog?.show()
     }
 
     // ==========================================
@@ -129,6 +151,7 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
         // Kembalikan pekerjaan ke Main UI Thread Android
         requireActivity().runOnUiThread {
             isScanningMode = false
+            nfcDialog?.dismiss()
             Toast.makeText(requireContext(), "Kartu Terbaca: $finalUidToSend. Memproses...", Toast.LENGTH_SHORT).show()
 
             // 3. Tembak API absen menggunakan UID topeng tadi
@@ -152,16 +175,27 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
                         currentAction = "CHECK_IN"
                         binding.btnCheckIn.text = "Mulai Check In"
                         binding.btnCheckIn.isEnabled = true
+                        binding.tvAttendance.text = "Belum Melakukan Absen Hari Ini"
+                        binding.tvAttendance.setTextColor(Color.parseColor("#64748B"))
                     } else if (attendance.check_out.isNullOrEmpty()) {
                         // Kasus B: Sudah check-in tapi kolom check-out masih kosong murni
                         currentAction = "CHECK_OUT"
                         binding.btnCheckIn.text = "Mulai Check Out"
                         binding.btnCheckIn.isEnabled = true
+                        
+                        val inTime = formatTime(attendance.check_in)
+                        binding.tvAttendance.text = "Check-In: $inTime (Menunggu Check-Out)"
+                        binding.tvAttendance.setTextColor(Color.parseColor("#E65100"))
                     } else {
                         // Kasus C: Keduanya sudah terpenuhi (Selesai shift tugas)
                         currentAction = "DONE"
                         binding.btnCheckIn.text = "Sudah Absen Hari Ini (Selesai)"
                         binding.btnCheckIn.isEnabled = false
+                        
+                        val inTime = formatTime(attendance.check_in)
+                        val outTime = formatTime(attendance.check_out)
+                        binding.tvAttendance.text = "Check-In: $inTime | Check-Out: $outTime (Shift Selesai)"
+                        binding.tvAttendance.setTextColor(Color.parseColor("#2E7D32"))
                     }
                 }
             }
@@ -176,6 +210,7 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
                 // kembalikan kondisi tombol ke posisi normal agar bisa diklik ulang
                 if (msg.contains("Gagal") || msg.contains("Error") || msg.contains("ditolak")) {
                     isScanningMode = false
+                    nfcDialog?.dismiss()
                     binding.btnCheckIn.isEnabled = true
                     binding.btnCheckIn.text = if (currentAction == "CHECK_IN") "Mulai Check In" else "Mulai Check Out"
                 }
@@ -183,13 +218,11 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-
-            viewModel.announcements.collectLatest {
-
-                announcementAdapter.submitList(it)
-
+            viewModel.announcements.collectLatest { list ->
+                val oneDayAgo = System.currentTimeMillis() - 86400000L
+                val filteredList = list.filter { it.created_at >= oneDayAgo }
+                announcementAdapter.submitList(filteredList)
             }
-
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -257,6 +290,18 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
     override fun onStop() {
         super.onStop()
         nfcAdapter?.disableReaderMode(requireActivity())
+    }
+
+    private fun formatTime(dateStr: String?): String {
+        if (dateStr.isNullOrEmpty()) return "--:--"
+        return try {
+            val parser = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            val formatter = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+            val date = parser.parse(dateStr)
+            if (date != null) formatter.format(date) else "--:--"
+        } catch (e: java.lang.Exception) {
+            "--:--"
+        }
     }
 
     override fun onDestroyView() {

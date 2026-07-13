@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.OnConflictStrategy
 import com.example.myapplication.data.sources.local.entities.AnnouncementEntity
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
@@ -20,6 +21,9 @@ interface AnnouncementDao{
 
 //    @Update
 //    suspend fun updateUser(user: UserEntity)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnnouncement(announcement: AnnouncementEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllAnnouncements(announcements: List<AnnouncementEntity>)
 }

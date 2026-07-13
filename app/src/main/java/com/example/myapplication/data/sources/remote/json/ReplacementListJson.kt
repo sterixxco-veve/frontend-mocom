@@ -44,6 +44,10 @@ data class ReplacementListJson(
 
             status = status,
 
+            startTime = start_time,
+
+            endTime = end_time,
+
             title = title,
 
             location = location,

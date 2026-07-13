@@ -13,16 +13,36 @@
         android:padding="24dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_ai_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Detail Request Ganti Jadwal"
-            android:textColor="#4361EE"
-            android:textSize="22sp"
-            android:fontFamily="sans-serif-black"
-            android:textStyle="bold"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Back"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/arrow_left_solid"
+                app:tint="#1E293B" />
+
+            <TextView
+                android:id="@+id/tv_ai_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="Detail Request"
+                android:textColor="#1E293B"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black"
+                android:textStyle="bold"/>
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -34,89 +54,130 @@
             app:strokeColor="#E2E8F0"
             app:strokeWidth="1dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Asisten Pemohon (Requester)"
-                    android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-medium" />
-
-                <TextView
-                    android:id="@+id/tvRequester"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="Nama Pemohon"
-                    android:textColor="#1E293B"
-                    android:textSize="16sp"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Asisten Pemohon (Requester)"
+                         android:textColor="#94A3B8"
+                         android:textSize="12sp"
+                         android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/tvRequester"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Nama Pemohon"
+                        android:textColor="#1E293B"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-bold"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Asisten Pengganti (Replacement)"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/tvReplacement"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Nama Pengganti"
+                        android:textColor="#1E293B"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mata Kuliah / Kelas"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/tvSchedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="Materi Praktikum Alpro"
+                        android:textColor="#1E293B"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Waktu Perpindahan"
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Senin, 08:00 - 10:00"
+                        android:textColor="#1E293B"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginTop="16dp"
+                         android:text="Diajukan Pada"
+                         android:textColor="#94A3B8"
+                         android:textSize="12sp"
+                         android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                         android:id="@+id/tvCreatedAt"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_marginTop="4dp"
+                         android:text="--"
+                         android:textColor="#1E293B"
+                         android:textSize="15sp"
+                         android:fontFamily="sans-serif" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvStatusDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="APPROVED"
+                    android:textSize="12sp"
                     android:fontFamily="sans-serif-bold"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:visibility="gone" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Asisten Pengganti (Replacement)"
-                    android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-medium" />
-
-                <TextView
-                    android:id="@+id/tvReplacement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="Nama Pengganti"
-                    android:textColor="#1E293B"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mata Kuliah / Kelas"
-                    android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-medium" />
-
-                <TextView
-                    android:id="@+id/tvSchedule"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="Materi Praktikum Alpro"
-                    android:textColor="#1E293B"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Waktu Perpindahan"
-                    android:textColor="#94A3B8"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-medium" />
-
-                <TextView
-                    android:id="@+id/tvTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Senin, 08:00 - 10:00"
-                    android:textColor="#1E293B"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif" />
-
-            </LinearLayout>
+            </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
@@ -158,6 +219,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
+            android:id="@+id/layoutButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -194,6 +256,8 @@
                 app:cornerRadius="14dp"
                 android:stateListAnimator="@null" />
         </LinearLayout>
+
+
 
     </LinearLayout>
 </ScrollView>

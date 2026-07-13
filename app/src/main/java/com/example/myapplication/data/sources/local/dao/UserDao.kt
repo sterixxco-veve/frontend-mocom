@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.OnConflictStrategy
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
 import com.example.myapplication.data.sources.models.User
@@ -24,6 +25,9 @@ interface UserDao{
     suspend fun deleteUserById(userId: Int)
     @Update
     suspend fun updateUser(user: UserEntity)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllUsers(users: List<UserEntity>)
 }

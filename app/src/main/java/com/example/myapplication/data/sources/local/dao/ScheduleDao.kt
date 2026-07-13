@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.OnConflictStrategy
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 
 @Dao
@@ -21,7 +22,7 @@ interface ScheduleDao {
     suspend fun insert(schedule: ScheduleEntity)
     @Query("DELETE FROM schedules WHERE id = :scheduleId")
     suspend fun deleteScheduleById(scheduleId: Int)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun bulkInsert(schedules: List<ScheduleEntity>)
     @Update
     suspend fun update(schedule: ScheduleEntity)

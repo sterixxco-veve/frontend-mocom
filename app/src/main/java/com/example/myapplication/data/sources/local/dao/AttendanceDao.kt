@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.OnConflictStrategy
 import com.example.myapplication.data.sources.local.entities.AttendanceEntity
 import com.example.myapplication.data.sources.local.entities.ScheduleEntity
 import com.example.myapplication.data.sources.local.entities.UserEntity
@@ -31,6 +32,9 @@ interface AttendanceDao {
     suspend fun deleteAttendanceById(id: Int)
     @Update
     suspend fun updateAttendance(attendanceEntity: AttendanceEntity)
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAttendance(attendanceEntity: AttendanceEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllAttendances(attendances: List<AttendanceEntity>)
 }

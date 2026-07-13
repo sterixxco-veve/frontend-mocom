@@ -187,8 +187,6 @@ class AdminReportsFragment : Fragment(R.layout.fragment_admin_reports) {
 
         viewModel.burnoutAnalysis.observe(viewLifecycleOwner) { analysisText ->
             if (analysisText.isNotEmpty() && analysisText != "Sedang memuat data dan menganalisis..." && analysisText != "Tidak ada data absensi untuk dianalisis pada rentang tanggal tersebut.") {
-                binding.btnPreviewBurnout.isEnabled = true
-                binding.btnPreviewBurnout.text = "🔥 Tinjau Analisis Burnout AI"
 
                 binding.tvPdfPlaceholder.visibility = View.GONE
                 binding.svPdfContent.visibility = View.VISIBLE
@@ -198,11 +196,9 @@ class AdminReportsFragment : Fragment(R.layout.fragment_admin_reports) {
                 binding.btnDownloadPdf.visibility = View.VISIBLE
                 activeReportType = ReportType.BURNOUT
             } else if (analysisText == "Sedang memuat data dan menganalisis...") {
-                binding.btnPreviewBurnout.isEnabled = false
-                binding.btnPreviewBurnout.text = "Menganalisis..."
+
             } else if (analysisText.isNotEmpty()) {
-                binding.btnPreviewBurnout.isEnabled = true
-                binding.btnPreviewBurnout.text = "🔥 Tinjau Analisis Burnout AI"
+
                 Toast.makeText(context, analysisText, Toast.LENGTH_LONG).show()
                 binding.tvPdfPlaceholder.visibility = View.VISIBLE
                 binding.svPdfContent.visibility = View.GONE
@@ -273,62 +269,7 @@ class AdminReportsFragment : Fragment(R.layout.fragment_admin_reports) {
         // ==========================================
         // PERBAIKAN 2: PREVIEW BURNOUT AI (STRING TO MILLIS & DISPLAY)
         // ==========================================
-        binding.btnPreviewBurnout.setOnClickListener {
-            val filteredStaffForAi = if (selectedStaff != null) {
-                listOf(selectedStaff!!)
-            } else {
-                usersList.filter { it.role_id != 1 }
-            }
 
-            val filteredAttendanceForAi = attendanceList.filter { att ->
-                val checkInMs = parseDateToMillis(att.check_in)
-                val dateInRange = checkInMs in startDateMs..endDateMs
-                val matchesStaff = if (selectedStaff != null) {
-                    val assignment = assignmentsList.find { it.id == att.assignment_id }
-                    assignment != null && assignment.user_id == selectedStaff!!.id
-                } else {
-                    true
-                }
-                dateInRange && matchesStaff
-            }
-
-            if (filteredAttendanceForAi.isEmpty()) {
-                Toast.makeText(context, "Tidak ada data absensi untuk dianalisis oleh AI.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val promptBuilder = StringBuilder()
-            promptBuilder.append("Analisis tingkat burnout staff berikut:\n\n")
-
-            promptBuilder.append("Daftar Staff Aktif:\n")
-            filteredStaffForAi.forEach { user ->
-                promptBuilder.append("- ID #${user.id}: ${user.full_name} (Status: ${if (user.is_active == 1) "Aktif" else "Nonaktif"})\n")
-            }
-
-            promptBuilder.append("\nRiwayat Kehadiran:\n")
-
-            filteredAttendanceForAi.forEach { att ->
-                val checkInStr = formatDisplayDate(att.check_in, "dd/MM/yyyy HH:mm")
-                val checkOutStr = formatDisplayDate(att.check_out, "dd/MM/yyyy HH:mm")
-
-                val assignment = assignmentsList.find { it.id == att.assignment_id }
-                val staffName = filteredStaffForAi.find { it.id == assignment?.user_id }?.full_name
-                    ?: usersList.find { it.id == assignment?.user_id }?.full_name
-                    ?: "Staff #${assignment?.user_id ?: att.assignment_id}"
-
-                val jobDesc = assignment?.job_desc ?: "Tugas Dinas"
-
-                promptBuilder.append("- Staff: $staffName | Keperluan: $jobDesc | Status=${att.status} | CheckIn=$checkInStr | CheckOut=$checkOutStr\n")
-            }
-
-            promptBuilder.append("\nHarap berikan analisis dalam Bahasa Indonesia yang mencakup:\n")
-            promptBuilder.append("1. Ringkasan singkat statistik kehadiran (berapa persen Present, Late, Absent).\n")
-            promptBuilder.append("2. Deteksi staff yang memiliki indikasi burnout (terlalu sering terlambat/absen atau pola tidak sehat).\n")
-            promptBuilder.append("3. Rekomendasi konkret bagi koordinator untuk meningkatkan kebugaran kerja staff.\n")
-            promptBuilder.append("Berikan hasil dengan format dokumen resmi yang rapi tanpa menyertakan kode markdown seperti asteriks tebal berlebih, tapi gunakan spasi paragraf yang bagus.")
-
-            viewModel.generateBurnoutAnalysis(promptBuilder.toString())
-        }
 
         binding.btnDownloadPdf.setOnClickListener {
             val reportType = activeReportType

@@ -15,6 +15,7 @@ import com.example.myapplication.databinding.FragmentAdminScheduleBinding
 import com.example.myapplication.ui.admin.AdminViewModel
 import com.example.myapplication.ui.admin.AdminViewModelFactory
 import com.example.myapplication.ui.admin.adapter.ScheduleAdapter // 💡 Menggunakan AdminScheduleAdapter pengunci visual kita
+import androidx.core.widget.doAfterTextChanged
 
 class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
 
@@ -76,11 +77,9 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         )
 
         // Setup Filter Dropdowns (Bulan & Tahun)
-        val months = arrayOf("Semua Bulan", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
-        val years = arrayOf("Semua Tahun", "2024", "2025", "2026", "2027", "2028")
+        val months = arrayOf("Semua", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
+        val years = arrayOf("Semua", "2024", "2025", "2026", "2027", "2028")
 
-// Jika ingin default-nya langsung menampilkan "Semua", set ke 0
-// Jika ingin default-nya tetap bulan/tahun ini, gunakan posisi asli + 1 untuk bulan
         selectedMonthPosition = 0
         selectedYearValue = 0
 
@@ -95,19 +94,60 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             viewModel.updateDateFilter(selectedMonthPosition, selectedYearValue)
         }
 
-// Setup Dropdown Tahun
-        val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, years)
-        binding.actvFilterYear.setAdapter(yearAdapter)
-        binding.actvFilterYear.setText(years[selectedYearValue], false)
-        viewModel.selectedYear.value = selectedYearValue
+// Setup Dropdown Tahun secara Dinamis berdasarkan data LiveData
+        viewModel.availableYears.observe(viewLifecycleOwner) { listTahun ->
+            val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listTahun)
+            binding.actvFilterYear.setAdapter(yearAdapter)
+            
+            val currentYearText = if (selectedYearValue == 0) "Semua" else selectedYearValue.toString()
+            val index = listTahun.indexOf(currentYearText)
+            if (index != -1) {
+                binding.actvFilterYear.setText(listTahun[index], false)
+            } else {
+                binding.actvFilterYear.setText(listTahun[0], false)
+                selectedYearValue = 0
+                viewModel.selectedYear.value = 0
+            }
+        }
 
         binding.actvFilterYear.setOnItemClickListener { _, _, position, _ ->
-            if (position == 0) {
-                selectedYearValue = 0 // 0 = Semua Tahun
+            val selectedText = binding.actvFilterYear.adapter.getItem(position).toString()
+            if (selectedText == "Semua") {
+                selectedYearValue = 0
             } else {
-                selectedYearValue = years[position].toInt() // Mengambil angka tahun asli ("2026", dll)
+                selectedYearValue = selectedText.toInt()
             }
             viewModel.updateDateFilter(selectedMonthPosition, selectedYearValue)
+        }
+
+        // Setup Search
+        binding.etSearch.doAfterTextChanged { text ->
+            viewModel.updateSearchQuery(text?.toString().orEmpty())
+        }
+
+        // Setup Dropdown Sort (Mengatasi bug AutoCompleteTextView yang menyaring pilihan menu)
+        val sortOptions = arrayOf("Terlama", "Terbaru", "Judul A-Z", "Judul Z-A")
+        val sortKeys = arrayOf("date_asc", "date_desc", "title_asc", "title_desc")
+        val sortAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, sortOptions) {
+            override fun getFilter(): android.widget.Filter {
+                return object : android.widget.Filter() {
+                    override fun performFiltering(constraint: CharSequence?): FilterResults {
+                        val results = FilterResults()
+                        results.values = sortOptions
+                        results.count = sortOptions.size
+                        return results
+                    }
+                    override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                        notifyDataSetChanged()
+                    }
+                }
+            }
+        }
+        binding.actvFilterSort.setAdapter(sortAdapter)
+        binding.actvFilterSort.setText(sortOptions[0], false)
+        viewModel.updateSortOption(sortKeys[0])
+        binding.actvFilterSort.setOnItemClickListener { _, _, position, _ ->
+            viewModel.updateSortOption(sortKeys[position])
         }
 
         binding.rvSchedule.apply {

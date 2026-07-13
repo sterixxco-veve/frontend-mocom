@@ -41,6 +41,10 @@ class ReplacementAdapter(
 
             binding.tvLocation.text=item.location
 
+            binding.tvTime.text="Waktu : ${item.startTime} - ${item.endTime}"
+
+            binding.tvCreatedAt.text="Diajukan : ${formatDateTime(item.createdAt)}"
+
             binding.tvStatus.text=item.status.uppercase()
 
             when(item.status.lowercase()){
@@ -105,4 +109,26 @@ class ReplacementAdapter(
 
     }
 
+    private fun formatDateTime(dateStr: String?): String {
+        if (dateStr.isNullOrEmpty()) return "-"
+        return try {
+            val parser = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault()).apply {
+                timeZone = java.util.TimeZone.getTimeZone("UTC")
+            }
+            val formatter = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault()).apply {
+                timeZone = java.util.TimeZone.getDefault()
+            }
+            val date = parser.parse(dateStr)
+            if (date != null) formatter.format(date) else dateStr
+        } catch (e: Exception) {
+            try {
+                val parser = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                val formatter = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault())
+                val date = parser.parse(dateStr)
+                if (date != null) formatter.format(date) else dateStr
+            } catch (e2: Exception) {
+                dateStr ?: "-"
+            }
+        }
+    }
 }
