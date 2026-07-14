@@ -31,8 +31,12 @@ class LeaveRequestFragment : Fragment(R.layout.fragment_leave_request) {
 
         // 1. Ambil session ID Login dari SharedPreferences
         val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", android.content.Context.MODE_PRIVATE)
-        currentUserId = sharedPref.getInt("LOGIN_USER_ID", -1)
-        currentCompanyId = sharedPref.getInt("LOGIN_COMPANY_ID", -1)
+        currentUserId = sharedPref.getInt("LOGIN_USER_ID", -1).let {
+            if (it != -1) it else requireActivity().intent.getIntExtra("EXTRA_USER_ID", -1)
+        }
+        currentCompanyId = sharedPref.getInt("LOGIN_COMPANY_ID", -1).let {
+            if (it != -1) it else requireActivity().intent.getIntExtra("EXTRA_COMPANY_ID", -1)
+        }
 
         // 2. Load data ke dalam dropdown menu
         loadShiftsDropdown()
@@ -64,10 +68,10 @@ class LeaveRequestFragment : Fragment(R.layout.fragment_leave_request) {
                         binding.actvShift.setAdapter(adapter)
 
                         // Tangkap item keberapa yang di-klik oleh user
-                        binding.actvShift.setOnItemClickListener { _, _, position, _ ->
-                            // 💡 NOTE: Jika kata 'assignmentId' di bawah ini masih merah,
-                            // coba ganti menjadi '.assignment_id' atau '.id' sesuai properti di model data class-mu!
-                            selectedAssignmentId = dataMurniShift[position].assignment_id
+                        binding.actvShift.setOnItemClickListener { parent, _, position, _ ->
+                            val selectedLabel = parent.getItemAtPosition(position) as String
+                            val matchedShift = dataMurniShift.find { "${it.title} (${it.location})" == selectedLabel }
+                            selectedAssignmentId = matchedShift?.assignment_id
                         }
                     } else {
                         binding.actvShift.setHint("Anda tidak memiliki shift aktif.")
@@ -94,8 +98,10 @@ class LeaveRequestFragment : Fragment(R.layout.fragment_leave_request) {
                     val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, staffLabels)
                     binding.actvStaff.setAdapter(adapter)
 
-                    binding.actvStaff.setOnItemClickListener { _, _, position, _ ->
-                        selectedReplacementUserId = filteredStaff[position].id
+                    binding.actvStaff.setOnItemClickListener { parent, _, position, _ ->
+                        val selectedLabel = parent.getItemAtPosition(position) as String
+                        val matchedStaff = filteredStaff.find { (it.full_name ?: it.username ?: "Staff") == selectedLabel }
+                        selectedReplacementUserId = matchedStaff?.id
                     }
                 }
             } catch (e: Exception) {
