@@ -120,6 +120,7 @@ class AdminStaffAssignmentBottomSheetFragment(private val selectedSchedule: Sche
                 if (isAdded && context != null) {
                     if (isSuccess) {
                         Toast.makeText(requireContext(), "Berhasil menugaskan staff!", Toast.LENGTH_SHORT).show()
+                        viewModel.loadSchedules(currentCompanyId)
                         dismiss()
                     } else {
                         // Gunakan requireContext() secara aman atau activity?.applicationContext

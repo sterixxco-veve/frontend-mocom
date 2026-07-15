@@ -82,4 +82,8 @@ interface RemoteDataSource {
 
     ):List<NotificationReplacement>
 
+    suspend fun updateAssignmentStatus(
+        assignmentId: Int,
+        body: Map<String, String>
+    ): retrofit2.Response<Map<String, Any>>
 }

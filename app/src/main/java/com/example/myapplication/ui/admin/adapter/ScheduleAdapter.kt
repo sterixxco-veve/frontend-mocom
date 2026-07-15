@@ -36,6 +36,25 @@ class ScheduleAdapter(
             val endTimeStr = timeFormat.format(Date(schedule.end_time))
             val dateStr = dateFormat.format(Date(schedule.start_time))
             binding.tvTime.text = "🕒 $dateStr | $startTimeStr - $endTimeStr"
+
+            // Bind Status Penugasan
+            val status = schedule.assignmentStatus
+            val staff = schedule.staffName
+            if (status != null && staff != null) {
+                binding.tvAssignmentStatus.text = "Petugas: $staff (${status.uppercase()})"
+                if (status.lowercase() == "accepted") {
+                    binding.tvAssignmentStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
+                } else if (status.lowercase() == "pending") {
+                    binding.tvAssignmentStatus.setTextColor(android.graphics.Color.parseColor("#F57C00"))
+                } else {
+                    binding.tvAssignmentStatus.setTextColor(android.graphics.Color.parseColor("#64748B"))
+                }
+            } else {
+                binding.tvAssignmentStatus.text = "Belum ditugaskan"
+                binding.tvAssignmentStatus.setTextColor(android.graphics.Color.parseColor("#64748B"))
+            }
+
+            android.util.Log.d("DEBUG_STATUS", "Judul: ${schedule.title} | Status: ${schedule.assignmentStatus} | Staff: ${schedule.staffName}")
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Judul Jadwal: ${schedule.title}")
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi Start: ${schedule.start_time}")
             android.util.Log.d("DEBUG_JAM_EDUSTAFF", "Tipe Data / Isi End  : ${schedule.end_time}")

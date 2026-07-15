@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.staff.adapter
 
 import android.graphics.Color
+import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,11 @@ class NotificationReplacementAdapter :
     RecyclerView.Adapter<NotificationReplacementAdapter.ViewHolder>() {
 
     private val items = mutableListOf<NotificationReplacement>()
+    private var onCloseClick: ((NotificationReplacement) -> Unit)? = null
+
+    fun setOnCloseClickListener(listener: (NotificationReplacement) -> Unit) {
+        this.onCloseClick = listener
+    }
 
     fun submitList(list: List<NotificationReplacement>) {
 
@@ -35,6 +41,10 @@ class NotificationReplacementAdapter :
             binding.tvTime.text =
                 "${item.startTime} - ${item.endTime}"
 
+            binding.btnClose.setOnClickListener {
+                onCloseClick?.invoke(item)
+            }
+
             when(item.status.lowercase()){
 
                 "pending"->{
@@ -48,6 +58,8 @@ class NotificationReplacementAdapter :
 
                     binding.tvMessage.text =
                         "Permohonanmu sedang diproses Admin."
+                    
+                    binding.btnClose.visibility = View.GONE
 
                 }
 
@@ -62,6 +74,8 @@ class NotificationReplacementAdapter :
 
                     binding.tvMessage.text =
                         "Admin menyetujui permohonanmu.\nPengganti : ${item.replacementName}"
+                    
+                    binding.btnClose.visibility = View.VISIBLE
 
                 }
 
@@ -76,6 +90,8 @@ class NotificationReplacementAdapter :
 
                     binding.tvMessage.text =
                         "Admin menolak permohonanmu."
+                    
+                    binding.btnClose.visibility = View.VISIBLE
 
                 }
 

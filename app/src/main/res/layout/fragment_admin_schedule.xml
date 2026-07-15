@@ -158,14 +158,80 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_schedule"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:scrollbars="none"
-            android:scrollbarStyle="outsideOverlay"
-            android:paddingBottom="96dp" />
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="96dp">
+
+                <!-- 1. PENDING SECTION -->
+                <TextView
+                    android:id="@+id/tvHeaderPending"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Menunggu Konfirmasi (Pending)"
+                    android:textColor="#F57C00"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPendingSchedules"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone" />
+
+                <!-- 2. ACCEPTED SECTION -->
+                <TextView
+                    android:id="@+id/tvHeaderAccepted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Disetujui Staff (Accepted)"
+                    android:textColor="#2E7D32"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAcceptedSchedules"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone" />
+
+                <!-- 3. OTHER SECTION -->
+                <TextView
+                    android:id="@+id/tvHeaderOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Jadwal Tersedia / Lainnya"
+                    android:textColor="#1E293B"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvOtherSchedules"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

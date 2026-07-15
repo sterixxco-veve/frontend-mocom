@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.nfc.tech.Ndef
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import com.example.myapplication.App
 import com.example.myapplication.ui.staff.adapter.BroadcastStaffAdapter
 import com.example.myapplication.ui.staff.adapters.ShiftTodayAdapter
@@ -86,6 +87,55 @@ class StaffHomeFragment : Fragment(R.layout.fragment_staff_home), NfcAdapter.Rea
 
         viewModel.loadStaffHomeData(currentUserId)
         setupObservers()
+
+        binding.btnGoToNotifications.setOnClickListener {
+            findNavController().navigate(R.id.navigation_notification)
+        }
+        loadRecentNotifications()
+    }
+
+    private fun loadRecentNotifications() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                // Ambil data notifikasi
+                val responseList = RetrofitClient.webService.getReplacementNotifications(currentUserId)
+                val mappedList = responseList.map { it.toNotificationReplacement() }
+
+                // Filter out dismissed notifications
+                val prefDismissed = requireActivity().getSharedPreferences("DismissedNotifications", android.content.Context.MODE_PRIVATE)
+                val dismissedIds = prefDismissed.getStringSet("dismissed_ids", emptySet()) ?: emptySet()
+                val filteredList = mappedList.filter { it.id.toString() !in dismissedIds }
+
+                // Ambil maks 3 terbaru
+                val recentNotifs = filteredList.take(3)
+
+                if (recentNotifs.isEmpty()) {
+                    binding.rvRecentNotifications.visibility = View.GONE
+                    binding.tvEmptyNotif.visibility = View.VISIBLE
+                } else {
+                    binding.rvRecentNotifications.visibility = View.VISIBLE
+                    binding.tvEmptyNotif.visibility = View.GONE
+
+                    val recentAdapter = com.example.myapplication.ui.staff.adapter.NotificationReplacementAdapter()
+                    recentAdapter.setOnCloseClickListener { notification ->
+                        // Simpan ke SharedPreferences
+                        val dismissedIdsSet = prefDismissed.getStringSet("dismissed_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+                        dismissedIdsSet.add(notification.id.toString())
+                        prefDismissed.edit().putStringSet("dismissed_ids", dismissedIdsSet).apply()
+
+                        // Muat ulang list notifikasi terbaru di dashboard
+                        loadRecentNotifications()
+                    }
+                    binding.rvRecentNotifications.layoutManager = LinearLayoutManager(requireContext())
+                    binding.rvRecentNotifications.adapter = recentAdapter
+                    recentAdapter.submitList(recentNotifs)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("HOME_NOTIF_ERROR", "Gagal load notifikasi terbaru", e)
+                binding.rvRecentNotifications.visibility = View.GONE
+                binding.tvEmptyNotif.visibility = View.VISIBLE
+            }
+        }
     }
 
     // ==========================================

@@ -37,7 +37,7 @@ class FakeUserRepository : UserRepository {
 
     override suspend fun updatePassword(id: Int, password: String) {
         val user = users.find { it.id == id }
-        user?.password = password
+
     }
 
     override suspend fun sync() {

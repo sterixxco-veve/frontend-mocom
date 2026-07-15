@@ -9,5 +9,5 @@ import com.example.myapplication.data.sources.models.User
 interface AssignmentRepository {
     suspend fun getMySchedule(userId: Int): List<MySchedule>
     suspend fun getAssignmentByUserId(user_id: Int): List<MySchedule>
-//    suspend fun sync()
+    suspend fun confirmAssignmentStatus(assignmentId: Int, status: String): Boolean
 }

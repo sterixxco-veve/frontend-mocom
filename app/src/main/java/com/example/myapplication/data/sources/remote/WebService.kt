@@ -165,4 +165,9 @@ interface WebService {
 
     ):List<NotificationReplacementJson>
 
+    @PUT("api/assignments/{id}/status")
+    suspend fun updateAssignmentStatus(
+        @Path("id") assignmentId: Int,
+        @Body body: Map<String, String>
+    ): Response<Map<String, Any>>
 }

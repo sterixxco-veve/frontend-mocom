@@ -14,7 +14,11 @@ data class ScheduleJson(
     val start_time: String,
     val end_time: String,
     val location: String? = null,
-    val created_at: String? = null
+    val created_at: String? = null,
+    val assignment_id: Int? = null,
+    val assignment_status: String? = null,
+    val assigned_at: String? = null,
+    val staff_name: String? = null
 ) {
     fun toSchedule(): Schedule {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -37,6 +41,11 @@ data class ScheduleJson(
             end_time = endTimeLong,
             location = this.location,
             created_at = createdAtLong
-        )
+        ).apply {
+            assignmentId = this@ScheduleJson.assignment_id
+            assignmentStatus = this@ScheduleJson.assignment_status
+            assignedAt = this@ScheduleJson.assigned_at
+            staffName = this@ScheduleJson.staff_name
+        }
     }
 }

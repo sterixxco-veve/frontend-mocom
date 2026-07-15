@@ -31,10 +31,18 @@ fun isEmulator(): Boolean {
 }
 
 object RetrofitClient {
+//    val BASE_URL = if (isEmulator()) {
+//        "http://backend-mocom.vercel.app"
+//    } else {
+//        "http://backend-mocom.vercel.app"
+//    }
+
     val BASE_URL = if (isEmulator()) {
-        "http://backend-mocom.vercel.app"
+        "http://10.0.2.2:3000"
     } else {
-        "http://backend-mocom.vercel.app"
+        // 🔴 UBAH DI SINI: Ganti URL Vercel dengan IP Lokal laptop/komputer Anda
+        // Contoh: "http://192.168.1.15:3000" (Sesuaikan dengan IP Wifi laptop Anda saat ini)
+        "http://192.168.100.113:3000"
     }
 
     private val gson = GsonBuilder()

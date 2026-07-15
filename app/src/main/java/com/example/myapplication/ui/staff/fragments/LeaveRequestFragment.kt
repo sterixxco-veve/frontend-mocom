@@ -73,6 +73,17 @@ class LeaveRequestFragment : Fragment(R.layout.fragment_leave_request) {
                             val matchedShift = dataMurniShift.find { "${it.title} (${it.location})" == selectedLabel }
                             selectedAssignmentId = matchedShift?.assignment_id
                         }
+
+                        // Cek jika terdapat argumen pemindah jadwal dari fragment luar (pre-filled)
+                        val argAssignmentId = arguments?.getInt("EXTRA_ASSIGNMENT_ID", -1) ?: -1
+                        if (argAssignmentId != -1) {
+                            val matchedShift = dataMurniShift.find { it.assignment_id == argAssignmentId }
+                            if (matchedShift != null) {
+                                selectedAssignmentId = matchedShift.assignment_id
+                                val label = "${matchedShift.title} (${matchedShift.location})"
+                                binding.actvShift.setText(label, false)
+                            }
+                        }
                     } else {
                         binding.actvShift.setHint("Anda tidak memiliki shift aktif.")
                     }

@@ -53,21 +53,34 @@ class AdminReplacementFragment:Fragment(R.layout.fragment_admin_replacement){
             findNavController().navigateUp()
         }
 
-        adapter=ReplacementAdapter{
+        adapter = ReplacementAdapter(
+            onClick = {
+                val bundle = Bundle()
+                bundle.putInt("replacement_id", it.id)
+                findNavController().navigate(
+                    R.id.action_replacement_to_detail,
+                    bundle
+                )
+            },
+            onCloseClick = { replacement ->
+                val prefDismissed = requireActivity().getSharedPreferences("AdminDismissedReplacements", Context.MODE_PRIVATE)
+                val dismissedIds = prefDismissed.getStringSet("dismissed_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+                dismissedIds.add(replacement.id.toString())
+                prefDismissed.edit().putStringSet("dismissed_ids", dismissedIds).apply()
 
-            val bundle=Bundle()
-
-            bundle.putInt("replacement_id",it.id)
-
-            findNavController().navigate(
-
-                R.id.action_replacement_to_detail,
-
-                bundle
-
-            )
-
-        }
+                viewModel.replacementRequests.value?.let { currentList ->
+                    val filteredList = currentList.filter { it.id.toString() !in dismissedIds }
+                    adapter.submitList(filteredList)
+                    if (filteredList.isEmpty()) {
+                        binding.rvReplacement.visibility = View.GONE
+                        binding.layoutEmpty.visibility = View.VISIBLE
+                    } else {
+                        binding.rvReplacement.visibility = View.VISIBLE
+                        binding.layoutEmpty.visibility = View.GONE
+                    }
+                }
+            }
+        )
 
         binding.rvReplacement.layoutManager=LinearLayoutManager(requireContext())
 
@@ -78,20 +91,22 @@ class AdminReplacementFragment:Fragment(R.layout.fragment_admin_replacement){
         binding.rvReplacement.visibility = View.GONE
         binding.layoutEmpty.visibility = View.GONE
 
-        viewModel.replacementRequests.observe(viewLifecycleOwner){
-
+        viewModel.replacementRequests.observe(viewLifecycleOwner){ list ->
             // Sembunyikan loading setelah data didapatkan
             binding.pbLoading.visibility = View.GONE
 
-            if (it.isNullOrEmpty()) {
+            val prefDismissed = requireActivity().getSharedPreferences("AdminDismissedReplacements", Context.MODE_PRIVATE)
+            val dismissedIds = prefDismissed.getStringSet("dismissed_ids", emptySet()) ?: emptySet()
+            val filteredList = list.filter { it.id.toString() !in dismissedIds }
+
+            if (filteredList.isEmpty()) {
                 binding.rvReplacement.visibility = View.GONE
                 binding.layoutEmpty.visibility = View.VISIBLE
             } else {
                 binding.rvReplacement.visibility = View.VISIBLE
                 binding.layoutEmpty.visibility = View.GONE
-                adapter.submitList(it)
+                adapter.submitList(filteredList)
             }
-
         }
 
         val pref = requireActivity().getSharedPreferences(

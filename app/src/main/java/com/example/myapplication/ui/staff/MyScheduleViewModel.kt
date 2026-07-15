@@ -22,6 +22,19 @@ class MyScheduleViewModel(
     val mySchedules: LiveData<List<MySchedule>>
         get() = _mySchedules
 
+    private val _confirmStatusSuccess = MutableLiveData<Boolean>()
+    val confirmStatusSuccess: LiveData<Boolean> get() = _confirmStatusSuccess
+
+    fun confirmAssignmentStatus(assignmentId: Int, status: String, userId: Int) {
+        viewModelScope.launch {
+            val success = assignmentRepository.confirmAssignmentStatus(assignmentId, status)
+            _confirmStatusSuccess.value = success
+            if (success) {
+                loadMySchedule(userId)
+            }
+        }
+    }
+
     fun loadMySchedule(userId: Int) {
 
         Log.d("TRACK_MY_SCHEDULE", "========================================")

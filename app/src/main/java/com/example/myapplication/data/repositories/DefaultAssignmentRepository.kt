@@ -27,13 +27,21 @@ class DefaultAssignmentRepository(
     // PERBAIKAN: Tambahkan fungsi override yang diminta oleh interface di bawah ini
     override suspend fun getAssignmentByUserId(user_id: Int): List<MySchedule> {
         return try {
-            // Memanggil fungsi dari remoteDataSource milikmu
-            // (Pastikan di kelas RemoteDataSource kamu sudah membuat fungsi getAssignmentByUserId atau sejenisnya)
             val remoteData = remoteDataSource.getMySchedule(user_id)
             remoteData
         } catch (e: Exception) {
             Log.e("REPOSITORY_GET_ASSIGN", "⚠️ Gagal mengambil data assignment untuk User ID ${user_id}: ${e.message}")
             emptyList()
+        }
+    }
+
+    override suspend fun confirmAssignmentStatus(assignmentId: Int, status: String): Boolean {
+        return try {
+            val response = remoteDataSource.updateAssignmentStatus(assignmentId, mapOf("status" to status))
+            response.isSuccessful
+        } catch (e: Exception) {
+            Log.e("REPOSITORY_CONFIRM", "Gagal memperbarui status assignment: ${e.message}")
+            false
         }
     }
 }

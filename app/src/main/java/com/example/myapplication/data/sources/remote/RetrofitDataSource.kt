@@ -472,5 +472,10 @@ class RetrofitDataSource(private val webService: WebService) : RemoteDataSource 
 
     }
 
-
+    override suspend fun updateAssignmentStatus(
+        assignmentId: Int,
+        body: Map<String, String>
+    ): retrofit2.Response<Map<String, Any>> {
+        return webService.updateAssignmentStatus(assignmentId, body)
+    }
 }

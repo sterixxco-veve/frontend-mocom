@@ -2,6 +2,7 @@ package com.example.myapplication.ui.admin.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.data.sources.models.ReplacementItem
@@ -9,7 +10,8 @@ import com.example.myapplication.databinding.ItemReplacementRequestBinding
 
 class ReplacementAdapter(
 
-    private val onClick:(ReplacementItem)->Unit
+    private val onClick:(ReplacementItem)->Unit,
+    private val onCloseClick:(ReplacementItem)->Unit
 
 ):RecyclerView.Adapter<ReplacementAdapter.ViewHolder>(){
 
@@ -46,6 +48,16 @@ class ReplacementAdapter(
             binding.tvCreatedAt.text="Diajukan : ${formatDateTime(item.createdAt)}"
 
             binding.tvStatus.text=item.status.uppercase()
+
+            if (item.status.lowercase() == "approved" || item.status.lowercase() == "rejected") {
+                binding.btnClose.visibility = View.VISIBLE
+            } else {
+                binding.btnClose.visibility = View.GONE
+            }
+
+            binding.btnClose.setOnClickListener {
+                onCloseClick(item)
+            }
 
             when(item.status.lowercase()){
 

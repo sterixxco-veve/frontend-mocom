@@ -317,9 +317,14 @@ class AdminViewModel (
         Log.d("TRACK_SCHEDULE", "🔄 loadSchedules() dipicu untuk Company ID: $companyId")
 
         viewModelScope.launch {
+            Log.d("TRACK_SCHEDULE", "🔗 Menggunakan BASE_URL: ${com.example.myapplication.RetrofitClient.BASE_URL}")
             try {
                 val result = scheduleRepository.getByCompanyId(companyId)
                 Log.d("TRACK_SCHEDULE", "✅ BERHASIL! Mendapatkan ${result?.size ?: 0} data dari repositori.")
+
+                result?.forEachIndexed { index, schedule ->
+                    Log.d("TRACK_SCHEDULE", "👉 Detail [$index]: Judul = ${schedule.title} | Status = ${schedule.assignmentStatus} | Staff = ${schedule.staffName}")
+                }
 
                 _schedules.postValue(result ?: emptyList())
             } catch (e: Exception) {
@@ -453,7 +458,6 @@ class AdminViewModel (
     fun assignStaffToSchedule(scheduleId: Int, staffId: Int, roleInEvent: String, jobDesc: String, dateMillis: Long, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                // Gunakan langsung constructor data class Assignment asli kamumu!
                 val newAssignment = Assignment(
                     id = 0,
                     schedule_id = scheduleId,
@@ -461,7 +465,7 @@ class AdminViewModel (
                     role_in_event = roleInEvent,
                     job_desc = jobDesc,
                     status = "pending",
-                    assigned_at = dateMillis // Kirim data Long milidetik murni
+                    assigned_at = dateMillis
                 )
 
                 val response = RetrofitClient.apiService.insertAssignments(newAssignment)

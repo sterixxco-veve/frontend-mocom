@@ -112,6 +112,12 @@ interface ApiService {
         @Path("user_id") userId: Int
     ): Response<List<MyScheduleJson>>
 
+    @PUT("api/assignments/{id}/status")
+    suspend fun updateAssignmentStatus(
+        @Path("id") assignmentId: Int,
+        @Body body: Map<String, String>
+    ): retrofit2.Response<Map<String, Any>>
+
     /* =========================
        ATTENDANCES
     ========================= */

@@ -65,6 +65,71 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardRecentNotifications"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/cardAnnouncement"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvNotifHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Notifikasi Terbaru"
+                    android:textStyle="bold"
+                    android:textColor="#4F46E5"
+                    android:textSize="15sp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"/>
+
+                <ImageView
+                    android:id="@+id/btnGoToNotifications"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_media_next"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    app:tint="#4F46E5"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecentNotifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvNotifHeader"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"/>
+
+                <TextView
+                    android:id="@+id/tvEmptyNotif"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvNotifHeader"
+                    android:layout_marginTop="12dp"
+                    android:text="Tidak ada notifikasi baru"
+                    android:textColor="#64748B"
+                    android:textSize="13sp"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardCheckin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -76,7 +141,7 @@
             app:cardBackgroundColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardAnnouncement">
+            app:layout_constraintTop_toBottomOf="@id/cardRecentNotifications">
 
             <LinearLayout
                 android:layout_width="match_parent"

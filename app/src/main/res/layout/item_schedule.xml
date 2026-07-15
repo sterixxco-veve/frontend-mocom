@@ -56,6 +56,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
+        <TextView
+            android:id="@+id/tvAssignmentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Belum ditugaskan"
+            android:textColor="#64748B"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+
         <View
             android:id="@+id/vDivider"
             android:layout_width="0dp"
@@ -64,7 +76,7 @@
             android:background="#E2E8F0"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+            app:layout_constraintTop_toBottomOf="@id/tvAssignmentStatus" />
 
         <TextView
             android:id="@+id/tvLocation"

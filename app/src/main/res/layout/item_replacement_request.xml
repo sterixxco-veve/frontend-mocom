@@ -12,95 +12,112 @@
     app:strokeWidth="1dp"
     app:strokeColor="#E2E8F0">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pending"
-            android:textColor="#F59E0B"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif-bold"
-            android:textStyle="bold"
-            android:background="#FEF3C7"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp" />
-
-        <TextView
-            android:id="@+id/tvRequester"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nama Pemohon"
-            android:textColor="#0F172A"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-bold"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp"/>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvReplacement"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Digantikan oleh: Nama Pengganti"
-            android:textColor="#64748B"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="13sp"
-            android:layout_marginTop="2dp"/>
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:textColor="#F59E0B"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-bold"
+                android:textStyle="bold"
+                android:background="#FEF3C7"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#F1F5F9"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"/>
+            <TextView
+                android:id="@+id/tvRequester"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nama Pemohon"
+                android:textColor="#0F172A"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-bold"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"/>
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Seminar AI"
-            android:textColor="#1E293B"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvReplacement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Digantikan oleh: Nama Pengganti"
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="13sp"
+                android:layout_marginTop="2dp"/>
 
-        <TextView
-            android:id="@+id/tvLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lab AI"
-            android:textColor="#64748B"
-            android:fontFamily="sans-serif"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F1F5F9"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"/>
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Waktu: --:--"
-            android:textColor="#64748B"
-            android:fontFamily="sans-serif"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp"/>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seminar AI"
+                android:textColor="#1E293B"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
 
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lab AI"
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"/>
 
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Waktu: --:--"
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"/>
 
-        <TextView
-            android:id="@+id/tvCreatedAt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Diajukan: --"
-            android:textColor="#94A3B8"
-            android:fontFamily="sans-serif"
-            android:textSize="11sp"
-            android:layout_marginTop="6dp"/>
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Diajukan: --"
+                android:textColor="#94A3B8"
+                android:fontFamily="sans-serif"
+                android:textSize="11sp"
+                android:layout_marginTop="6dp"/>
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="12dp"
+            android:padding="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="Close"
+            app:tint="#64748B"
+            android:visibility="gone"/>
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

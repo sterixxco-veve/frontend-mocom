@@ -35,7 +35,11 @@
         android:id="@+id/staffScheduleFragment"
         android:name="com.example.myapplication.ui.staff.fragments.StaffScheduleFragment"
         android:label="Jadwal Kerja"
-        tools:layout="@layout/fragment_staff_schedule" />
+        tools:layout="@layout/fragment_staff_schedule">
+        <action
+            android:id="@+id/action_staffScheduleFragment_to_leaveRequestFragment"
+            app:destination="@id/leaveRequestFragment" />
+    </fragment>
 
     <!-- 3. HALAMAN REQUEST PENGGANTI (IZIN STAFF) -->
     <!-- Catatan: Sesuaikan nilai android:name jika nanti Anda membuat kelas fragmennya -->

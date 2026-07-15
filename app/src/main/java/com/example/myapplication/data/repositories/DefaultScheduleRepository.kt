@@ -25,11 +25,14 @@ class DefaultScheduleRepository(
     override suspend fun getByCompanyId(id: Int): List<Schedule> {
         return try {
             val remoteData = remoteDataSource.fetchScheduleByCompanyId(id)
-            // 💡 OFFLINE-FIRST: Segarkan data lokal khusus perusahaan ini
-            localDataSource.sync(remoteData)
+            try {
+                localDataSource.sync(remoteData)
+            } catch (syncEx: Exception) {
+                Log.e("REPOSITORY_GET_COMP", "⚠️ Gagal melakukan sinkronisasi lokal (sync): ${syncEx.message}")
+            }
             remoteData
         } catch (e: Exception) {
-            Log.e("REPOSITORY_GET_COMP", "⚠️ Server offline, memuat data lokal terfilter untuk Company ID $id")
+            Log.e("REPOSITORY_GET_COMP", "⚠️ Server offline, memuat data lokal terfilter untuk Company ID $id: ${e.message}")
             localDataSource.getScheduleByCompanyId(id)
         }
     }

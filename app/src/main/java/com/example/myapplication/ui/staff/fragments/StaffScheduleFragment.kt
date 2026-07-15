@@ -12,6 +12,7 @@ import com.example.myapplication.databinding.FragmentStaffScheduleBinding
 import com.example.myapplication.ui.staff.MyScheduleViewModel
 import com.example.myapplication.ui.staff.MyScheduleViewModelFactory
 import com.example.myapplication.ui.staff.adapter.MyScheduleAdapter
+import androidx.navigation.fragment.findNavController
 
 class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
 
@@ -47,8 +48,60 @@ class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
 
         myScheduleAdapter = MyScheduleAdapter(
             myScheduleList = emptyList(),
-            onItemClick = {
-                // nanti kalau ingin buka detail jadwal
+            onItemClick = { schedule ->
+                val detailMessage = StringBuilder().apply {
+                    append("📌 Judul: ${schedule.title}\n\n")
+                    append("📝 Deskripsi: ${schedule.description ?: "Tidak ada deskripsi"}\n\n")
+                    append("📍 Lokasi: ${schedule.location ?: "Tidak ada"}\n\n")
+                    append("🕒 Waktu: ${schedule.start_time} - ${schedule.end_time}\n\n")
+                    append("👤 Peran: ${schedule.role_in_event ?: "-"}\n\n")
+                    append("💼 Tugas: ${schedule.job_desc ?: "-"}\n\n")
+                    append("📊 Status: ${schedule.status?.uppercase() ?: "PENDING"}")
+                }.toString()
+
+                val builder = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Detail Jadwal Shift")
+                    .setMessage(detailMessage)
+
+                val statusLower = schedule.status?.lowercase() ?: "pending"
+                if (statusLower == "pending") {
+                    builder.setPositiveButton("Terima Shift") { dialog, _ ->
+                        viewModel.confirmAssignmentStatus(schedule.assignment_id, "accepted", userId)
+                        dialog.dismiss()
+                    }
+                    builder.setNegativeButton("Ajukan Izin") { dialog, _ ->
+                        dialog.dismiss()
+                        val bundle = Bundle().apply {
+                            putInt("EXTRA_ASSIGNMENT_ID", schedule.assignment_id)
+                        }
+                        findNavController().navigate(
+                            R.id.action_staffScheduleFragment_to_leaveRequestFragment,
+                            bundle
+                        )
+                    }
+                    builder.setNeutralButton("Batal") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                } else if (statusLower == "accepted") {
+                    builder.setPositiveButton("Ajukan Izin") { dialog, _ ->
+                        dialog.dismiss()
+                        val bundle = Bundle().apply {
+                            putInt("EXTRA_ASSIGNMENT_ID", schedule.assignment_id)
+                        }
+                        findNavController().navigate(
+                            R.id.action_staffScheduleFragment_to_leaveRequestFragment,
+                            bundle
+                        )
+                    }
+                    builder.setNegativeButton("Tutup") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                } else {
+                    builder.setPositiveButton("Tutup") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                }
+                builder.show()
             }
         )
 
@@ -86,6 +139,14 @@ class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
             filterAndSubmitList(schedules)
         }
 
+        viewModel.confirmStatusSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                android.widget.Toast.makeText(requireContext(), "Berhasil memperbarui status jadwal!", android.widget.Toast.LENGTH_SHORT).show()
+            } else {
+                android.widget.Toast.makeText(requireContext(), "Gagal memperbarui status jadwal.", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+
         // Pemicu load data dengan ID yang valid dari session
         viewModel.loadMySchedule(userId)
     }
@@ -113,8 +174,9 @@ class StaffScheduleFragment : Fragment(R.layout.fragment_staff_schedule) {
 
                 val monthMatch = scheduleMonth == selectedMonthPosition
                 val yearMatch = scheduleYear == selectedYearValue
+                val statusMatch = assignment.status?.lowercase() == "accepted" || assignment.status?.lowercase() == "completed"
 
-                monthMatch && yearMatch
+                monthMatch && yearMatch && statusMatch
             } else {
                 false
             }

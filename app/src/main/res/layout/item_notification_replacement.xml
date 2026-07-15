@@ -14,74 +14,65 @@
     app:cardElevation="4dp"
     app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
-
+    <FrameLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        android:layout_height="wrap_content"
-
-        android:orientation="vertical"
-
-        android:padding="16dp">
-
-        <TextView
-
-            android:id="@+id/tvStatus"
-
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"
-
-            android:textStyle="bold"
-
-            android:textSize="16sp"/>
-
-        <TextView
-
-            android:id="@+id/tvTitle"
-
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"
-
-            android:textStyle="bold"
-
-            android:textSize="18sp"
-
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-
-            android:id="@+id/tvLocation"
-
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"
-
-            android:layout_marginTop="4dp"/>
-
-        <TextView
-
-            android:id="@+id/tvTime"
-
-            android:layout_width="wrap_content"
-
-            android:layout_height="wrap_content"
-
-            android:layout_marginTop="4dp"/>
-
-        <TextView
-
-            android:id="@+id/tvMessage"
-
+        <LinearLayout
             android:layout_width="match_parent"
-
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            android:layout_marginTop="12dp"
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
 
-            android:textSize="15sp"/>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="8dp"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textSize="15sp"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="12dp"
+            android:padding="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="Close"
+            app:tint="#64748B"
+            android:visibility="gone"/>
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

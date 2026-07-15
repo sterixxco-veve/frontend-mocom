@@ -14,12 +14,21 @@ class Schedule(
     val created_by: Int,
     val company_id: Int = 1,
     val title: String,
-    val description: String?, // Dibuat nullable (?) karena di DB tidak ada "NOT NULL"
+    val description: String?,
     val start_time: Long = Date().time,
     val end_time: Long = Date().time,
-    val location: String?, // Dibuat nullable (?) karena di DB tidak ada "NOT NULL"
+    val location: String?,
     var created_at: Long = Date().time
 ) : Parcelable {
+
+    @androidx.room.Ignore
+    var assignmentId: Int? = null
+    @androidx.room.Ignore
+    var assignmentStatus: String? = null
+    @androidx.room.Ignore
+    var assignedAt: String? = null
+    @androidx.room.Ignore
+    var staffName: String? = null
 
     init {
         if (title.isBlank()) {

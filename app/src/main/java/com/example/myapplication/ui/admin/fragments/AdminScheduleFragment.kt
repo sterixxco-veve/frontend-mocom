@@ -21,8 +21,9 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
 
     private var _binding: FragmentAdminScheduleBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var scheduleAdapter: ScheduleAdapter
+    private lateinit var pendingAdapter: ScheduleAdapter
+    private lateinit var acceptedAdapter: ScheduleAdapter
+    private lateinit var otherAdapter: ScheduleAdapter
     private val currentCal = java.util.Calendar.getInstance()
     private var selectedMonthPosition = currentCal.get(java.util.Calendar.MONTH) + 1
     private var selectedYearValue = currentCal.get(java.util.Calendar.YEAR)
@@ -40,40 +41,63 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         val sharedPref = requireActivity().getSharedPreferences("EduStaffSession", Context.MODE_PRIVATE)
         val companyId = sharedPref.getInt("LOGIN_COMPANY_ID", -1)
 
-        // Setup Adapter RecyclerView (AdminScheduleAdapter untuk deteksi gembok)
-        // Setup Adapter RecyclerView
-        scheduleAdapter = ScheduleAdapter(
+        val onEdit: (com.example.myapplication.data.sources.models.Schedule) -> Unit = { scheduleTerpilih ->
+            val bundle = Bundle().apply {
+                putInt("EDIT_ID", scheduleTerpilih.id)
+                putInt("EDIT_CREATED_BY", scheduleTerpilih.created_by)
+                putInt("EDIT_COMPANY_ID", scheduleTerpilih.company_id)
+                putString("EDIT_TITLE", scheduleTerpilih.title)
+                putString("EDIT_DESC", scheduleTerpilih.description)
+                putString("EDIT_LOCATION", scheduleTerpilih.location)
+                putLong("EDIT_START", scheduleTerpilih.start_time)
+                putLong("EDIT_END", scheduleTerpilih.end_time)
+            }
+            val addScheduleBottomSheet = AddScheduleBottomSheetFragment().apply {
+                arguments = bundle
+            }
+            addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
+        }
+
+        val onDelete: (com.example.myapplication.data.sources.models.Schedule) -> Unit = { scheduleTerpilih ->
+            viewModel.deleteSchedule(scheduleTerpilih.id) { success ->
+                if (success) {
+                    Toast.makeText(requireContext(), "Jadwal berhasil dihapus!", Toast.LENGTH_SHORT).show()
+                    viewModel.loadSchedules(companyId)
+                } else {
+                    Toast.makeText(requireContext(), "Gagal menghapus jadwal!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        // Setup 3 adapter terpisah untuk masing-masing bagian status
+        pendingAdapter = ScheduleAdapter(
+            scheduleList = emptyList(),
+            onItemClick = { schedule ->
+                val name = schedule.staffName ?: "karyawan"
+                Toast.makeText(requireContext(), "Jadwal ini sudah ditugaskan ke $name (menunggu konfirmasi).", Toast.LENGTH_SHORT).show()
+            },
+            onEditClick = onEdit,
+            onDeleteClick = onDelete
+        )
+
+        acceptedAdapter = ScheduleAdapter(
+            scheduleList = emptyList(),
+            onItemClick = { schedule ->
+                val name = schedule.staffName ?: "karyawan"
+                Toast.makeText(requireContext(), "Jadwal ini sudah disetujui oleh $name dan tidak dapat diubah.", Toast.LENGTH_SHORT).show()
+            },
+            onEditClick = onEdit,
+            onDeleteClick = onDelete
+        )
+
+        otherAdapter = ScheduleAdapter(
             scheduleList = emptyList(),
             onItemClick = { scheduleTerpilih ->
                 val staffAssignmentBottomSheet = AdminStaffAssignmentBottomSheetFragment(scheduleTerpilih)
                 staffAssignmentBottomSheet.show(parentFragmentManager, "AdminStaffAssignmentBottomSheet")
             },
-            onEditClick = { scheduleTerpilih ->
-                val bundle = Bundle().apply {
-                    putInt("EDIT_ID", scheduleTerpilih.id)
-                    putInt("EDIT_CREATED_BY", scheduleTerpilih.created_by)
-                    putInt("EDIT_COMPANY_ID", scheduleTerpilih.company_id)
-                    putString("EDIT_TITLE", scheduleTerpilih.title)
-                    putString("EDIT_DESC", scheduleTerpilih.description)
-                    putString("EDIT_LOCATION", scheduleTerpilih.location)
-                    putLong("EDIT_START", scheduleTerpilih.start_time)
-                    putLong("EDIT_END", scheduleTerpilih.end_time)
-                }
-                val addScheduleBottomSheet = AddScheduleBottomSheetFragment().apply {
-                    arguments = bundle
-                }
-                addScheduleBottomSheet.show(parentFragmentManager, "AddScheduleBottomSheet")
-            },
-            onDeleteClick = { scheduleTerpilih ->
-                viewModel.deleteSchedule(scheduleTerpilih.id) { success ->
-                    if (success) {
-                        Toast.makeText(requireContext(), "Jadwal berhasil dihapus!", Toast.LENGTH_SHORT).show()
-                        viewModel.loadSchedules(companyId)
-                    } else {
-                        Toast.makeText(requireContext(), "Gagal menghapus jadwal!", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+            onEditClick = onEdit,
+            onDeleteClick = onDelete
         )
 
         // Setup Filter Dropdowns (Bulan & Tahun)
@@ -150,9 +174,18 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
             viewModel.updateSortOption(sortKeys[position])
         }
 
-        binding.rvSchedule.apply {
+        // Setup 3 RecyclerView untuk masing-masing seksi
+        binding.rvPendingSchedules.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = scheduleAdapter
+            adapter = pendingAdapter
+        }
+        binding.rvAcceptedSchedules.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = acceptedAdapter
+        }
+        binding.rvOtherSchedules.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = otherAdapter
         }
 
         // Setup Tampilan Warna Swipe-to-Refresh
@@ -160,23 +193,61 @@ class AdminScheduleFragment : Fragment(R.layout.fragment_admin_schedule) {
         binding.swipeRefresh.setProgressBackgroundColorSchemeColor(Color.parseColor("#1E293B"))
 
         // =========================================================================
-// 💡 PERBAIKAN 1: Pemicu Refresh Harus Menarik KEDUA Data Sekaligus dari Server
+// 💡 Pemicu Refresh Harus Menarik KEDUA Data Sekaligus dari Server
 // =========================================================================
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadSchedules(companyId)
         }
 
 // =========================================================================
-// 🎯 PERBAIKAN 2: Observer filteredSchedules (Gunakan .submitList Bawaan Aslimu)
+// 🎯 Observer filteredSchedules (Pemisahan ke 3 Sub-List)
 // =========================================================================
         viewModel.filteredSchedules.observe(viewLifecycleOwner) { listJadwalTerfilter ->
             binding.swipeRefresh.isRefreshing = false
 
             if (listJadwalTerfilter != null) {
-                // Kembali menggunakan fungsi bawaan ScheduleAdapter aslimu agar tidak unresolved reference
-                scheduleAdapter.submitList(listJadwalTerfilter)
+                // Split list berdasarkan status penugasan
+                val pendingList = listJadwalTerfilter.filter {
+                    it.assignmentStatus?.lowercase() == "pending"
+                }
+                val acceptedList = listJadwalTerfilter.filter {
+                    it.assignmentStatus?.lowercase() == "accepted"
+                }
+                val otherList = listJadwalTerfilter.filter {
+                    it.assignmentStatus == null ||
+                    it.assignmentStatus?.lowercase() == "declined" ||
+                    it.assignmentStatus?.lowercase() == "completed"
+                }
+
+                // Update data untuk masing-masing seksi
+                pendingAdapter.submitList(pendingList)
+                acceptedAdapter.submitList(acceptedList)
+                otherAdapter.submitList(otherList)
+
+                // Atur visibilitas Header & List secara dinamis
+                if (pendingList.isEmpty()) {
+                    binding.tvHeaderPending.visibility = View.GONE
+                    binding.rvPendingSchedules.visibility = View.GONE
+                } else {
+                    binding.tvHeaderPending.visibility = View.VISIBLE
+                    binding.rvPendingSchedules.visibility = View.VISIBLE
+                }
+
+                if (acceptedList.isEmpty()) {
+                    binding.tvHeaderAccepted.visibility = View.GONE
+                    binding.rvAcceptedSchedules.visibility = View.GONE
+                } else {
+                    binding.tvHeaderAccepted.visibility = View.VISIBLE
+                    binding.rvAcceptedSchedules.visibility = View.VISIBLE
+                }
             } else {
-                scheduleAdapter.submitList(emptyList())
+                pendingAdapter.submitList(emptyList())
+                acceptedAdapter.submitList(emptyList())
+                otherAdapter.submitList(emptyList())
+                binding.tvHeaderPending.visibility = View.GONE
+                binding.rvPendingSchedules.visibility = View.GONE
+                binding.tvHeaderAccepted.visibility = View.GONE
+                binding.rvAcceptedSchedules.visibility = View.GONE
             }
         }
 

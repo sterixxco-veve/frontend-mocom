@@ -55,6 +55,25 @@ class StaffNotificationFragment :
 
         adapter = NotificationReplacementAdapter()
 
+        adapter.setOnCloseClickListener { notification ->
+            val prefDismissed = requireActivity().getSharedPreferences("DismissedNotifications", Context.MODE_PRIVATE)
+            val dismissedIds = prefDismissed.getStringSet("dismissed_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+            dismissedIds.add(notification.id.toString())
+            prefDismissed.edit().putStringSet("dismissed_ids", dismissedIds).apply()
+
+            viewModel.replacementNotifications.value?.let { currentList ->
+                val filteredList = currentList.filter { it.id.toString() !in dismissedIds }
+                adapter.submitList(filteredList)
+                if (filteredList.isEmpty()) {
+                    binding.llEmptyState.visibility = View.VISIBLE
+                    binding.rvNotification.visibility = View.GONE
+                } else {
+                    binding.llEmptyState.visibility = View.GONE
+                    binding.rvNotification.visibility = View.VISIBLE
+                }
+            }
+        }
+
         binding.rvNotification.layoutManager =
             LinearLayoutManager(requireContext())
 
@@ -75,8 +94,12 @@ class StaffNotificationFragment :
         viewModel.loadReplacementNotifications(userId)
 
         viewModel.replacementNotifications.observe(viewLifecycleOwner){ list ->
-            adapter.submitList(list)
-            if (list.isNullOrEmpty()) {
+            val prefDismissed = requireActivity().getSharedPreferences("DismissedNotifications", Context.MODE_PRIVATE)
+            val dismissedIds = prefDismissed.getStringSet("dismissed_ids", emptySet()) ?: emptySet()
+            val filteredList = list.filter { it.id.toString() !in dismissedIds }
+
+            adapter.submitList(filteredList)
+            if (filteredList.isEmpty()) {
                 binding.llEmptyState.visibility = View.VISIBLE
                 binding.rvNotification.visibility = View.GONE
             } else {
